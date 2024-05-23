@@ -2,11 +2,12 @@ const getState = ({ getStore, getActions, setStore }) => {
 	const fetchHelper = async (url, config = {}, successCallback) => {
 		try {
 			const response = await fetch(url, config);
+			const data = await response.json();
 			if (response.ok) {
-				const data = await response.json();
 				if (successCallback) successCallback(data);
-				setStore({ message: response.message || "", error: "" });
-			} else setStore({ message: "", error: response.error || "An error occurred" });
+				const prevMessage = getStore().message;
+				setStore({ message: data.message || prevMessage, error: "" });
+			} else setStore({ message: "", error: data.error || "An error occurred" });
 		} catch (error) {
 			console.error(error);
 		}
@@ -60,7 +61,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 
 				fetchHelper(
-					process.env.BACKEND_URL + `/api/tasks/${id}`,
+					process.env.BACKEND_URL + `/api/tasks`,
 					config,
 					() => getActions().getTasks()
 				);
