@@ -23,9 +23,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 			getTasks: () => {
 				fetchHelper(
-					process.env.BACKEND_URL + "/api/tasks", // url como siempre
-					{}, 									// la configuración del request, en este caso vacía porque es un GET
-					(data) => setStore({ tasks: data })		// función a realizar despues de que una respuesta sea buena
+					process.env.BACKEND_URL + "/api/tasks", 
+					{}, 									
+					(data) => setStore({ tasks: data })		
 				)
 			},
 
@@ -40,6 +40,56 @@ const getState = ({ getStore, getActions, setStore }) => {
 					config,
 					() => getActions().getTasks(),
 				)
+			},
+
+			addTask: (title, description, deliveryLocation, pickupLocation, dueDate) => {
+				const newTask = {
+					"title": title,
+					"description": description,
+					"delivery_location": deliveryLocation,
+					"pickup_location": pickupLocation,
+					"due_date": dueDate,
+				}
+
+				const config = { 
+					method: "POST",
+					body: JSON.stringify(newTask),
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					}
+				}
+
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/tasks/${id}`,
+					config,
+					() => getActions().getTasks()
+				);
+			},
+
+			editTask: (id, title, description, deliveryLocation, pickupLocation, dueDate) => {
+				const task = {
+					"title": title,
+					"description": description,
+					"delivery_location": deliveryLocation,
+					"pickup_location": pickupLocation,
+					"due_date": dueDate,
+				}
+
+				const config = { 
+					method: "PUT",
+					body: JSON.stringify(task),
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					}
+				}
+
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/tasks/${id}`,
+					config,
+					() => getActions().getTasks()
+				);
 			},
 		}
 	};
