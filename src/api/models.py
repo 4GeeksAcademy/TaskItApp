@@ -1,6 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
-from datetime import datetime, timedelta
 from enum import Enum
 
 db = SQLAlchemy()
@@ -20,9 +19,6 @@ class User(db.Model):
             "email": self.email,
             # do not serialize the password, its a security breach
         }
-    
-def default_due_date():
-    return datetime.now() + timedelta(days=2)
 
 class StatusEnum(Enum):
     PENDING = "pending"
@@ -34,7 +30,7 @@ class Task(db.Model):
     title = db.Column(db.String(80), unique=False, nullable=False)
     description = db.Column(db.String(500), unique=False, nullable=False)
     creation_date = db.Column(db.DateTime, default=func.now(), nullable=False)
-    due_date = db.Column(db.DateTime, default=default_due_date, nullable=False)
+    due_date = db.Column(db.DateTime, nullable=False)
     status = db.Column(db.Enum(StatusEnum), nullable=False, default=StatusEnum.PENDING)
     delivery_location = db.Column(db.String(120), nullable=False)
     pickup_location = db.Column(db.String(120), nullable=False)
