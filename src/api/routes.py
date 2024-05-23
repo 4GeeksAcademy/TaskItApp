@@ -30,7 +30,7 @@ def add_task():
         return jsonify({ 'error': 'Missing fields.'}), 400
     
     try:
-        due_date = datetime.strptime(due_date_str, '%d/%m/%Y')
+        due_date = datetime.strptime(due_date_str, '%Y-%m-%d')
     except ValueError:
         return jsonify({"error": "Invalid due_date format"}), 400
     
