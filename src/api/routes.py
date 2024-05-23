@@ -44,16 +44,54 @@ def get_address(address_id):
 def create_address():
     data = request.json
     if not "address" in data:
-        return jsonify("You must enter an address"), 400
+        return jsonify({"message": "You must enter an address"}), 400
     if data["address"] == "":
-        return jsonify("The address cannot be empty"), 400
+        return jsonify({"message": "The address cannot be empty"}), 400
     # Create new street
     addre = Address(**data)
     db.session.add(addre)
     db.session.commit()
 
     response_body = {
-        "msg": "Address created"
+        "message": "Address created"
     }
 
     return jsonify(response_body), 200
+
+
+@api.route('/addresses/<int:id>', methods=['DELETE'])
+def delete_address(id):
+    # Buscar la direccion por su ID en la base de datos
+    address = Address.query.get(id)
+
+    # Si no se encuentra la dirección, devuelve un error 404
+    if address is None:
+        return jsonify({"error": "address not found"}), 404
+
+    # Eliminar dirección de la base de datos
+    db.session.delete(address)
+    db.session.commit()
+
+    # Devolver una respuesta exitosa
+    return jsonify({"message": "Address successfully deleted"}), 200
+
+@api.route('/addresses/<int:id>', methods=['PUT'])
+def update_address(id):
+    address = Address.query.get(id)
+    if address is None:
+        return jsonify({"error": "Address not found"}), 404
+
+    data = request.json
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    if "address" in data and data["address"] == "":
+        return jsonify({"message": "The address cannot be empty"}), 400
+
+    # Update address fields
+    for key in data:
+        if hasattr(address, key):
+            setattr(address, key, data[key])
+
+    db.session.commit()
+    return jsonify({"message": "Address successfully updated"}), 200
