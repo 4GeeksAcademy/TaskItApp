@@ -32,7 +32,7 @@ def add_task():
     try:
         due_date = datetime.strptime(due_date_str, '%Y-%m-%d')
     except ValueError:
-        return jsonify({"error": "Invalid due_date format"}), 400
+        return jsonify({"error": "Invalid due date format"}), 400
     
     new_task = Task(title=title, description=description, delivery_location=delivery_location, pickup_location=pickup_location, due_date=due_date)
     
@@ -79,10 +79,10 @@ def edit_task(id):
 
     if new_due_date_str:
         try:
-            new_due_date = datetime.strptime(new_due_date_str, '%d/%m/%Y')
+            new_due_date = datetime.strptime(new_due_date_str, '%Y-%m-%d')
             task.due_date = new_due_date
         except ValueError:
-            return jsonify({"error": "Invalid due_date format."}), 400
+            return jsonify({"error": "Invalid due date format."}), 400
         
     if new_status:
         try:
