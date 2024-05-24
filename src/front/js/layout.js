@@ -23,10 +23,10 @@ const Layout = () => {
                 <ScrollToTop>
                     <Navbar />
                     <Routes>
-                        <Route element={<Home />} path="/" />
+                        <Route element={<Home />} path="/home" />
                         <Route element={<Demo />} path="/demo" />
                         <Route element={<Single />} path="/single/:theid" />
-                        <Route element={<Addresses />} path="/addresses" />
+                        <Route element={<Addresses />} path="/" />
                         <Route element={<h1>Not found!</h1>} />
                     </Routes>
                     <Footer />
