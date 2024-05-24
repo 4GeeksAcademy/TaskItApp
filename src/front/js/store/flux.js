@@ -20,8 +20,13 @@ const getState = ({ getStore, getActions, setStore }) => {
 			tasks: [],
             addresses: [],
 			categories: [],
+			users: [],
+			user: {},
+			editing: false,
 		},
 		actions: {
+			setEditing: (bool) => { setStore({ editing: bool })},
+			// TASKS
             getTasks: () => {
 				fetchHelper(
 					process.env.BACKEND_URL + "/api/tasks", // url como siempre
@@ -42,6 +47,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					() => getActions().getTasks(),
 				)
 			},
+
             addTask: (title, description, deliveryLocation, pickupLocation, dueDate) => {
 				const newTask = {
 					"title": title,
@@ -91,6 +97,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 					() => getActions().getTasks()
 				);
 			},
+
+			// ADDRESSES
             getAddresses: () => {
                 fetchHelper(
                     process.env.BACKEND_URL + "/api/addresses",
@@ -157,11 +165,13 @@ const getState = ({ getStore, getActions, setStore }) => {
                     () => getActions().getAddresses()
                 );
             },
+
+			// CATEGORIES
 			getCategories: () => {
 				fetchHelper(
-					process.env.BACKEND_URL + "/api/categories", // url como siempre
-					{}, 									// la configuración del request, en este caso vacía porque es un GET
-					(data) => setStore({ categories: data.categories })		// función a realizar despues de que una respuesta sea buena
+					process.env.BACKEND_URL + "/api/categories", 
+					{}, 									
+					(data) => setStore({ categories: data.categories })		
 				)
 			},
 
@@ -177,6 +187,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					() => getActions().getCategories(),
 				)
 			},
+
 			editCategory: (id, name) => {
 				const config = { 
 					method: "PUT",
@@ -191,7 +202,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 					config,
 					() => getActions().getCategories(),
 				)
-			},addCategory: (name) => {
+			},
+			
+			addCategory: (name) => {
 				const config = { 
 					method: "POST",
 					body: JSON.stringify({"name":name}),
@@ -205,6 +218,84 @@ const getState = ({ getStore, getActions, setStore }) => {
 					config,
 					() => getActions().getCategories(),
 				)
+			},
+
+			// USERS
+			getUsers: () => {
+				fetchHelper(
+					process.env.BACKEND_URL + "/api/users", // url como siempre
+					{}, 									// la configuración del request, en este caso vacía porque es un GET
+					(data) => setStore({ users: data })		// función a realizar despues de que una respuesta sea buena
+				)
+			},
+
+			getUser: (id) => {
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/users/${id}`, 
+					{}, 								
+					(data) => setStore({ user: data })		
+				)
+			},
+
+			deleteUser: (id) => {
+				const config = { 
+					method: "DELETE",
+					headers: { 'Accept': 'application/json' }
+				}
+
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/users/${id}`,
+					config,
+					() => getActions().getUsers(),
+				)
+			},
+
+            addUser: (username, email, password, fullName) => {
+				const newUser = {
+					"username": username,
+					"email": email,
+					"password": password,
+					"full_name": fullName,
+				}
+
+				const config = { 
+					method: "POST",
+					body: JSON.stringify(newUser),
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					}
+				}
+
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/users`,
+					config,
+					() => getActions().getUsers()
+				);
+			},
+
+			editUser: (id, username, email, password, fullName) => {
+				const user = {
+					"username": username,
+					"email": email,
+					"password": password,
+					"full_name": fullName,
+				}
+
+				const config = { 
+					method: "PUT",
+					body: JSON.stringify(user),
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					}
+				}
+
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/users/${id}`,
+					config,
+					() => getActions().getUsers()
+				);
 			},
 		}
 	};
