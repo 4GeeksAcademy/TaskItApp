@@ -4,21 +4,32 @@ from enum import Enum
 
 db = SQLAlchemy()
 
+class RoleEnum(Enum):
+    TASK_SEEKER = "task_seeker"
+    REQUESTER = "requester"
+    BOTH = "both"
+    NONE = "none"
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(24), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
-    is_active = db.Column(db.Boolean(), unique=False, nullable=False)
+    full_name = db.Column(db.String(120), unique=False, nullable=False)
+    role = db.Column(db.Enum(RoleEnum), nullable=True, default=RoleEnum.NONE)
 
     def __repr__(self):
-        return f'<User {self.email}>'
+        return f'<User {self.username}>'
 
     def serialize(self):
         return {
             "id": self.id,
+            "username": self.username,
             "email": self.email,
-            # do not serialize the password, its a security breach
+            "full_name": self.full_name,
+            "role": self.role.value
         }
+    
 class StatusEnum(Enum):
     PENDING = "pending"
     IN_PROGRESS = "in_progress"
@@ -65,8 +76,8 @@ class Address(db.Model):
             "address": self.address,
             "latitude": self.latitude,
             "longitude": self.longitude,
-            # do not serialize the password, its a security breach
         }
+    
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(250), nullable=False)
