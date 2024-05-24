@@ -18,7 +18,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 			message: "",
 			error: "",
 			tasks: [],
-            addresses: []
+            addresses: [],
+			categories: [],
 		},
 		actions: {
             getTasks: () => {
@@ -155,7 +156,56 @@ const getState = ({ getStore, getActions, setStore }) => {
                     config,
                     () => getActions().getAddresses()
                 );
-            }
+            },
+			getCategories: () => {
+				fetchHelper(
+					process.env.BACKEND_URL + "/api/categories", // url como siempre
+					{}, 									// la configuración del request, en este caso vacía porque es un GET
+					(data) => setStore({ categories: data.categories })		// función a realizar despues de que una respuesta sea buena
+				)
+			},
+
+			deleteCategory: (id) => {
+				const config = { 
+					method: "DELETE",
+					headers: { 'Accept': 'application/json' }
+				}
+
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/categories/${id}`,
+					config,
+					() => getActions().getCategories(),
+				)
+			},
+			editCategory: (id, name) => {
+				const config = { 
+					method: "PUT",
+					body: JSON.stringify({"name":name}),
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					}
+				}
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/categories/${id}`,
+					config,
+					() => getActions().getCategories(),
+				)
+			},addCategory: (name) => {
+				const config = { 
+					method: "POST",
+					body: JSON.stringify({"name":name}),
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					}
+				}
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/categories`,
+					config,
+					() => getActions().getCategories(),
+				)
+			},
 		}
 	};
 };

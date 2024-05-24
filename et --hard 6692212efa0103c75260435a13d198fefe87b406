@@ -1,0 +1,26 @@
+[33mcommit 6692212efa0103c75260435a13d198fefe87b406[m[33m ([m[1;36mHEAD -> [m[1;32mFT-02-Aresdgi[m[33m, [m[1;31morigin/FT-02-Aresdgi[m[33m)[m
+Author: Aresdgi <115067719+Aresdgi@users.noreply.github.com>
+Date:   Fri May 24 08:23:58 2024 +0000
+
+    finsih back
+
+[33mcommit 5ff42303dd650716388d3e4d7c04e8e65323fa89[m[33m ([m[1;31morigin/develop[m[33m)[m
+Merge: 9f9624a ac0afef
+Author: Rafael <154633798+Fali1980@users.noreply.github.com>
+Date:   Thu May 23 13:20:23 2024 +0200
+
+    Merge pull request #1 from 4GeeksAcademy/Helper
+    
+    fetch helper + examples
+
+[33mcommit ac0afef6bb18f6b41fe96b83b23edca4ee3bc3e8[m[33m ([m[1;31morigin/Helper[m[33m)[m
+Author: Blondy Martínez <47917655+BlondyMartinez@users.noreply.github.com>
+Date:   Thu May 23 11:08:45 2024 +0000
+
+    fetch helper+ examples
+
+[33mcommit 9f9624ac7e7a4fd99c401a214f0064db858909cf[m[33m ([m[1;31morigin/main[m[33m)[m
+Author: Blondy Martínez <47917655+BlondyMartinez@users.noreply.github.com>
+Date:   Wed May 22 19:37:58 2024 +0200
+
+    Initial commit

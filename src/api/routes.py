@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Task, StatusEnum, Address
+from api.models import db, User, Task, StatusEnum, Address, Category
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from datetime import datetime
@@ -11,6 +11,16 @@ api = Blueprint('api', __name__)
 
 # Allow CORS requests to this API
 CORS(api)
+
+
+@api.route('/hello', methods=['POST', 'GET'])
+def handle_hello():
+
+    response_body = {
+        "message": "Hello! I'm a message that came from the backend, check the network tab on the google inspector and you will see the GET request"
+    }
+
+    return jsonify(response_body), 200
 
 @api.route('/tasks', methods=['GET'])
 def get_tasks():
@@ -173,3 +183,58 @@ def update_address(id):
 
     db.session.commit()
     return jsonify({"message": "Address successfully updated"}), 200
+
+@api.route('/categories', methods=['POST'])
+def create_category():
+    data = request.get_json()
+    name = data.get('name')
+    
+    if not name:
+        return jsonify({'error': 'Name is required.'}), 400
+    
+    new_category = Category(name=name)
+    db.session.add(new_category)
+    db.session.commit()
+    
+    return jsonify({'message': 'Category created successfully'}), 201
+
+@api.route('/categories/<int:id>', methods=['GET'])
+def get_category(id):
+    category = Category.query.get(id)
+    if not category:
+        return jsonify({'error': 'Category not found'}), 404
+    return jsonify({'category': category.serialize()}), 200
+
+@api.route('/categories', methods=['GET'])
+def get_categories():
+    categories = Category.query.all()
+    return jsonify({'categories': [category.serialize() for category in categories]}), 200
+
+@api.route('/categories/<int:id>', methods=['PUT'])
+def update_category(id):
+    category = Category.query.get(id)
+    if not category:
+        return jsonify({'error': 'Category not found'}), 404
+    
+    data = request.get_json()
+    name = data.get('name')
+    
+    if not name:
+        return jsonify({'error': 'Name is required'}), 400
+    
+    category.name = name
+    db.session.commit()
+    
+    return jsonify({'message': 'Category updated successfully'}), 200
+
+@api.route('/categories/<int:id>', methods=['DELETE'])
+def delete_category(id):
+    category = Category.query.get(id)
+    if not category:
+        return jsonify({'error': 'Category not found'}), 404
+    
+    db.session.delete(category)
+    db.session.commit()
+    
+    return jsonify({'message': 'Category deleted successfully'}), 200
+

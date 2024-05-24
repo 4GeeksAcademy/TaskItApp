@@ -19,7 +19,6 @@ class User(db.Model):
             "email": self.email,
             # do not serialize the password, its a security breach
         }
-
 class StatusEnum(Enum):
     PENDING = "pending"
     IN_PROGRESS = "in_progress"
@@ -67,5 +66,17 @@ class Address(db.Model):
             "latitude": self.latitude,
             "longitude": self.longitude,
             # do not serialize the password, its a security breach
+        }
+class Category(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(250), nullable=False)
+
+    def __repr__(self):
+        return f'<User %r {self.name}>'
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
         }
     
