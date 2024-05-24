@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Task, StatusEnum, Address, Category
+from api.models import db, User, Task, StatusEnum, Address, Category, RoleEnum
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from datetime import datetime
@@ -12,16 +12,7 @@ api = Blueprint('api', __name__)
 # Allow CORS requests to this API
 CORS(api)
 
-
-@api.route('/hello', methods=['POST', 'GET'])
-def handle_hello():
-
-    response_body = {
-        "message": "Hello! I'm a message that came from the backend, check the network tab on the google inspector and you will see the GET request"
-    }
-
-    return jsonify(response_body), 200
-
+# TASKS BELOW
 @api.route('/tasks', methods=['GET'])
 def get_tasks():
     return jsonify([task.serialize() for task in Task.query.all()]), 200
@@ -110,8 +101,7 @@ def edit_task(id):
 
     return jsonify({'message': 'Task edited successfully.'}), 200
 
-
-
+# ADDRESSES
 @api.route('/addresses', methods=['GET'])
 def get_addresses():
     all_addresses = Address.query.all()
@@ -119,10 +109,7 @@ def get_addresses():
     results = list(map(lambda address: address.serialize(), all_addresses))
     print(results)
 
-
     return jsonify(results), 200
-
-
 
 @api.route('/addresses/<int:address_id>', methods=['GET'])
 def get_address(address_id):
@@ -147,6 +134,7 @@ def create_address():
     }
 
     return jsonify(response_body), 200
+
 @api.route('/addresses/<int:id>', methods=['DELETE'])
 def delete_address(id):
     # Buscar la direccion por su ID en la base de datos
@@ -184,6 +172,7 @@ def update_address(id):
     db.session.commit()
     return jsonify({"message": "Address successfully updated"}), 200
 
+# CATEGORIES
 @api.route('/categories', methods=['POST'])
 def create_category():
     data = request.get_json()
@@ -238,3 +227,80 @@ def delete_category(id):
     
     return jsonify({'message': 'Category deleted successfully'}), 200
 
+# USERS
+@api.route('/users', methods=['GET'])
+def get_users():
+    return jsonify([user.serialize() for user in User.query.all()]), 200
+
+
+@api.route('/users', methods=['POST'])
+def add_user():
+    data = request.json
+    username = data.get('username')
+    email = data.get("email")
+    password = data.get('password')
+    full_name = data.get('full_name')
+    
+    if not username or not email or not password or not full_name:
+        return jsonify({ 'error': 'Missing fields.'}), 400
+    
+    existing_email = User.query.filter_by(email=email).first()
+    if existing_email: return jsonify({ 'error': 'Email already used.'}), 400
+
+    new_user = User(username=username, email=email, password=password, full_name=full_name)
+    
+    db.session.add(new_user)
+    db.session.commit()
+
+    return jsonify({'message': 'User created successfully.'}), 201
+
+
+@api.route('/users/<int:id>', methods=['GET'])
+def get_user(id):
+    user = User.query.get(id)
+
+    if not user: return jsonify({'error': 'User not found.'}), 404
+
+    return jsonify(user.serialize()), 200
+
+
+@api.route('/users/<int:id>', methods=['DELETE'])
+def delete_user(id):
+    user = User.query.get(id)
+
+    if not user: return jsonify({'error': 'User not found.'}), 404
+
+    db.session.delete(user)
+    db.session.commit()
+
+    return jsonify({'message': 'User deleted successfully.'}), 200
+
+
+@api.route('/users/<int:id>', methods=['PUT'])
+def edit_user(id):  
+    user = User.query.get(id)
+
+    if not user: return jsonify({'error': 'User not found.'}), 404
+
+    data = request.json
+    new_username = data.get('username')
+    new_email = data.get("email")
+    new_password = data.get('password')
+    new_full_name = data.get('full_name')
+    new_role_str = data.get('role')
+        
+    if new_role_str:
+        try:
+            new_role = RoleEnum(new_role_str)
+            user.role = new_role
+        except ValueError:
+            return jsonify({"error": "Invalid role value."}), 400
+
+    if new_username: user.username = new_username
+    if new_email: user.email = new_email
+    if new_password: user.password = new_password
+    if new_full_name: user.full_name = new_full_name
+
+    db.session.commit()
+
+    return jsonify({'message': 'User edited successfully.'}), 200
