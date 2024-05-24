@@ -6,7 +6,7 @@ import { BackendURL } from "./component/backendURL";
 import { Home } from "./pages/home";
 import { Demo } from "./pages/demo";
 import { Single } from "./pages/single";
-import Addresses from "./pages/addresses"; // Corrige la importación aquí
+import Addresses from "./pages/addresses";
 import injectContext from "./store/appContext";
 
 import { Navbar } from "./component/navbar";
