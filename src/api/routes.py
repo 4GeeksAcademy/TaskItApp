@@ -15,16 +15,16 @@ CORS(api)
 @api.route('/categories', methods=['POST'])
 def create_category():
     data = request.get_json()
-    nombre = data.get('nombre')
+    name = data.get('name')
     
-    if not nombre:
-        return jsonify({'error': 'Nombre is required'}), 400
+    if not name:
+        return jsonify({'error': 'Name is required.'}), 400
     
-    new_category = Category(nombre=nombre)
+    new_category = Category(name=name)
     db.session.add(new_category)
     db.session.commit()
     
-    return jsonify({'message': 'Category created successfully', 'category': new_category.serialize()}), 201
+    return jsonify({'message': 'Category created successfully'}), 201
 
 @api.route('/categories/<int:id>', methods=['GET'])
 def get_category(id):
@@ -45,15 +45,15 @@ def update_category(id):
         return jsonify({'error': 'Category not found'}), 404
     
     data = request.get_json()
-    nombre = data.get('nombre')
+    name = data.get('name')
     
-    if not nombre:
-        return jsonify({'error': 'Nombre is required'}), 400
+    if not name:
+        return jsonify({'error': 'Name is required'}), 400
     
-    category.nombre = nombre
+    category.name = name
     db.session.commit()
     
-    return jsonify({'message': 'Category updated successfully', 'category': category.serialize()}), 200
+    return jsonify({'message': 'Category updated successfully'}), 200
 
 @api.route('/categories/<int:id>', methods=['DELETE'])
 def delete_category(id):
@@ -64,7 +64,7 @@ def delete_category(id):
     db.session.delete(category)
     db.session.commit()
     
-    return jsonify({'message': 'Category deleted successfully'}), 204
+    return jsonify({'message': 'Category deleted successfully'}), 200
 
 
 
