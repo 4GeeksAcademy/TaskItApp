@@ -137,8 +137,6 @@ def create_address():
     }
 
     return jsonify(response_body), 200
-
-
 @api.route('/addresses/<int:id>', methods=['DELETE'])
 def delete_address(id):
     # Buscar la direccion por su ID en la base de datos

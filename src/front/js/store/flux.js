@@ -1,17 +1,17 @@
-const getState = ({ getStore, getActions, setStore }) => {
-	const fetchHelper = async (url, config = {}, successCallback) => {
-		try {
-			const response = await fetch(url, config);
-			const data = await response.json();
-			if (response.ok) {
-				if (successCallback) successCallback(data);
-				const prevMessage = getStore().message;
-				setStore({ message: data.message || prevMessage, error: "" });
-			} else setStore({ message: "", error: data.error || "An error occurred" });
-		} catch (error) {
-			console.error(error);
-		}
-	};
+const getState = ({ getStore, getActions, setStore }) => {	
+    const fetchHelper = async (url, config = {}, successCallback) => {
+    try {
+        const response = await fetch(url, config);
+        const data = await response.json();
+        if (response.ok) {
+            if (successCallback) successCallback(data);
+            const prevMessage = getStore().message;
+            setStore({ message: data.message || prevMessage, error: "" });
+        } else setStore({ message: "", error: data.error || "An error occurred" });
+    } catch (error) {
+        console.error(error);
+    }
+};
 
 	return {
 		store: {
@@ -21,7 +21,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             addresses: []
 		},
 		actions: {
-			getTasks: () => {
+            getTasks: () => {
 				fetchHelper(
 					process.env.BACKEND_URL + "/api/tasks", // url como siempre
 					{}, 									// la configuración del request, en este caso vacía porque es un GET
