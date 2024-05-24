@@ -20,6 +20,10 @@ const Addresses = () => {
         setLongitude('');
     };
 
+    const handleDelete = (id) => {
+        actions.deleteAddresses(id);
+    };
+
     return (
         <div>
             <form onSubmit={handleSubmit}>
@@ -67,6 +71,12 @@ const Addresses = () => {
                             <div><strong>Address:</strong> {addr.address}</div>
                             <div><strong>Latitude:</strong> {addr.latitude}</div>
                             <div><strong>Longitude:</strong> {addr.longitude}</div>
+                            <button
+                                className="btn btn-danger"
+                                onClick={() => handleDelete(addr.id)}
+                            >
+                                Delete
+                            </button>
                         </li>
                     ))}
                 </ul>
