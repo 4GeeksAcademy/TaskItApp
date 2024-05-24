@@ -2,12 +2,12 @@ const getState = ({ getStore, getActions, setStore }) => {
 	const fetchHelper = async (url, config = {}, successCallback) => {
 		try {
 			const response = await fetch(url, config);
+			const data = await response.json();
 			if (response.ok) {
-				const data = await response.json();
 				if (successCallback) successCallback(data);
-				setStore({ message: response.message || "", error: "" });
-			} else setStore({ message: "", error: response.error || "An error occurred" });
-			console.log(getStore())
+				const prevMessage = getStore().message;
+				setStore({ message: data.message || prevMessage, error: "" });
+			} else setStore({ message: "", error: data.error || "An error occurred" });
 		} catch (error) {
 			console.error(error);
 		}
@@ -21,38 +21,6 @@ const getState = ({ getStore, getActions, setStore }) => {
             addresses: []
 		},
 		actions: {
-			// Use getActions to call a function within a fuction
-			exampleFunction: () => {
-				getActions().changeColor(0, "green");
-			},
-
-			getMessage: async () => {
-				try{
-					// fetching data from the backend
-					const resp = await fetch(process.env.BACKEND_URL + "/api/hello")
-					const data = await resp.json()
-					setStore({ message: data.message })
-					// don't forget to return something, that is how the async resolves
-					return data;
-				}catch(error){
-					console.log("Error loading message from backend", error)
-				}
-			},
-			changeColor: (index, color) => {
-				//get the store
-				const store = getStore();
-
-				//we have to loop the entire demo array to look for the respective index
-				//and change its color
-				const demo = store.demo.map((elm, i) => {
-					if (i === index) elm.background = color;
-					return elm;
-				});
-
-				//reset the global store
-				setStore({ demo: demo });
-			},
-			
 			getTasks: () => {
 				fetchHelper(
 					process.env.BACKEND_URL + "/api/tasks", // url como siempre
@@ -73,6 +41,121 @@ const getState = ({ getStore, getActions, setStore }) => {
 					() => getActions().getTasks(),
 				)
 			},
+            addTask: (title, description, deliveryLocation, pickupLocation, dueDate) => {
+				const newTask = {
+					"title": title,
+					"description": description,
+					"delivery_location": deliveryLocation,
+					"pickup_location": pickupLocation,
+					"due_date": dueDate,
+				}
+
+				const config = { 
+					method: "POST",
+					body: JSON.stringify(newTask),
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					}
+				}
+
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/tasks`,
+					config,
+					() => getActions().getTasks()
+				);
+			},
+
+			editTask: (id, title, description, deliveryLocation, pickupLocation, dueDate) => {
+				const task = {
+					"title": title,
+					"description": description,
+					"delivery_location": deliveryLocation,
+					"pickup_location": pickupLocation,
+					"due_date": dueDate,
+				}
+
+				const config = { 
+					method: "PUT",
+					body: JSON.stringify(task),
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					}
+				}
+
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/tasks/${id}`,
+					config,
+					() => getActions().getTasks()
+				);
+			},
+            getAddresses: () => {
+                fetchHelper(
+                    process.env.BACKEND_URL + "/api/addresses",
+                    {},
+                    (data) => setStore({ addresses: data })
+                );
+            },
+
+            deleteAddresses: (id) => {
+                const config = {
+                    method: "DELETE",
+                    headers: { 'Accept': 'application/json' }
+                };
+
+                fetchHelper(
+                    process.env.BACKEND_URL + `/api/addresses/${id}`,
+                    config,
+                    () => getActions().getAddresses()
+                );
+            },
+
+            addAddress: (address, latitude, longitude) => {
+                const newAddress = {
+                    address,
+                    latitude,
+                    longitude,
+                };
+
+                const config = {
+                    method: "POST",
+                    body: JSON.stringify(newAddress),
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                };
+
+                fetchHelper(
+                    process.env.BACKEND_URL + `/api/addresses`,
+                    config,
+                    () => getActions().getAddresses()
+                );
+            },
+
+            editAddress: (id, address, latitude, longitude) => {
+                const addressObj = {
+                    address,
+                    latitude,
+                    longitude,
+                };
+
+                const config = {
+                    method: "PUT",
+                    body: JSON.stringify(addressObj),
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                };
+
+                fetchHelper(
+                    process.env.BACKEND_URL + `/api/addresses/${id}`,
+                    config,
+                    () => getActions().getAddresses()
+                );
+            }
 		}
 	};
 };
