@@ -18,33 +18,17 @@ class User(db.Model):
             # do not serialize the password, its a security breach
         }
     
-class Empresa(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(250), nullable=False)
-    ciudad = db.Column(db.String(250), nullable=False)
-    slogan = db.Column(db.String(250), nullable=False)
-
-    def __repr__(self):
-        return f'<User {self.email}>'
-
-    def serialize(self):
-        return {
-            "id": self.id,
-            # do not serialize the password, its a security breach
-        }
-    
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(250), nullable=False)
+    name = db.Column(db.String(250), nullable=False)
 
     def __repr__(self):
-        return f'<User %r {self.nombre}>'
+        return f'<User %r {self.name}>'
 
     def serialize(self):
         return {
             "id": self.id,
-            
-            # do not serialize the password, its a security breach
+            "name": self.name,
         }
     
     
