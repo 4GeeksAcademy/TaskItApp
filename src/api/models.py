@@ -49,3 +49,23 @@ class Task(db.Model):
             "delivery_location": self.delivery_location,
             "pickup_location": self.pickup_location
         }
+
+    
+class Address(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    address = db.Column(db.String(120), unique=True, nullable=False)
+    latitude = db.Column(db.Float, unique=False, nullable=False)
+    longitude = db.Column(db.Float, unique=False, nullable=False)
+
+    def __repr__(self):
+        return f'<Address {self.address}>'
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "address": self.address,
+            "latitude": self.latitude,
+            "longitude": self.longitude,
+            # do not serialize the password, its a security breach
+        }
+    
