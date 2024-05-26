@@ -17,6 +17,7 @@ class User(db.Model):
     password = db.Column(db.String(80), unique=False, nullable=False)
     full_name = db.Column(db.String(120), unique=False, nullable=False)
     role = db.Column(db.Enum(RoleEnum), nullable=True, default=RoleEnum.NONE)
+    description = db.Column(db.String(500), unique=False, nullable=True)
 
     def __repr__(self):
         return f'<User {self.username}>'
