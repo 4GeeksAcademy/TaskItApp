@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Task, StatusEnum, Address, Category, RoleEnum, Requester
+from api.models import db, User, Task, StatusEnum, Address, Category, RoleEnum, Requester, TaskSeeker
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from datetime import datetime
@@ -380,3 +380,77 @@ def edit_requester(id):
     db.session.commit()
 
     return jsonify({'message': 'Requested info edited successfully.'}), 200
+
+# TASK SEEKERS
+@api.route('/task-seekers', methods=['GET'])
+def get_seekers():
+    return jsonify([seeker.serialize() for seeker in TaskSeeker.query.all()]), 200
+
+
+@api.route('/task-seekers', methods=['POST'])
+def add_seeker():
+    data = request.json
+    user_id = data.get('user_id')
+    
+    if not user_id:
+        return jsonify({ 'error': 'Missing user id.'}), 400
+    
+    existing_user = User.query.get(user_id)
+    if not existing_user: return jsonify({ 'error': 'User not found.'}), 404
+
+    if existing_user.role == RoleEnum.TASK_SEEKER or existing_user.role == RoleEnum.BOTH:
+        return jsonify({'error': 'User already has requester role.'}), 400
+
+    new_seeker = TaskSeeker(user=existing_user)
+    if existing_user.role == RoleEnum.NONE: existing_user.role = RoleEnum.TASK_SEEKER
+    else: existing_user.role = RoleEnum.BOTH
+
+    db.session.add(new_seeker)
+    db.session.commit()
+
+    return jsonify({'message': 'Task seeker role successfully added to user.'}), 201
+
+
+@api.route('/task-seekers/<int:id>', methods=['GET'])
+def get_seeker(id):
+    seeker = TaskSeeker.query.get(id)
+
+    if not seeker: return jsonify({'error': 'Seeker not found.'}), 404
+
+    return jsonify(seeker.serialize()), 200
+
+
+@api.route('/task-seekers/<int:id>', methods=['DELETE'])
+def delete_seeker(id):
+    seeker = TaskSeeker.query.get(id)
+
+    if not seeker: return jsonify({'error': 'Seeker not found.'}), 404
+    
+    user = User.query.get(seeker.user_id)
+    if user.role == RoleEnum.TASK_SEEKER: user.role = RoleEnum.NONE
+    else: user.role = RoleEnum.REQUESTER
+
+    db.session.delete(seeker)
+    db.session.commit()
+
+    return jsonify({'message': 'Removed seeker role successfully.'}), 200
+
+
+@api.route('/task-seekers/<int:id>', methods=['PUT'])
+def edit_seeker(id):  
+    seeker = TaskSeeker.query.get(id)
+
+    if not seeker: return jsonify({'error': 'Seeker not found.'}), 404
+
+    data = request.json
+    new_overall_rating = data.get("overall_rating")
+    new_total_requested_tasks = data.get("total_requested_tasks")
+    new_total_reviews = data.get("total_reviews")
+
+    if new_overall_rating: seeker.overall_rating = new_overall_rating
+    if new_total_requested_tasks: seeker.total_requested_tasks = new_total_requested_tasks
+    if new_total_reviews: seeker.total_reviews = new_total_reviews
+
+    db.session.commit()
+
+    return jsonify({'message': 'Seeker info edited successfully.'}), 200
