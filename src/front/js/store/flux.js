@@ -21,7 +21,8 @@ const getState = ({ getStore, getActions, setStore }) => {
             addresses: [],
 			categories: [],
 			users: [],
-			user: { role: "both" },
+			currentUser: { role: "both" }, 	// logged in user
+			user: {},						// user to view in detail
 			requesters: [],
 			seekers: [],
 			editing: false,
@@ -240,6 +241,15 @@ const getState = ({ getStore, getActions, setStore }) => {
 					(data) => setStore({ user: data })		
 				)
 			},
+
+			getUserByUsername: (username) => {
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/users/${username}`, 
+					{}, 								
+					(data) => setStore({ user: data })		
+				)
+			},
+
 
 			deleteUser: (id) => {
 				const config = { 
