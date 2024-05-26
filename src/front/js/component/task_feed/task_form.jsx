@@ -24,7 +24,6 @@ const TaskForm = (props) => {
 
     const handleSubmit = (title, description, pickupAddress, deliveryAddress, dueDate) => {
         event.preventDefault();
-        console.log(dueDate)
         if(props.currentTask) actions.editTask(props.currentTask.id, title, description, pickupAddress, deliveryAddress, dueDate);
         else actions.addTask(title, description, pickupAddress, deliveryAddress, dueDate);
     };

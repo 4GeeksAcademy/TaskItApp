@@ -6,7 +6,6 @@ const UserList = () => {
     const { store, actions } = useContext(Context);
 
     useEffect(() => actions.getUsers(), []);
-    useEffect(() => console.log(store.users), [store.users]);
 
     return (
         <div>
