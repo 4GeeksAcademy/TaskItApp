@@ -1,28 +1,91 @@
 import React, { useState, useEffect, useContext } from "react";
 import PropTypes from "prop-types";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Context } from "../store/appContext";
-import rigoImageUrl from "../../img/rigo-baby.jpg";
 
-export const Single = props => {
-	const { store, actions } = useContext(Context);
+export const User = () => {
+	const { actions } = useContext(Context);
 	const params = useParams();
 
-	return (
-		<div className="jumbotron">
-			<h1 className="display-4">This will show the demo element: {store.demo[params.theid].title}</h1>
-			<img src={rigoImageUrl} />
-			<hr className="my-4" />
+	const [user, setUser] = useState({});
+	const [seekerInfo, setSeekerInfo] = useState({});
+	const [requesterInfo, setRequesterInfo] = useState({});
 
-			<Link to="/">
-				<span className="btn btn-primary btn-lg" href="#" role="button">
-					Back home
-				</span>
-			</Link>
+	useEffect(() => {
+		const loadInfo = async () => {
+			const currentUser = await actions.getUserByUsername(params.theusername);
+			setUser(currentUser);
+			console.log(currentUser)
+			
+			if(currentUser.role == "both"|| currentUser.role == "task_seeker") setSeekerInfo(await actions.getSeeker(currentUser.id));
+			if(currentUser.role == "both"|| currentUser.role == "requester") setRequesterInfo(await actions.getRequester(currentUser.id));
+		}
+
+		loadInfo();
+	}, [])
+
+	return (
+		<div className="container-fluid">
+			<div className="row d-flex justify-content-center mx-2">
+				<div className="col-6" >
+					<div className="rounded overflow-hidden p-0 float-start">
+						<img 
+							className="img-fluid" 
+							src="https://www.phillymag.com/wp-content/uploads/sites/3/2019/03/best-career-advice-900x600.jpg" 
+							alt="User Profile"
+							style={{ height: "40rem", objectFit: "cover" }}
+						/>
+					</div>
+				</div>
+				<div className="col-6 d-flex flex-column justify-content-between">
+					<div>
+						<h1><b>{user.full_name}</b> ({user.username})</h1>
+						{ seekerInfo && Object.keys(seekerInfo).length > 0 && 
+							(<div className="d-flex justify-content-between">
+								<p className="text-muted fs-2">Task Seeker</p>
+								<p className="text-muted fs-2">{seekerInfo.overall_rating}★</p>
+							</div>)
+						}
+						{ requesterInfo && Object.keys(requesterInfo).length > 0 && 
+							(<div className="d-flex justify-content-between">
+								<p className="text-muted fs-2">Requester</p>
+								<p className="text-muted fs-2">{requesterInfo.overall_rating}★</p>
+							</div>)
+						}
+						<p className="fs-3 text-muted">{user.description}</p>
+					</div>
+					<div className="d-flex justify-content-around">
+						{	seekerInfo && Object.keys(seekerInfo).length > 0 &&
+							<React.Fragment>
+								<div className="text-center d-flex flex-column">
+									<span className="fs-2"><b>Total Completed</b></span>
+									<h2>{seekerInfo.total_completed_tasks}</h2>
+								</div>
+								<div className="text-center d-flex flex-column">
+									<span className="fs-2"><b>Ongoing</b></span>
+									<h2>{seekerInfo.total_ongoing_tasks}</h2>
+								</div>
+							</React.Fragment>
+						}
+						{	requesterInfo && Object.keys(requesterInfo).length > 0 &&
+							<React.Fragment>
+								<div className="text-center d-flex flex-column">
+									<span className="fs-2"><b>Total Requested</b></span>
+									<h2>{requesterInfo.total_requested_tasks}</h2>
+								</div>
+								<div className="text-center d-flex flex-column">
+									<span className="fs-2"><b>Average Budget</b></span>
+									<h2>{requesterInfo.average_budget}</h2>
+								</div>
+							</React.Fragment>
+						}
+					</div>
+				</div>
+			</div>
 		</div>
 	);
 };
 
-Single.propTypes = {
+User.propTypes = {
 	match: PropTypes.object
 };
