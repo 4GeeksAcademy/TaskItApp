@@ -263,6 +263,14 @@ def get_user(id):
 
     return jsonify(user.serialize()), 200
 
+@api.route('/users/<string:username>', methods=['GET'])
+def get_user_by_username(username):
+    user = User.query.filter_by(username=username).first()
+
+    if not user: return jsonify({'error': 'User not found.'}), 404
+
+    return jsonify(user.serialize()), 200
+
 
 @api.route('/users/<int:id>', methods=['DELETE'])
 def delete_user(id):
