@@ -23,6 +23,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			users: [],
 			user: {},
 			editing: false,
+			requesters: [],
 		},
 		actions: {
 			setEditing: (bool) => { setStore({ editing: bool })},
@@ -295,6 +296,73 @@ const getState = ({ getStore, getActions, setStore }) => {
 					process.env.BACKEND_URL + `/api/users/${id}`,
 					config,
 					() => getActions().getUsers()
+				);
+			},
+
+			// REQUESTERS
+			getRequesters: () => {
+				fetchHelper(
+					process.env.BACKEND_URL + "/api/requesters", 
+					{}, 									
+					(data) => setStore({ requesters: data })		
+				)
+			},
+
+			deleteRequester: (id) => {
+				const config = { 
+					method: "DELETE",
+					headers: { 'Accept': 'application/json' }
+				}
+
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/requesters/${id}`,
+					config,
+					() => getActions().getRequesters(),
+				)
+			},
+
+            addRequester: (userID) => {
+				const newRequester = {
+					"user_id": userID
+				}
+
+				const config = { 
+					method: "POST",
+					body: JSON.stringify(newRequester),
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					}
+				}
+
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/requesters`,
+					config,
+					() => getActions().getRequesters()
+				);
+			},
+
+			editRequester: (id, overallRating, totalRequestedTasks, totalReviews, averageBudget) => {
+				const requester = {
+					"overall_rating": overallRating,
+					"total_requested_tasks": totalRequestedTasks,
+					"total_reviews": totalReviews,
+					"average_budget": averageBudget,
+				}
+
+				const config = { 
+					method: "PUT",
+					body: JSON.stringify(requester),
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					}
+				}
+
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/requesters/${id}`,
+					config,
+					() => getActions().getRequesters()
 				);
 			},
 		}
