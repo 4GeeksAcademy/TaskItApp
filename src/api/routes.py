@@ -314,17 +314,20 @@ def get_requesters():
 @api.route('/requesters', methods=['POST'])
 def add_requester():
     data = request.json
-    user = data.get('user')
+    user_id = data.get('user_id')
     
-    if not user:
-        return jsonify({ 'error': 'Missing user.'}), 400
+    if not user_id:
+        return jsonify({ 'error': 'Missing user id.'}), 400
     
-    existing_user = User.query.get(user)
+    existing_user = User.query.get(user_id)
     if not existing_user: return jsonify({ 'error': 'User not found.'}), 404
 
-    new_requester = Requester(user=user)
-    if user.role.value == "none": user.role = RoleEnum("requester")
-    else: user.role = RoleEnum("both")
+    if existing_user.role == RoleEnum.REQUESTER or existing_user.role == RoleEnum.BOTH:
+        return jsonify({'error': 'User already has requester role.'}), 400
+
+    new_requester = Requester(user=existing_user)
+    if existing_user.role == RoleEnum.NONE: existing_user.role = RoleEnum.REQUESTER
+    else: existing_user.role = RoleEnum.BOTH
 
     db.session.add(new_requester)
     db.session.commit()
@@ -348,8 +351,8 @@ def delete_requester(id):
     if not requester: return jsonify({'error': 'Requester not found.'}), 404
     
     user = User.query.get(requester.user_id)
-    if user.role.value == "requester": user.role = RoleEnum("none")
-    else: user.role = RoleEnum("task_seeker")
+    if user.role == RoleEnum.REQUESTER: user.role = RoleEnum.NONE
+    else: user.role = RoleEnum.TASK_SEEKER
 
     db.session.delete(requester)
     db.session.commit()
