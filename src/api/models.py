@@ -135,3 +135,28 @@ class Category(db.Model):
             "name": self.name,
         }
     
+
+class Rating(db.Model):
+    __tablename__ = 'ratings'
+    id = db.Column(db.Integer, primary_key=True)
+    stars = db.Column(db.Integer, nullable=False)
+    seeker_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    task_id = db.Column(db.Integer, db.ForeignKey('task.id'), nullable=False)
+    
+    # Relationships
+    seeker = db.relationship('User', foreign_keys=[seeker_id], backref=db.backref('ratings', lazy=True))
+    task = db.relationship('Task', foreign_keys=[task_id], backref=db.backref('task_ratings', lazy=True))
+
+    def __repr__(self):
+        return f'<Rating id={self.id}, stars={self.stars}>'
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "stars": self.stars,
+            "seeker_id": self.seeker_id,
+            "task_id": self.task_id,
+            "seeker_username": self.seeker.username if self.seeker else None,  
+            "task_description": self.task.description if self.task else None   
+        }
+
