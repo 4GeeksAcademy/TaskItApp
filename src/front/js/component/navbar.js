@@ -46,7 +46,14 @@ export const Navbar = () => {
 							<Icon className="smooth" icon="mdi:bell-outline" />
 						</li>
 						<li>
-							<div className="bg-black rounded-circle smooth" style={{ width: "3rem", height: "3rem" }}></div>
+							<div className="bg-black rounded-circle smooth overflow-hidden" style={{ width: "3rem", height: "3rem" }}>
+								<img 
+									className="img-fluid" 
+									src="https://www.phillymag.com/wp-content/uploads/sites/3/2019/03/best-career-advice-900x600.jpg" 
+									alt="User Profile"
+									style={{ width: "100%", height: "100%", objectFit: "cover" }}
+								/>
+							</div>
 						</li>
 					</ul>
 				</div>
