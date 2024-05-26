@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Task, StatusEnum, Address, Category, RoleEnum
+from api.models import db, User, Task, StatusEnum, Address, Category, RoleEnum, Requester
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from datetime import datetime
@@ -304,3 +304,76 @@ def edit_user(id):
     db.session.commit()
 
     return jsonify({'message': 'User edited successfully.'}), 200
+
+# REQUESTERS
+@api.route('/requesters', methods=['GET'])
+def get_requesters():
+    return jsonify([requester.serialize() for requester in Requester.query.all()]), 200
+
+
+@api.route('/requesters', methods=['POST'])
+def add_requester():
+    data = request.json
+    user = data.get('user')
+    
+    if not user:
+        return jsonify({ 'error': 'Missing user.'}), 400
+    
+    existing_user = User.query.get(user)
+    if not existing_user: return jsonify({ 'error': 'User not found.'}), 404
+
+    new_requester = Requester(user=user)
+    if user.role.value == "none": user.role = RoleEnum("requester")
+    else: user.role = RoleEnum("both")
+
+    db.session.add(new_requester)
+    db.session.commit()
+
+    return jsonify({'message': 'Requester role successfully added to user.'}), 201
+
+
+@api.route('/requesters/<int:id>', methods=['GET'])
+def get_requester(id):
+    requester = Requester.query.get(id)
+
+    if not requester: return jsonify({'error': 'Requester not found.'}), 404
+
+    return jsonify(requester.serialize()), 200
+
+
+@api.route('/requesters/<int:id>', methods=['DELETE'])
+def delete_requester(id):
+    requester = Requester.query.get(id)
+
+    if not requester: return jsonify({'error': 'Requester not found.'}), 404
+    
+    user = User.query.get(requester.user_id)
+    if user.role.value == "requester": user.role = RoleEnum("none")
+    else: user.role = RoleEnum("task_seeker")
+
+    db.session.delete(requester)
+    db.session.commit()
+
+    return jsonify({'message': 'Removed requester role successfully.'}), 200
+
+
+@api.route('/requesters/<int:id>', methods=['PUT'])
+def edit_requester(id):  
+    requester = Requester.query.get(id)
+
+    if not requester: return jsonify({'error': 'Requester not found.'}), 404
+
+    data = request.json
+    new_overall_rating = data.get("overall_rating")
+    new_total_requested_tasks = data.get("total_requested_tasks")
+    new_total_reviews = data.get("total_reviews")
+    new_average_budget = data.get("average_budget")
+
+    if new_overall_rating: requester.overall_rating = new_overall_rating
+    if new_total_requested_tasks: requester.total_requested_tasks = new_total_requested_tasks
+    if new_total_reviews: requester.total_reviews = new_total_reviews
+    if new_average_budget: requester.average_budget = new_average_budget
+
+    db.session.commit()
+
+    return jsonify({'message': 'Requested info edited successfully.'}), 200
