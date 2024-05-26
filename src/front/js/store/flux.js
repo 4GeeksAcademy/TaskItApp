@@ -1,17 +1,17 @@
 const getState = ({ getStore, getActions, setStore }) => {	
     const fetchHelper = async (url, config = {}, successCallback) => {
-    try {
-        const response = await fetch(url, config);
-        const data = await response.json();
-        if (response.ok) {
-            if (successCallback) successCallback(data);
-            const prevMessage = getStore().message;
-            setStore({ message: data.message || prevMessage, error: "" });
-        } else setStore({ message: "", error: data.error || "An error occurred" });
-    } catch (error) {
-        console.error(error);
-    }
-};
+		try {
+			const response = await fetch(url, config);
+			const data = await response.json();
+			if (response.ok) {
+				if (successCallback) successCallback(data);
+				const prevMessage = getStore().message;
+				setStore({ message: data.message || prevMessage, error: "" });
+			} else setStore({ message: "", error: data.error || "An error occurred" });
+		} catch (error) {
+			console.error(error);
+		}
+	};
 
 	return {
 		store: {
@@ -20,14 +20,16 @@ const getState = ({ getStore, getActions, setStore }) => {
 			tasks: [],
             addresses: [],
 			categories: [],
-			users: [],
-			user: {},
+			users: [],								
+			user: { role: "both" }, 
 			requesters: [],
 			seekers: [],
 			editing: false,
+			auth: false,
 		},
 		actions: {
 			setEditing: (bool) => { setStore({ editing: bool })},
+			setAuth: (bool) => { setStore({ auth: bool })},
 			// TASKS
             getTasks: () => {
 				fetchHelper(
@@ -231,13 +233,20 @@ const getState = ({ getStore, getActions, setStore }) => {
 				)
 			},
 
-			getUser: (id) => {
-				fetchHelper(
-					process.env.BACKEND_URL + `/api/users/${id}`, 
-					{}, 								
-					(data) => setStore({ user: data })		
-				)
+			getUserByUsername: (username) => {
+				return new Promise((resolve, reject) => {
+					fetchHelper(
+						`${process.env.BACKEND_URL}/api/users/${username}`, 
+						{}, 
+						(data) => resolve(data),
+						(error) => {
+							console.error(error);
+							reject(error);
+						}
+					);
+				});
 			},
+
 
 			deleteUser: (id) => {
 				const config = { 
@@ -252,12 +261,13 @@ const getState = ({ getStore, getActions, setStore }) => {
 				)
 			},
 
-            addUser: (username, email, password, fullName) => {
+            addUser: (username, email, password, fullName, description) => {
 				const newUser = {
 					"username": username,
 					"email": email,
 					"password": password,
 					"full_name": fullName,
+					"description": description,
 				}
 
 				const config = { 
@@ -276,12 +286,13 @@ const getState = ({ getStore, getActions, setStore }) => {
 				);
 			},
 
-			editUser: (id, username, email, password, fullName) => {
+			editUser: (id, username, email, password, fullName, description) => {
 				const user = {
 					"username": username,
 					"email": email,
 					"password": password,
 					"full_name": fullName,
+					"description": description,
 				}
 
 				const config = { 
@@ -307,6 +318,20 @@ const getState = ({ getStore, getActions, setStore }) => {
 					{}, 									
 					(data) => setStore({ requesters: data })		
 				)
+			},
+
+			getRequester: (id) => {
+				return new Promise((resolve, reject) => {
+					fetchHelper(
+						`${process.env.BACKEND_URL}/api/requesters/user_id/${id}`, 
+						{}, 
+						(data) => resolve(data),
+						(error) => {
+							console.error(error);
+							reject(error);
+						}
+					);
+				});
 			},
 
 			deleteRequester: (id) => {
@@ -374,6 +399,20 @@ const getState = ({ getStore, getActions, setStore }) => {
 					{}, 									
 					(data) => setStore({ seekers: data })		
 				)
+			},
+
+			getSeeker: (id) => {
+				return new Promise((resolve, reject) => {
+					fetchHelper(
+						`${process.env.BACKEND_URL}/api/task-seekers/user_id/${id}`, 
+						{}, 
+						(data) => resolve(data),
+						(error) => {
+							console.error(error);
+							reject(error);
+						}
+					);
+				});
 			},
 
 			deleteSeeker: (id) => {
