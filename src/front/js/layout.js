@@ -8,6 +8,7 @@ import { Demo } from "./pages/demo";
 import { Single } from "./pages/single";
 import { TaskFeed } from "./pages/task_feed";
 import { Users } from "./pages/users";
+import { Requesters } from "./pages/requesters";
 import Addresses from "./pages/addresses";
 import injectContext from "./store/appContext";
 import CategoryList from "./pages/categories";
@@ -31,6 +32,7 @@ const Layout = () => {
                         <Route element={<Demo />} path="/demo" />
                         <Route element={<TaskFeed />} path="/task-feed" />
                         <Route element={<Users />} path="/users" />
+                        <Route element={<Requesters />} path="/requesters" />
                         <Route element={<Single />} path="/single/:theid" />
                         <Route element={<Addresses />} path="/addresses" />
                         <Route element={<h1>Not found!</h1>} />
