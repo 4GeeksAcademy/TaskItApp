@@ -318,6 +318,13 @@ def edit_user(id):
 def get_requesters():
     return jsonify([requester.serialize() for requester in Requester.query.all()]), 200
 
+@api.route('/requesters/user_id/<int:id>', methods=['GET'])
+def get_requester_by_username(id):
+    requester = Requester.query.filter_by(user_id=id).first()
+
+    if not requester: return jsonify({'error': 'Requester not found.'}), 404
+
+    return jsonify(requester.serialize()), 200
 
 @api.route('/requesters', methods=['POST'])
 def add_requester():
@@ -427,6 +434,13 @@ def get_seeker(id):
 
     return jsonify(seeker.serialize()), 200
 
+@api.route('/task-seekers/user_id/<int:id>', methods=['GET'])
+def get_seeker_by_username(id):
+    seeker = TaskSeeker.query.filter_by(user_id=id).first()
+
+    if not seeker: return jsonify({'error': 'Seeker not found.'}), 404
+
+    return jsonify(seeker.serialize()), 200
 
 @api.route('/task-seekers/<int:id>', methods=['DELETE'])
 def delete_seeker(id):
