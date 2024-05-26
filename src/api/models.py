@@ -28,7 +28,8 @@ class User(db.Model):
             "username": self.username,
             "email": self.email,
             "full_name": self.full_name,
-            "role": self.role.value
+            "role": self.role.value,
+            "description": self.description,
         }
     
 class Requester(db.Model):
