@@ -53,6 +53,27 @@ class Requester(db.Model):
             "average_budget": self.average_budget,
         }
     
+class TaskSeeker(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship('User')
+    overall_rating = db.Column(db.Integer, unique=False, nullable=True, default=0)
+    total_reviews = db.Column(db.Integer, unique=False, nullable=True, default=0)
+    total_completed_tasks = db.Column(db.Integer, unique=False, nullable=True, default=0)
+
+    def __repr__(self):
+        return f'<Requester {self.user.username}>'
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "username": self.user.username,
+            "user_id": self.user_id,
+            "overall_rating": self.overall_rating,
+            "total_reviews": self.total_reviews,
+            "total_completed_tasks": self.total_completed_tasks,
+        }
+    
 class StatusEnum(Enum):
     PENDING = "pending"
     IN_PROGRESS = "in_progress"
