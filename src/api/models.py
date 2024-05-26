@@ -38,6 +38,7 @@ class Requester(db.Model):
     total_reviews = db.Column(db.Integer, unique=False, nullable=True, default=0)
     total_requested_tasks = db.Column(db.Integer, unique=False, nullable=True, default=0)
     average_budget = db.Column(db.Integer, unique=False, nullable=True, default=0)
+    total_open_tasks = db.Column(db.Integer, unique=False, nullable=True, default=0)
 
     def __repr__(self):
         return f'<Requester {self.user.username}>'
@@ -51,6 +52,7 @@ class Requester(db.Model):
             "total_reviews": self.total_reviews,
             "total_requested_tasks": self.total_requested_tasks,
             "average_budget": self.average_budget,
+            "total_open_tasks": self.total_open_tasks
         }
     
 class TaskSeeker(db.Model):
@@ -60,6 +62,7 @@ class TaskSeeker(db.Model):
     overall_rating = db.Column(db.Integer, unique=False, nullable=True, default=0)
     total_reviews = db.Column(db.Integer, unique=False, nullable=True, default=0)
     total_completed_tasks = db.Column(db.Integer, unique=False, nullable=True, default=0)
+    total_ongoing_tasks = db.Column(db.Integer, unique=False, nullable=True, default=0)
 
     def __repr__(self):
         return f'<Requester {self.user.username}>'
@@ -72,6 +75,7 @@ class TaskSeeker(db.Model):
             "overall_rating": self.overall_rating,
             "total_reviews": self.total_reviews,
             "total_completed_tasks": self.total_completed_tasks,
+            "total_ongoing_tasks": self.total_ongoing_tasks
         }
     
 class StatusEnum(Enum):
