@@ -21,13 +21,15 @@ const getState = ({ getStore, getActions, setStore }) => {
             addresses: [],
 			categories: [],
 			users: [],
-			user: {},
+			user: { role: "both" },
 			requesters: [],
 			seekers: [],
 			editing: false,
+			auth: false,
 		},
 		actions: {
 			setEditing: (bool) => { setStore({ editing: bool })},
+			setAuth: (bool) => { setStore({ auth: bool })},
 			// TASKS
             getTasks: () => {
 				fetchHelper(
