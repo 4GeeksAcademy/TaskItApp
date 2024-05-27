@@ -240,6 +240,7 @@ def add_user():
     email = data.get("email")
     password = data.get('password')
     full_name = data.get('full_name')
+    description = data.get('description')
     
     if not username or not email or not password or not full_name:
         return jsonify({ 'error': 'Missing fields.'}), 400
@@ -247,7 +248,7 @@ def add_user():
     existing_email = User.query.filter_by(email=email).first()
     if existing_email: return jsonify({ 'error': 'Email already used.'}), 400
 
-    new_user = User(username=username, email=email, password=password, full_name=full_name)
+    new_user = User(username=username, email=email, password=password, full_name=full_name, description=description)
     
     db.session.add(new_user)
     db.session.commit()
@@ -296,6 +297,7 @@ def edit_user(id):
     new_password = data.get('password')
     new_full_name = data.get('full_name')
     new_role_str = data.get('role')
+    new_description = data.get('description')
         
     if new_role_str:
         try:
@@ -308,6 +310,7 @@ def edit_user(id):
     if new_email: user.email = new_email
     if new_password: user.password = new_password
     if new_full_name: user.full_name = new_full_name
+    if new_description: user.new_description = new_description
 
     db.session.commit()
 
