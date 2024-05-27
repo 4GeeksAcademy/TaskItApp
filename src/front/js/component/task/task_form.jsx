@@ -52,8 +52,9 @@ const TaskForm = (props) => {
                         aria-label="category list" 
                         id="category-select"
                         value={category}
-                        onChange={(e) => setCategory(e.target.value)}
+                        onChange={(e) => {setCategory(e.target.value); console.log(store.categories, e.target.value)}}
                     >
+                        <option value="" disabled>Choose category</option>
                         {store.categories.map((category) => (
                             <option key={category.id} value={category.id}>{category.name}</option>
                         ))}

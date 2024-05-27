@@ -64,8 +64,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 					"delivery_location": deliveryLocation,
 					"pickup_location": pickupLocation,
 					"due_date": dueDate,
-					"category": category,
-					"requester_id": getStore().user.id
+					"category_id": category,
+					"requester_id": getStore().user[0].id,
 				}
 
 				const config = { 

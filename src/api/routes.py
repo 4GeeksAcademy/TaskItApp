@@ -32,8 +32,8 @@ def add_task():
     if not title or not description or not delivery_location or not pickup_location or not due_date_str or not requester_id or not category_id:
         return jsonify({ 'error': 'Missing fields.'}), 400
     
-    existing_requester = Requester.query.get(requester_id)
-    if not existing_requester: return jsonify({ 'error': 'Requester not found.'}), 404
+    existing_requester = Requester.query.filter_by(user_id=requester_id).first()
+    if not existing_requester: return jsonify({ 'error': 'Requester with given user ID not found.'}), 404
 
     existing_category = Category.query.get(category_id)
     if not existing_category: return jsonify({ 'error': 'Category not found.'}), 404
