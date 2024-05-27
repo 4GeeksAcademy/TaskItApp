@@ -26,16 +26,24 @@ def add_task():
     delivery_location = data.get('delivery_location')
     pickup_location = data.get('pickup_location')
     due_date_str = data.get('due_date')
+    requester_id = data.get('requester_id')
+    category_id = data.get('category_id')
 
-    if not title or not description or not delivery_location or not pickup_location or not due_date_str:
+    if not title or not description or not delivery_location or not pickup_location or not due_date_str or not requester_id or not category_id:
         return jsonify({ 'error': 'Missing fields.'}), 400
+    
+    existing_requester = Requester.query.get(requester_id)
+    if not existing_requester: return jsonify({ 'error': 'Requester not found.'}), 404
+
+    existing_category = Category.query.get(category_id)
+    if not existing_category: return jsonify({ 'error': 'Category not found.'}), 404
     
     try:
         due_date = datetime.strptime(due_date_str, '%Y-%m-%d')
     except ValueError:
         return jsonify({"error": "Invalid due date format"}), 400
     
-    new_task = Task(title=title, description=description, delivery_location=delivery_location, pickup_location=pickup_location, due_date=due_date)
+    new_task = Task(title=title, description=description, delivery_location=delivery_location, pickup_location=pickup_location, due_date=due_date, requester=existing_requester, category=existing_category)
     
     db.session.add(new_task)
     db.session.commit()
@@ -77,6 +85,18 @@ def edit_task(id):
     new_pickup_location = data.get('pickup_location')
     new_due_date_str = data.get('due_date')
     new_status = data.get('status')
+    new_requester_id = data.get('requester_id')
+    new_category_id = data.get('category_id')
+    new_seeker_id = data.get('seeker_id')
+
+    existing_requester = Requester.query.get(new_requester_id)
+    if not existing_requester: return jsonify({ 'error': 'Requester not found.'}), 404
+
+    existing_seeker = TaskSeeker.query.get(new_seeker_id)
+    if not existing_seeker: return jsonify({ 'error': 'Task seeker not found.'}), 404
+
+    existing_category = Category.query.get(new_category_id)
+    if not existing_category: return jsonify({ 'error': 'Category not found.'}), 404
 
     if new_due_date_str:
         try:
@@ -96,6 +116,9 @@ def edit_task(id):
     if new_description: task.description = new_description
     if new_delivery_location: task.delivery_location = new_delivery_location
     if new_pickup_location: task.pickup_location = new_pickup_location
+    if existing_requester: task.requester = existing_requester
+    if existing_category: task.category = existing_category
+    if existing_seeker: task.seeker = existing_seeker
 
     db.session.commit()
 
