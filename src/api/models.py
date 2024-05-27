@@ -155,10 +155,12 @@ class Postulant(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     application_date = db.Column(db.DateTime, default=func.now(), nullable=False)
     status = db.Column(db.String(120), nullable=False)
+    price = db.Column(db.String(120), nullable=False)
     task_id = db.Column(db.Integer, db.ForeignKey('task.id'), nullable=False)
     seeker_id = db.Column(db.Integer, db.ForeignKey('task_seeker.id'), nullable=False)
-    task = db.relationship('Task', backref=db.backref('postulants', lazy=True))
-    seeker = db.relationship('TaskSeeker', backref=db.backref('postulants', lazy=True))
+    task = db.relationship('Task')
+    seeker = db.relationship('TaskSeeker')
+
 
     def __repr__(self):
         return f'<Postulant {self.application_date}>'
@@ -170,4 +172,5 @@ class Postulant(db.Model):
             "status": self.status,
             "task_id": self.task_id,
             "seeker_id": self.seeker_id,
+            "price": self.price,
         }
