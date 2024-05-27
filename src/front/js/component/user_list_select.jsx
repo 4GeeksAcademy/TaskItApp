@@ -20,6 +20,7 @@ const UserSelect = () => {
                 value={selectedValue}
                 onChange={(e) => { actions.setUser(e.target.value); setSelectedValue(e.target.value); }}
             >
+                <option value="" disabled>Choose category</option>
                 {store.users.map((user) => (
                     <option key={user.id} value={user.username}>{user.username}</option>
                 ))}
