@@ -94,6 +94,12 @@ class Task(db.Model):
     status = db.Column(db.Enum(StatusEnum), nullable=False, default=StatusEnum.PENDING)
     delivery_location = db.Column(db.String(120), nullable=False)
     pickup_location = db.Column(db.String(120), nullable=False)
+    requester_id = db.Column(db.Integer, db.ForeignKey('requester.id'), nullable=True)
+    requester = db.relationship('Requester', backref=db.backref('tasks', lazy=True))
+    seeker_id = db.Column(db.Integer, db.ForeignKey('task_seeker.id'), nullable=True)
+    seeker = db.relationship('TaskSeeker', backref=db.backref('tasks', lazy=True))
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=True)
+    category = db.relationship('Category', backref=db.backref('tasks', lazy=True))
 
     def __repr__(self):
         return f'<Task {self.title}>'
@@ -107,7 +113,11 @@ class Task(db.Model):
             "due_date": self.due_date.isoformat(),
             "status": self.status.value,
             "delivery_location": self.delivery_location,
-            "pickup_location": self.pickup_location
+            "pickup_location": self.pickup_location,
+            "seeker_id": self.seeker_id if self.seeker else None,
+            "requester_id": self.requester_id,
+            "category_id": self.category_id,
+            "category_name": self.category.name
         }
 
     
