@@ -3,24 +3,30 @@ import { Context } from '../../store/appContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import StarRating from './StarRating.jsx';
 
-const RatingPage = () => {
+const Rating = () => {
     const [newRatingStars, setNewRatingStars] = useState(0);
     const [newSeekerId, setNewSeekerId] = useState("");
+    const [newRequesterId, setNewRequesterId] = useState("");
     const [newTaskId, setNewTaskId] = useState("");
     const [ratingKey, setRatingKey] = useState(0);
     const { store, actions } = useContext(Context);
 
     useEffect(() => {
-        actions.getRatings();
-    }, []);
+        if (actions && actions.getRatings) {
+            actions.getRatings();
+        } else {
+            console.error("actions.getRatings is not defined");
+        }
+    }, [actions]);
 
     const handleAddRating = async () => {
         const stars = parseInt(newRatingStars, 10);
-        const seeker_id = parseInt(newSeekerId, 10);
+        const seeker_id = newSeekerId ? parseInt(newSeekerId, 10) : null;
+        const requester_id = newRequesterId ? parseInt(newRequesterId, 10) : null;
         const task_id = parseInt(newTaskId, 10);
 
-        if (!newSeekerId || !newTaskId) {
-            alert("Please enter both the seeker ID and task ID.");
+        if (!newTaskId || (!newSeekerId && !newRequesterId) || (newSeekerId && newRequesterId)) {
+            alert("Please enter valid Seeker ID or Requester ID, and Task ID.");
             return;
         }
 
@@ -29,21 +35,26 @@ const RatingPage = () => {
             return;
         }
 
-        const seekerExists = await actions.checkSeekerExists(seeker_id);
-        if (!seekerExists) {
-            alert("Seeker ID does not exist.");
-            return;
+        if (seeker_id) {
+            const seekerExists = await actions.checkSeekerExists(seeker_id);
+            if (!seekerExists) {
+                alert("Seeker ID does not exist.");
+                return;
+            }
         }
 
-        const taskExists = await actions.checkTaskExists(task_id);
-        if (!taskExists) {
-            alert("Task ID does not exist.");
-            return;
+        if (requester_id) {
+            const requesterExists = await actions.checkRequesterExists(requester_id); // This function needs to be implemented
+            if (!requesterExists) {
+                alert("Requester ID does not exist.");
+                return;
+            }
         }
 
-        actions.addRating(stars, seeker_id, task_id);
+        actions.addRating(stars, seeker_id, requester_id, task_id);
         setNewRatingStars(0);
         setNewSeekerId("");
+        setNewRequesterId("");
         setNewTaskId("");
         setRatingKey(prevKey => prevKey + 1);
     };
@@ -68,6 +79,19 @@ const RatingPage = () => {
                         placeholder="Seeker ID"
                         type="number"
                         min="1"
+                        disabled={!!newRequesterId}
+                    />
+                </div>
+                <div className="form-group mx-sm-3 mb-2">
+                    <input
+                        className="form-control"
+                        style={{ width: "150px" }}
+                        value={newRequesterId}
+                        onChange={(e) => setNewRequesterId(e.target.value)}
+                        placeholder="Requester ID"
+                        type="number"
+                        min="1"
+                        disabled={!!newSeekerId}
                     />
                 </div>
                 <div className="form-group mx-sm-3 mb-2">
@@ -90,7 +114,11 @@ const RatingPage = () => {
                     <li key={rating.id} className="list-group-item d-flex justify-content-between align-items-center">
                         <div>
                             <StarRating value={rating.stars} />
-                            <span className="ml-3">- Seeker ID: {rating.seeker_id} - Seeker Username: {rating.seeker_username} - Task ID: {rating.task_id} - Task Description: {rating.task_description}</span>
+                            <span className="ml-3">
+                                - {rating.seeker_id ? `Seeker ID: ${rating.seeker_id} - Seeker Username: ${rating.seeker_username}` : ''}
+                                - {rating.requester_id ? `Requester ID: ${rating.requester_id} - Requester Username: ${rating.requester_username}` : ''}
+                                - Task ID: {rating.task_id} - Task Description: {rating.task_description}
+                            </span>
                         </div>
                         <div>
                             <button className="btn btn-danger btn-sm mr-2" onClick={() => actions.deleteRating(rating.id)}>
@@ -114,4 +142,4 @@ const RatingPage = () => {
     );
 };
 
-export default RatingPage;
+export default Rating;

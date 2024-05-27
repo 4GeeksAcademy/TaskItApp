@@ -25,6 +25,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			requesters: [],
 			seekers: [],
 			editing: false,
+			ratings: [],
 		},
 		actions: {
 			setEditing: (bool) => { setStore({ editing: bool })},
@@ -434,68 +435,67 @@ const getState = ({ getStore, getActions, setStore }) => {
 				);
 			},
 		//Rating
-			getRatings: () => {
-				fetchHelper(
-					process.env.BACKEND_URL + "/api/ratings", 
-					{}, 
-					(data) => setStore({ ratings: data })  // Asegúrate de que el endpoint devuelve el array correctamente
-				)
-			},
+		getRatings: () => {
+			fetchHelper(
+				process.env.BACKEND_URL + "/api/ratings", 
+				{}, 
+				(data) => setStore({ ratings: data })
+			);
+		},
 
-			deleteRating: (id) => {
-				const config = { 
-					method: "DELETE",
-					headers: { 'Accept': 'application/json' }
+		addRating: (stars, seeker_id, requester_id, task_id) => {
+			const config = { 
+				method: "POST",
+				body: JSON.stringify({ stars, seeker_id, requester_id, task_id }),
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
 				}
+			};
+			fetchHelper(
+				process.env.BACKEND_URL + `/api/ratings`,
+				config,
+				() => getActions().getRatings()
+			);
+		},
 
-				fetchHelper(
-					process.env.BACKEND_URL + `/api/ratings/${id}`,
-					config,
-					() => getActions().getRatings(),
-				)
-			},
-
-			editRating: (id, stars) => {
-				const config = { 
-					method: "PUT",
-					body: JSON.stringify({"stars": stars}),
-					headers: {
-						'Accept': 'application/json',
-						'Content-Type': 'application/json'
-					}
+		editRating: (id, stars) => {
+			const config = { 
+				method: "PUT",
+				body: JSON.stringify({ stars }),
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
 				}
-				fetchHelper(
-					process.env.BACKEND_URL + `/api/ratings/${id}`,
-					config,
-					() => getActions().getRatings(),
-				)
-			},
+			};
+			fetchHelper(
+				process.env.BACKEND_URL + `/api/ratings/${id}`,
+				config,
+				() => getActions().getRatings()
+			);
+		},
 
-			addRating: (stars, seeker_id, task_id) => {
-				const config = { 
-					method: "POST",
-					body: JSON.stringify({ "stars": stars, "seeker_id": seeker_id, "task_id": task_id }),
-					headers: {
-						'Accept': 'application/json',
-						'Content-Type': 'application/json'
-					}
-				};
-				fetchHelper(
-					process.env.BACKEND_URL + `/api/ratings`,
-					config,
-					() => getActions().getRatings()  
-				);
-			},
+		deleteRating: (id) => {
+			const config = { 
+				method: "DELETE",
+				headers: { 'Accept': 'application/json' }
+			};
+			fetchHelper(
+				process.env.BACKEND_URL + `/api/ratings/${id}`,
+				config,
+				() => getActions().getRatings()
+			);
+		},
 
-			checkSeekerExists: async (seeker_id) => {
-				const response = await fetch(`${process.env.BACKEND_URL}/api/users/${seeker_id}`);
-				return response.ok
-			},
+		checkSeekerExists: async (seeker_id) => {
+			const response = await fetch(`${process.env.BACKEND_URL}/api/users/${seeker_id}`);
+			return response.ok;
+		},
 
-			checkTaskExists: async (task_id) => {
-				const response = await fetch(`${process.env.BACKEND_URL}/api/tasks/${task_id}`);
-				return response.ok;
-			}			
+		checkRequesterExists: async (requester_id) => {
+			const response = await fetch(`${process.env.BACKEND_URL}/api/users/${requester_id}`);
+			return response.ok;
+		},
 		}
 	};
 };
