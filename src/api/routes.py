@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Task, StatusEnum, Address, Category, RoleEnum, Requester, TaskSeeker
+from api.models import db, User, Task, StatusEnum, Address, Category, RoleEnum, Requester, TaskSeeker, Rating
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from datetime import datetime
@@ -502,3 +502,77 @@ def edit_seeker(id):
     db.session.commit()
 
     return jsonify({'message': 'Seeker info edited successfully.'}), 200
+
+# ratings
+
+@api.route('/ratings', methods=['POST'])
+def add_rating():
+    data = request.json
+    stars = data.get('stars')
+    seeker_id = data.get('seeker_id')
+    requester_id = data.get('requester_id')
+    task_id = data.get('task_id')
+
+    if not all([stars, task_id]) or (not seeker_id and not requester_id) or (seeker_id and requester_id):
+        return jsonify({'error': 'Invalid fields'}), 400
+
+    if stars < 1 or stars > 5:
+        return jsonify({'error': 'Stars must be between 1 and 5'}), 400
+
+    if seeker_id:
+        seeker = User.query.get(seeker_id)
+        if not seeker:
+            return jsonify({'error': 'Seeker ID does not exist'}), 400
+
+    if requester_id:
+        requester = User.query.get(requester_id)
+        if not requester:
+            return jsonify({'error': 'Requester ID does not exist'}), 400
+
+    task = Task.query.get(task_id)
+    if not task:
+        return jsonify({'error': 'Task ID does not exist'}), 400
+
+    new_rating = Rating(stars=stars, seeker_id=seeker_id, requester_id=requester_id, task_id=task_id)
+    db.session.add(new_rating)
+    db.session.commit()
+    return jsonify(new_rating.serialize()), 201
+
+@api.route('/ratings', methods=['GET'])
+def get_ratings():
+    ratings = Rating.query.all()
+    return jsonify([rating.serialize() for rating in ratings]), 200
+
+@api.route('/ratings/<int:rating_id>', methods=['GET'])
+def get_rating(rating_id):
+    rating = Rating.query.get(rating_id)
+    if rating is None:
+        return jsonify({'error': 'Rating not found'}), 404
+    return jsonify(rating.serialize()), 200
+
+@api.route('/ratings/<int:rating_id>', methods=['PUT'])
+def update_rating(rating_id):
+    rating = Rating.query.get(rating_id)
+    if not rating:
+        return jsonify({'error': 'Rating not found'}), 404
+
+    data = request.json
+    stars = data.get('stars')
+
+    if stars:
+        rating.stars = stars
+    
+    db.session.commit()
+    return jsonify({'message': 'Rating updated successfully'}), 200
+
+@api.route('/ratings/<int:rating_id>', methods=['DELETE'])
+def delete_rating(rating_id):
+    rating = Rating.query.get(rating_id)
+    if not rating:
+        return jsonify({'error': 'Rating not found'}), 404
+
+    db.session.delete(rating)
+    db.session.commit()
+    return jsonify({'message': 'Rating deleted successfully'}), 200
+
+

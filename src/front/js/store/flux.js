@@ -25,6 +25,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			requesters: [],
 			seekers: [],
 			editing: false,
+			ratings: [],
 			auth: false,
 		},
 		actions: {
@@ -319,6 +320,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					() => getActions().getUsers()
 				);
 			},
+			
 
 			// REQUESTERS
 			getRequesters: () => {
@@ -480,6 +482,68 @@ const getState = ({ getStore, getActions, setStore }) => {
 					() => getActions().getSeekers()
 				);
 			},
+		//Rating
+		getRatings: () => {
+			fetchHelper(
+				process.env.BACKEND_URL + "/api/ratings", 
+				{}, 
+				(data) => setStore({ ratings: data })
+			);
+		},
+
+		addRating: (stars, seeker_id, requester_id, task_id) => {
+			const config = { 
+				method: "POST",
+				body: JSON.stringify({ stars, seeker_id, requester_id, task_id }),
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				}
+			};
+			fetchHelper(
+				process.env.BACKEND_URL + `/api/ratings`,
+				config,
+				() => getActions().getRatings()
+			);
+		},
+
+		editRating: (id, stars) => {
+			const config = { 
+				method: "PUT",
+				body: JSON.stringify({ stars }),
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				}
+			};
+			fetchHelper(
+				process.env.BACKEND_URL + `/api/ratings/${id}`,
+				config,
+				() => getActions().getRatings()
+			);
+		},
+
+		deleteRating: (id) => {
+			const config = { 
+				method: "DELETE",
+				headers: { 'Accept': 'application/json' }
+			};
+			fetchHelper(
+				process.env.BACKEND_URL + `/api/ratings/${id}`,
+				config,
+				() => getActions().getRatings()
+			);
+		},
+
+		checkSeekerExists: async (seeker_id) => {
+			const response = await fetch(`${process.env.BACKEND_URL}/api/users/${seeker_id}`);
+			return response.ok;
+		},
+
+		checkRequesterExists: async (requester_id) => {
+			const response = await fetch(`${process.env.BACKEND_URL}/api/users/${requester_id}`);
+			return response.ok;
+		},
 		}
 	};
 };
