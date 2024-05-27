@@ -527,13 +527,21 @@ def get_postulant(postulant_id):
 @api.route('/postulants', methods=['POST'])
 def create_postulant():
     data = request.json
-    application_date = data.get('application_date')
     status = data.get('status')
+    seeker_id = data.get('seeker_id')
+    price=data.get('price')
+    task_id = data.get('task_id')
 
-    if not application_date or not status:
-        return jsonify({"message": "Application date and status are required"}), 400
+    if not status or not seeker_id or not price: 
+        return jsonify({ 'error': 'Missing fields.'}), 400
+    
+    existing_seeker = TaskSeeker.query.filter_by(user_id=seeker_id).first()
+    if not existing_seeker: return jsonify({ 'error': 'Task seeker with given user ID not found.'}), 404
 
-    postul = Postulant(application_date=application_date, status=status)
+    existing_task = Task.query.get(task_id)
+    if not existing_task: return jsonify({ 'error': 'Task ID not found.'}), 404
+    
+    postul = Postulant(status=status, seeker=existing_seeker, price=price, task=existing_task)
     db.session.add(postul)
     db.session.commit()
 
