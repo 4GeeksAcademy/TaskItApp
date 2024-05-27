@@ -30,6 +30,11 @@ const getState = ({ getStore, getActions, setStore }) => {
 		actions: {
 			setEditing: (bool) => { setStore({ editing: bool })},
 			setAuth: (bool) => { setStore({ auth: bool })},
+			setUser: (username) => { 
+				const user = getStore().users.filter((userInfo) => userInfo.username == username);
+				setStore({ user: user, auth: true })
+			},
+
 			// TASKS
             getTasks: () => {
 				fetchHelper(
@@ -52,13 +57,15 @@ const getState = ({ getStore, getActions, setStore }) => {
 				)
 			},
 
-            addTask: (title, description, deliveryLocation, pickupLocation, dueDate) => {
+            addTask: (title, description, deliveryLocation, pickupLocation, dueDate, category) => {
 				const newTask = {
 					"title": title,
 					"description": description,
 					"delivery_location": deliveryLocation,
 					"pickup_location": pickupLocation,
 					"due_date": dueDate,
+					"category_id": category,
+					"requester_id": getStore().user[0].id,
 				}
 
 				const config = { 
@@ -77,13 +84,15 @@ const getState = ({ getStore, getActions, setStore }) => {
 				);
 			},
 
-			editTask: (id, title, description, deliveryLocation, pickupLocation, dueDate) => {
+			editTask: (id, title, description, deliveryLocation, pickupLocation, dueDate, category, seekerID) => {
 				const task = {
 					"title": title,
 					"description": description,
 					"delivery_location": deliveryLocation,
 					"pickup_location": pickupLocation,
 					"due_date": dueDate,
+					"category": category,
+					"seeker_id": seekerID
 				}
 
 				const config = { 
