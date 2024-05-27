@@ -1,0 +1,20 @@
+a {
+    text-decoration: none;
+    font-weight: bold;
+}
+
+a:hover{
+    color:black;
+}
+
+.smooth {
+    transition: all 0.1s ease;
+}
+
+.smooth:hover {
+    transform: scale(1.1);
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+}

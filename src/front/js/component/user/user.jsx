@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import { Context } from "../../store/appContext";
 import UserForm from "./user_form.jsx";
+import { Link } from "react-router-dom";
 
 const User = ({ userInfo }) => {
     const { actions } = useContext(Context);
@@ -25,6 +26,7 @@ const User = ({ userInfo }) => {
                 {show && <UserForm currentUser={userInfo} handleClose={handleClose}></UserForm>}
                 <button className="btn btn-primary" onClick={handleShow}>Edit</button>
                 <button className="btn btn-danger" onClick={() => actions.deleteUser(userInfo.id)}>Delete</button>
+                <Link to={`/users/${userInfo.username}`}>View</Link>
             </div>
         </div>
     );

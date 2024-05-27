@@ -17,6 +17,7 @@ class User(db.Model):
     password = db.Column(db.String(80), unique=False, nullable=False)
     full_name = db.Column(db.String(120), unique=False, nullable=False)
     role = db.Column(db.Enum(RoleEnum), nullable=True, default=RoleEnum.NONE)
+    description = db.Column(db.String(500), unique=False, nullable=True)
 
     def __repr__(self):
         return f'<User {self.username}>'
@@ -27,7 +28,8 @@ class User(db.Model):
             "username": self.username,
             "email": self.email,
             "full_name": self.full_name,
-            "role": self.role.value
+            "role": self.role.value,
+            "description": self.description,
         }
     
 class Requester(db.Model):
@@ -38,6 +40,7 @@ class Requester(db.Model):
     total_reviews = db.Column(db.Integer, unique=False, nullable=True, default=0)
     total_requested_tasks = db.Column(db.Integer, unique=False, nullable=True, default=0)
     average_budget = db.Column(db.Integer, unique=False, nullable=True, default=0)
+    total_open_tasks = db.Column(db.Integer, unique=False, nullable=True, default=0)
 
     def __repr__(self):
         return f'<Requester {self.user.username}>'
@@ -51,6 +54,7 @@ class Requester(db.Model):
             "total_reviews": self.total_reviews,
             "total_requested_tasks": self.total_requested_tasks,
             "average_budget": self.average_budget,
+            "total_open_tasks": self.total_open_tasks
         }
     
 class TaskSeeker(db.Model):
@@ -60,9 +64,10 @@ class TaskSeeker(db.Model):
     overall_rating = db.Column(db.Integer, unique=False, nullable=True, default=0)
     total_reviews = db.Column(db.Integer, unique=False, nullable=True, default=0)
     total_completed_tasks = db.Column(db.Integer, unique=False, nullable=True, default=0)
+    total_ongoing_tasks = db.Column(db.Integer, unique=False, nullable=True, default=0)
 
     def __repr__(self):
-        return f'<Requester {self.user.username}>'
+        return f'<Seeker {self.user.username}>'
 
     def serialize(self):
         return {
@@ -72,6 +77,7 @@ class TaskSeeker(db.Model):
             "overall_rating": self.overall_rating,
             "total_reviews": self.total_reviews,
             "total_completed_tasks": self.total_completed_tasks,
+            "total_ongoing_tasks": self.total_ongoing_tasks
         }
     
 class StatusEnum(Enum):
@@ -88,6 +94,12 @@ class Task(db.Model):
     status = db.Column(db.Enum(StatusEnum), nullable=False, default=StatusEnum.PENDING)
     delivery_location = db.Column(db.String(120), nullable=False)
     pickup_location = db.Column(db.String(120), nullable=False)
+    requester_id = db.Column(db.Integer, db.ForeignKey('requester.id'), nullable=False)
+    requester = db.relationship('Requester', backref=db.backref('tasks', lazy=True))
+    seeker_id = db.Column(db.Integer, db.ForeignKey('task_seeker.id'), nullable=True)
+    seeker = db.relationship('TaskSeeker', backref=db.backref('tasks', lazy=True))
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
+    category = db.relationship('Category', backref=db.backref('tasks', lazy=True))
 
     def __repr__(self):
         return f'<Task {self.title}>'
@@ -101,7 +113,11 @@ class Task(db.Model):
             "due_date": self.due_date.isoformat(),
             "status": self.status.value,
             "delivery_location": self.delivery_location,
-            "pickup_location": self.pickup_location
+            "pickup_location": self.pickup_location,
+            "seeker_id": self.seeker_id if self.seeker else None,
+            "requester_id": self.requester_id,
+            "category_id": self.category_id,
+            "category_name": self.category.name
         }
 
     
