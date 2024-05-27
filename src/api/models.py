@@ -67,7 +67,7 @@ class TaskSeeker(db.Model):
     total_ongoing_tasks = db.Column(db.Integer, unique=False, nullable=True, default=0)
 
     def __repr__(self):
-        return f'<Requester {self.user.username}>'
+        return f'<Seeker {self.user.username}>'
 
     def serialize(self):
         return {
