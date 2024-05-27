@@ -15,7 +15,6 @@ export const User = () => {
 		const loadInfo = async () => {
 			const currentUser = await actions.getUserByUsername(params.theusername);
 			setUser(currentUser);
-			console.log(currentUser)
 			
 			if(currentUser.role == "both"|| currentUser.role == "task_seeker") setSeekerInfo(await actions.getSeeker(currentUser.id));
 			if(currentUser.role == "both"|| currentUser.role == "requester") setRequesterInfo(await actions.getRequester(currentUser.id));
