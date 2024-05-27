@@ -462,23 +462,30 @@ def add_rating():
     data = request.json
     stars = data.get('stars')
     seeker_id = data.get('seeker_id')
+    requester_id = data.get('requester_id')
     task_id = data.get('task_id')
 
-    if not all([stars, seeker_id, task_id]):
-        return jsonify({'error': 'Missing fields'}), 400
+    if not all([stars, task_id]) or (not seeker_id and not requester_id) or (seeker_id and requester_id):
+        return jsonify({'error': 'Invalid fields'}), 400
 
     if stars < 1 or stars > 5:
         return jsonify({'error': 'Stars must be between 1 and 5'}), 400
 
-    seeker = User.query.get(seeker_id)
-    if not seeker:
-        return jsonify({'error': 'Seeker ID does not exist'}), 400
+    if seeker_id:
+        seeker = User.query.get(seeker_id)
+        if not seeker:
+            return jsonify({'error': 'Seeker ID does not exist'}), 400
+
+    if requester_id:
+        requester = User.query.get(requester_id)
+        if not requester:
+            return jsonify({'error': 'Requester ID does not exist'}), 400
 
     task = Task.query.get(task_id)
     if not task:
         return jsonify({'error': 'Task ID does not exist'}), 400
 
-    new_rating = Rating(stars=stars, seeker_id=seeker_id, task_id=task_id)
+    new_rating = Rating(stars=stars, seeker_id=seeker_id, requester_id=requester_id, task_id=task_id)
     db.session.add(new_rating)
     db.session.commit()
     return jsonify(new_rating.serialize()), 201
