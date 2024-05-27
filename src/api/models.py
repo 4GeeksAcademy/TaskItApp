@@ -94,11 +94,11 @@ class Task(db.Model):
     status = db.Column(db.Enum(StatusEnum), nullable=False, default=StatusEnum.PENDING)
     delivery_location = db.Column(db.String(120), nullable=False)
     pickup_location = db.Column(db.String(120), nullable=False)
-    requester_id = db.Column(db.Integer, db.ForeignKey('requester.id'), nullable=True)
+    requester_id = db.Column(db.Integer, db.ForeignKey('requester.id'), nullable=False)
     requester = db.relationship('Requester', backref=db.backref('tasks', lazy=True))
     seeker_id = db.Column(db.Integer, db.ForeignKey('task_seeker.id'), nullable=True)
     seeker = db.relationship('TaskSeeker', backref=db.backref('tasks', lazy=True))
-    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=True)
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
     category = db.relationship('Category', backref=db.backref('tasks', lazy=True))
 
     def __repr__(self):
