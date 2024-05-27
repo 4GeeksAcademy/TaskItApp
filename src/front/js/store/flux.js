@@ -24,6 +24,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			user: { role: "both" }, 
 			requesters: [],
 			seekers: [],
+			postulants: [],
 			editing: false,
 			auth: false,
 		},
@@ -480,6 +481,79 @@ const getState = ({ getStore, getActions, setStore }) => {
 					() => getActions().getSeekers()
 				);
 			},
+			//POSTULANT
+			getPostulants: () => {
+				fetchHelper(
+					process.env.BACKEND_URL + "/api/postulants", // url como siempre
+					{}, 									// la configuración del request, en este caso vacía porque es un GET
+					(data) => setStore({ postulants: data })		// función a realizar despues de que una respuesta sea buena
+				)
+			},
+
+			deletePostulant: (id) => {
+				const config = { 
+					method: "DELETE",
+					headers: { 'Accept': 'application/json' }
+				}
+
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/postulants/${id}`,
+					config,
+					() => getActions().getPostulants(),
+				)
+			},
+
+            addPostulant: (taskId, seekerId, applicationDate, status, price) => {
+				const newPostulant = {
+					"task_id": taskId,
+					"seeker_id": seekerId,
+					"application_date": applicationDate,
+					"status": status,
+					"price": price,
+					
+				}
+
+				const config = { 
+					method: "POST",
+					body: JSON.stringify(newPostulant),
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					}
+				}
+
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/postulants`,
+					config,
+					() => getActions().getPostulants()
+				);
+			},
+
+			editPostulant: (id, taskId, seekerId, applicationDate, status, price) => {
+				const postulant = {
+					"task_id": taskId,
+					"seeker_id": seekerId,
+					"application_date": applicationDate,
+					"status": status,
+					"price": price
+				}
+			
+				const config = { 
+					method: "PUT",
+					body: JSON.stringify(postulant),
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					}
+				}
+			
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/postulants/${id}`,
+					config,
+					() => getActions().getPostulants()
+				);
+			},
+			
 		}
 	};
 };
