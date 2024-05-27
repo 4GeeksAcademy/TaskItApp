@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Task, StatusEnum, Address, Category, RoleEnum, Requester, TaskSeeker
+from api.models import db, User, Task, StatusEnum, Address, Category, RoleEnum, Requester, TaskSeeker, Postulant
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from datetime import datetime
@@ -553,12 +553,21 @@ def update_postulant(id):
     if not data:
         return jsonify({"error": "No data provided"}), 400
 
-    if "postulant" in data and data["postulant"] == "":
-        return jsonify({"message": "The postulant cannot be empty"}), 400
-
     for key in data:
         if hasattr(postulant, key):
             setattr(postulant, key, data[key])
 
     db.session.commit()
-    return jsonify({"message": "postulant successfully updated"}), 200
+    return jsonify({"message": "Postulant successfully updated"}), 200
+
+@api.route('/postulants/<int:id>', methods=['DELETE'])
+def delete_postulant(id):
+    postulant = Postulant.query.get(id)
+
+    if not postulant:
+        return jsonify({'error': 'Postulant not found.'}), 404
+
+    db.session.delete(postulant)
+    db.session.commit()
+
+    return jsonify({'message': 'Postulant deleted successfully.'}), 200
