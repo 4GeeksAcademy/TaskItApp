@@ -12,12 +12,15 @@ const Rating = () => {
     const { store, actions } = useContext(Context);
 
     useEffect(() => {
-        if (actions && actions.getRatings) {
+        if (actions) {
             actions.getRatings();
+            actions.getSeekers();
+            actions.getRequesters();
+            actions.getTasks();
         } else {
-            console.error("actions.getRatings is not defined");
+            console.error("actions is not defined");
         }
-    }, [actions]);
+    }, []); // Dependencias vacías para asegurarnos de que solo se ejecute una vez al montar el componente
 
     const handleAddRating = async () => {
         const stars = parseInt(newRatingStars, 10);
@@ -44,7 +47,7 @@ const Rating = () => {
         }
 
         if (requester_id) {
-            const requesterExists = await actions.checkRequesterExists(requester_id); // This function needs to be implemented
+            const requesterExists = await actions.checkRequesterExists(requester_id); 
             if (!requesterExists) {
                 alert("Requester ID does not exist.");
                 return;
@@ -71,39 +74,48 @@ const Rating = () => {
                     />
                 </div>
                 <div className="form-group mx-sm-3 mb-2">
-                    <input
+                    <select
                         className="form-control"
-                        style={{ width: "150px" }}
                         value={newSeekerId}
                         onChange={(e) => setNewSeekerId(e.target.value)}
-                        placeholder="Seeker ID"
-                        type="number"
-                        min="1"
                         disabled={!!newRequesterId}
-                    />
+                    >
+                        <option value="">Select Seeker ID</option>
+                        {store.seekers.map(seeker => (
+                            <option key={seeker.id} value={seeker.id}>
+                                {seeker.user && seeker.user.username ? `${seeker.user.username} (ID: ${seeker.id})` : `ID: ${seeker.id}`}
+                            </option>
+                        ))}
+                    </select>
                 </div>
                 <div className="form-group mx-sm-3 mb-2">
-                    <input
+                    <select
                         className="form-control"
-                        style={{ width: "150px" }}
                         value={newRequesterId}
                         onChange={(e) => setNewRequesterId(e.target.value)}
-                        placeholder="Requester ID"
-                        type="number"
-                        min="1"
                         disabled={!!newSeekerId}
-                    />
+                    >
+                        <option value="">Select Requester ID</option>
+                        {store.requesters.map(requester => (
+                            <option key={requester.id} value={requester.id}>
+                                {requester.user && requester.user.username ? `${requester.user.username} (ID: ${requester.id})` : `ID: ${requester.id}`}
+                            </option>
+                        ))}
+                    </select>
                 </div>
                 <div className="form-group mx-sm-3 mb-2">
-                    <input
+                    <select
                         className="form-control"
-                        style={{ width: "150px" }}
                         value={newTaskId}
                         onChange={(e) => setNewTaskId(e.target.value)}
-                        placeholder="Task ID"
-                        type="number"
-                        min="1"
-                    />
+                    >
+                        <option value="">Select Task ID</option>
+                        {store.tasks.map(task => (
+                            <option key={task.id} value={task.id}>
+                                {task.title} (ID: {task.id})
+                            </option>
+                        ))}
+                    </select>
                 </div>
                 <button type="button" className="btn btn-primary mb-2" onClick={handleAddRating}>
                     Add Rating
@@ -115,9 +127,9 @@ const Rating = () => {
                         <div>
                             <StarRating value={rating.stars} />
                             <span className="ml-3">
-                                - {rating.seeker_id ? `Seeker ID: ${rating.seeker_id} - Seeker Username: ${rating.seeker_username}` : ''}
-                                - {rating.requester_id ? `Requester ID: ${rating.requester_id} - Requester Username: ${rating.requester_username}` : ''}
-                                - Task ID: {rating.task_id} - Task Description: {rating.task_description}
+                                {rating.seeker_id ? `Seeker ID: ${rating.seeker_id} - Seeker Username: ${rating.seeker_username || 'N/A'}` : ''}
+                                {rating.requester_id ? `Requester ID: ${rating.requester_id} - Requester Username: ${rating.requester_username || 'N/A'}` : ''}
+                                - Task ID: {rating.task_id} - Task Description: {rating.task_description || 'N/A'}
                             </span>
                         </div>
                         <div>
