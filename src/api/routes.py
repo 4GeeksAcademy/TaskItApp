@@ -502,3 +502,63 @@ def edit_seeker(id):
     db.session.commit()
 
     return jsonify({'message': 'Seeker info edited successfully.'}), 200
+
+# POSTULANT
+
+@api.route('/postulants', methods=['GET'])
+def get_postulants():
+    all_postulants = Postulant.query.all()
+    print(all_postulants)
+    results = list(map(lambda postulant: postulant.serialize(), all_postulants))
+    print(results)
+
+
+    return jsonify(results), 200
+
+
+@api.route('/postulants/<int:postulant_id>', methods=['GET'])
+def get_postulant(postulant_id):
+    postulant = Postulant.query.filter_by(id=postulant_id).first()
+    if not postulant:
+        return jsonify({'error': 'Postulant not found'}), 404
+    return jsonify(postulant.serialize()), 200
+
+
+@api.route('/postulants', methods=['POST'])
+def create_postulant():
+    data = request.json
+    application_date = data.get('application_date')
+    status = data.get('status')
+
+    if not application_date or not status:
+        return jsonify({"message": "Application date and status are required"}), 400
+
+    postul = Postulant(application_date=application_date, status=status)
+    db.session.add(postul)
+    db.session.commit()
+
+    response_body = {
+        "message": "Postulant created"
+    }
+
+    return jsonify(response_body), 200
+
+@api.route('/postulants/<int:id>', methods=['PUT'])
+def update_postulant(id):
+    postulant = Postulant.query.get(id)
+    if postulant is None:
+        return jsonify({"error": "Postulant not found"}), 404
+
+    data = request.json
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    if "postulant" in data and data["postulant"] == "":
+        return jsonify({"message": "The postulant cannot be empty"}), 400
+
+    for key in data:
+        if hasattr(postulant, key):
+            setattr(postulant, key, data[key])
+
+    db.session.commit()
+    return jsonify({"message": "postulant successfully updated"}), 200
