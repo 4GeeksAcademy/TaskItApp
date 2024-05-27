@@ -1,11 +1,17 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Context } from "../store/appContext";
 import { Link } from "react-router-dom";
 import "../../styles/navbar.css";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import TaskForm from './task/task_form.jsx';
 
 export const Navbar = () => {
 	const { store } = useContext(Context);
+
+	const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
 
 	return (
 		<nav className="navbar navbar-light bg-white py-5 px-3">
@@ -39,9 +45,11 @@ export const Navbar = () => {
 				</div>
 				: <div className="ml-auto">
 					<ul className="nav d-flex align-items-center">
-						<li className="nav-item">
-							<button className="btn btn-dark smooth">Post Task</button>	
-						</li>
+						{ store.user[0].role == "both" || store.user[0].role == "requester" &&
+							<li className="nav-item">
+								<button className="btn btn-dark smooth" onClick={handleShow}>Post Task</button>	
+							</li>
+						}
 						<li className="nav-item d-flex align-items-center fs-2 mx-2">
 							<Icon className="smooth" icon="mdi:bell-outline" />
 						</li>
@@ -59,6 +67,8 @@ export const Navbar = () => {
 				</div>
 				}
 			</div>
+
+			<TaskForm show={show} handleClose={handleClose}></TaskForm>
 		</nav>
 	);
 };
