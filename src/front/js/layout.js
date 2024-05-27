@@ -31,7 +31,7 @@ const Layout = () => {
                         <Route element={<CategoryList />} path="/categories" />
                         <Route element={<Home />} path="/" />
                         <Route element={<Demo />} path="/demo" />
-                        <Route element={<TaskFeed />} path="/task-feed" />
+                        <Route element={<TaskFeed />} path="/tasks" />
                         <Route element={<Users />} path="/users" />
                         <Route element={<Requesters />} path="/requesters" />
                         <Route element={<Seekers />} path="/seekers" />

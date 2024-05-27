@@ -1,6 +1,6 @@
 import React from "react";
-import TaskList from "../component/task_feed/tasks_list.jsx";
-import PostTask from "../component/task_feed/post_task.jsx";
+import TaskList from "../component/task/tasks_list.jsx";
+import PostTask from "../component/task/post_task.jsx";
 
 export const TaskFeed = () => {
 	return (
