@@ -147,7 +147,7 @@ def create_address():
     address = data.get('address')
     latitude = data.get('latitude')
     longitude = data.get('longitude')
-    user_id = data.get('user_id')
+    user_id = data.get('user_id')    
 
     if not address or not latitude or not longitude or not user_id:
         return jsonify({"error": "Missing fields."}), 400
@@ -160,11 +160,7 @@ def create_address():
     db.session.add(address)
     db.session.commit()
 
-    response_body = {
-        "message": "Address created."
-    }
-
-    return jsonify(response_body), 200
+    return jsonify({"message": "Address saved."}), 200
 
 @api.route('/addresses/<int:id>', methods=['DELETE'])
 def delete_address(id):
