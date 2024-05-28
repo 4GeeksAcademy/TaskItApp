@@ -58,7 +58,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				)
 			},
 
-            addTask: (title, description, deliveryLocation, pickupLocation, dueDate, category) => {
+            addTask: (title, description, deliveryLocation, pickupLocation, dueDate, category, budget) => {
 				const newTask = {
 					"title": title,
 					"description": description,
@@ -67,6 +67,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					"due_date": dueDate,
 					"category_id": category,
 					"requester_id": getStore().user[0].id,
+					"budget": budget
 				}
 
 				const config = { 
@@ -85,7 +86,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				);
 			},
 
-			editTask: (id, title, description, deliveryLocation, pickupLocation, dueDate, category, seekerID) => {
+			editTask: (id, title, description, deliveryLocation, pickupLocation, dueDate, category, seekerID, budget) => {
 				const task = {
 					"title": title,
 					"description": description,
@@ -93,7 +94,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 					"pickup_location": pickupLocation,
 					"due_date": dueDate,
 					"category": category,
-					"seeker_id": seekerID
+					"seeker_id": seekerID,
+					"budget": budget
 				}
 
 				const config = { 
@@ -134,11 +136,12 @@ const getState = ({ getStore, getActions, setStore }) => {
                 );
             },
 
-            addAddress: (address, latitude, longitude) => {
+            addAddress: (address, latitude, longitude, userID) => {
                 const newAddress = {
                     address,
                     latitude,
                     longitude,
+					user_id: userID,
                 };
 
                 const config = {
@@ -157,11 +160,12 @@ const getState = ({ getStore, getActions, setStore }) => {
                 );
             },
 
-            editAddress: (id, address, latitude, longitude) => {
+            editAddress: (id, address, latitude, longitude, userID) => {
                 const addressObj = {
                     address,
                     latitude,
                     longitude,
+					user_id: userID
                 };
 
                 const config = {
@@ -482,6 +486,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					() => getActions().getSeekers()
 				);
 			},
+			
 		//Rating
 		getRatings: () => {
 			fetchHelper(
