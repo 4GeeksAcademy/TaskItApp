@@ -6,6 +6,7 @@ from api.models import db, User, Task, StatusEnum, Address, Category, RoleEnum, 
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from datetime import datetime
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 
 api = Blueprint('api', __name__)
 
@@ -639,4 +640,47 @@ def edit_admin(id):
     db.session.commit()
 
     return jsonify({'message': 'Admin actualizado exitosamente.'}), 200
+
+# La función create_access_token() se utiliza para generar el JWT
+@api.route("/token", methods=["POST"])
+def create_token():
+    username = request.json.get("username", None)
+    password = request.json.get("password", None)
+
+    # Consulta la base de datos por el nombre de usuario y la contraseña
+    user = User.query.filter_by(username=username, password=password).first()
+
+    if user is None:
+        # el usuario no se encontró en la base de datos
+        return jsonify({"msg": "Bad username or password"}), 401
+    
+    # Crea un nuevo token con el id de usuario dentro
+    access_token = create_access_token(identity=user.id)
+    return jsonify({ "token": access_token, "user_id": user.id })
+
+@api.route('/login', methods=['POST'])
+def login():
+    data = request.json
+    email = data.get('email')
+    password = data.get('password')
+
+    if not email or not password:
+        return jsonify({'error': 'Missing email or password'}), 400
+
+    user = AdminUser.query.filter_by(email=email).first()
+
+    if user and user.password == password:
+        access_token = create_access_token(identity=user.id)
+        return jsonify(access_token=access_token), 200
+    else:
+        return jsonify({'error': 'Invalid email or password'}), 401
+    
+
+# private
+@api.route('/random-name', methods=['GET'])
+@jwt_required()
+def protected():
+    current_user = get_jwt_identity()
+    return jsonify(logged_in_as=current_user), 200
+
 
