@@ -13,6 +13,7 @@ import { Seekers } from "./pages/seekers";
 import Addresses from "./pages/addresses";
 import injectContext from "./store/appContext";
 import CategoryList from "./pages/categories";
+import RatingPage from "./component/rating/rating.jsx"; // Actualiza la importación aquí
 
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
@@ -38,9 +39,9 @@ const Layout = () => {
                         <Route element={<Seekers />} path="/seekers" />
                         <Route element={<User />} path="/users/:theusername" />
                         <Route element={<Addresses />} path="/addresses" />
+                        <Route element={<RatingPage />} path="/ratings" /> {/* Asegúrate de usar RatingPage */}
                         <Route element={<Postulants />} path="/postulants" />
                         <Route element={<h1>Not found!</h1>} />
-                        
                     </Routes>
                     <Footer />
                 </ScrollToTop>
