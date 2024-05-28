@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Task, StatusEnum, Address, Category, RoleEnum, Requester, TaskSeeker, Rating
+from api.models import db, User, Task, StatusEnum, Address, Category, RoleEnum, Requester, TaskSeeker, Rating, AdminUser
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from datetime import datetime
@@ -575,4 +575,68 @@ def delete_rating(rating_id):
     db.session.commit()
     return jsonify({'message': 'Rating deleted successfully'}), 200
 
+# ADMINS
+@api.route('/admins', methods=['GET'])
+def get_admins():
+    return jsonify([admin.serialize() for admin in AdminUser.query.all()]), 200  # Cambiar Admin a AdminUser
+
+@api.route('/admins', methods=['POST'])
+def add_admin():
+    data = request.json
+    email = data.get('email')
+    password = data.get('password')
+
+    if not email or not password:
+        return jsonify({'error': 'Faltan campos.'}), 400
+
+    existing_email = AdminUser.query.filter_by(email=email).first()
+    if existing_email:
+        return jsonify({'error': 'El correo electrónico ya está en uso.'}), 400
+
+    new_admin = AdminUser(email=email, password=password)
+    db.session.add(new_admin)
+    db.session.commit()
+
+    return jsonify({'message': 'Admin creado exitosamente.'}), 201
+
+@api.route('/admins/<int:id>', methods=['GET'])
+def get_admin(id):
+    admin = AdminUser.query.get(id)  # Cambiar Admin a AdminUser
+
+    if not admin:
+        return jsonify({'error': 'Admin no encontrado.'}), 404
+
+    return jsonify(admin.serialize()), 200
+
+@api.route('/admins/<int:id>', methods=['DELETE'])
+def delete_admin(id):
+    admin = AdminUser.query.get(id)  # Cambiar Admin a AdminUser
+
+    if not admin:
+        return jsonify({'error': 'Admin no encontrado.'}), 404
+
+    db.session.delete(admin)
+    db.session.commit()
+
+    return jsonify({'message': 'Admin eliminado exitosamente.'}), 200
+
+@api.route('/admins/<int:id>', methods=['PUT'])
+def edit_admin(id):
+    admin = AdminUser.query.get(id)  # Cambiar Admin a AdminUser
+
+    if not admin:
+        return jsonify({'error': 'Admin no encontrado.'}), 404
+
+    data = request.json
+    new_email = data.get('email')
+    new_password = data.get('password')
+
+    if new_email:
+        admin.email = new_email
+    if new_password:
+        admin.password = new_password
+
+    db.session.commit()
+
+    return jsonify({'message': 'Admin actualizado exitosamente.'}), 200
 

@@ -1,41 +1,42 @@
-const getState = ({ getStore, getActions, setStore }) => {	
+const getState = ({ getStore, getActions, setStore }) => {
     const fetchHelper = async (url, config = {}, successCallback) => {
-		try {
-			const response = await fetch(url, config);
-			const data = await response.json();
-			if (response.ok) {
-				if (successCallback) successCallback(data);
-				const prevMessage = getStore().message;
-				setStore({ message: data.message || prevMessage, error: "" });
-			} else setStore({ message: "", error: data.error || "An error occurred" });
-		} catch (error) {
-			console.error(error);
-		}
-	};
+        try {
+            const response = await fetch(url, config);
+            const data = await response.json();
+            if (response.ok) {
+                if (successCallback) successCallback(data);
+                const prevMessage = getStore().message;
+                setStore({ message: data.message || prevMessage, error: "" });
+            } else setStore({ message: "", error: data.error || "An error occurred" });
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
-	return {
-		store: {
-			message: "",
-			error: "",
-			tasks: [],
+    return {
+        store: {
+            message: "",
+            error: "",
+            tasks: [],
             addresses: [],
-			categories: [],
-			users: [],								
-			user: { role: "both" }, 
-			requesters: [],
-			seekers: [],
-			editing: false,
-			ratings: [],
-			auth: false,
-		},
-		actions: {
-			setEditing: (bool) => { setStore({ editing: bool })},
-			setAuth: (bool) => { setStore({ auth: bool })},
-			setUser: (username) => { 
-				const user = getStore().users.filter((userInfo) => userInfo.username == username);
-				setStore({ user: user, auth: true })
-			},
-
+            categories: [],
+            users: [],
+            user: { role: "both" },
+            requesters: [],
+            seekers: [],
+            editing: false,
+            ratings: [],
+            auth: false,
+            admins: [], // Añadido para almacenar los admins
+        },
+        actions: {
+            setEditing: (bool) => { setStore({ editing: bool }) },
+            setAuth: (bool) => { setStore({ auth: bool }) },
+            setUser: (username) => {
+                const user = getStore().users.filter((userInfo) => userInfo.username == username);
+                setStore({ user: user, auth: true })
+            },
+			
 			// TASKS
             getTasks: () => {
 				fetchHelper(
@@ -483,67 +484,161 @@ const getState = ({ getStore, getActions, setStore }) => {
 				);
 			},
 		//Rating
-		getRatings: () => {
-			fetchHelper(
-				process.env.BACKEND_URL + "/api/ratings", 
-				{}, 
-				(data) => setStore({ ratings: data })
-			);
-		},
+			getRatings: () => {
+				fetchHelper(
+					process.env.BACKEND_URL + "/api/ratings", 
+					{}, 
+					(data) => setStore({ ratings: data })
+				);
+			},
 
-		addRating: (stars, seeker_id, requester_id, task_id) => {
-			const config = { 
-				method: "POST",
-				body: JSON.stringify({ stars, seeker_id, requester_id, task_id }),
-				headers: {
-					'Accept': 'application/json',
-					'Content-Type': 'application/json'
-				}
-			};
-			fetchHelper(
-				process.env.BACKEND_URL + `/api/ratings`,
-				config,
-				() => getActions().getRatings()
-			);
-		},
+			addRating: (stars, seeker_id, requester_id, task_id) => {
+				const config = { 
+					method: "POST",
+					body: JSON.stringify({ stars, seeker_id, requester_id, task_id }),
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					}
+				};
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/ratings`,
+					config,
+					() => getActions().getRatings()
+				);
+			},
 
-		editRating: (id, stars) => {
-			const config = { 
-				method: "PUT",
-				body: JSON.stringify({ stars }),
-				headers: {
-					'Accept': 'application/json',
-					'Content-Type': 'application/json'
-				}
-			};
-			fetchHelper(
-				process.env.BACKEND_URL + `/api/ratings/${id}`,
-				config,
-				() => getActions().getRatings()
-			);
-		},
+			editRating: (id, stars) => {
+				const config = { 
+					method: "PUT",
+					body: JSON.stringify({ stars }),
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					}
+				};
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/ratings/${id}`,
+					config,
+					() => getActions().getRatings()
+				);
+			},
 
-		deleteRating: (id) => {
-			const config = { 
-				method: "DELETE",
-				headers: { 'Accept': 'application/json' }
-			};
-			fetchHelper(
-				process.env.BACKEND_URL + `/api/ratings/${id}`,
-				config,
-				() => getActions().getRatings()
-			);
-		},
+			deleteRating: (id) => {
+				const config = { 
+					method: "DELETE",
+					headers: { 'Accept': 'application/json' }
+				};
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/ratings/${id}`,
+					config,
+					() => getActions().getRatings()
+				);
+			},
 
-		checkSeekerExists: async (seeker_id) => {
-			const response = await fetch(`${process.env.BACKEND_URL}/api/users/${seeker_id}`);
-			return response.ok;
-		},
+			checkSeekerExists: async (seeker_id) => {
+				const response = await fetch(`${process.env.BACKEND_URL}/api/users/${seeker_id}`);
+				return response.ok;
+			},
 
-		checkRequesterExists: async (requester_id) => {
-			const response = await fetch(`${process.env.BACKEND_URL}/api/users/${requester_id}`);
-			return response.ok;
-		},
+			checkRequesterExists: async (requester_id) => {
+				const response = await fetch(`${process.env.BACKEND_URL}/api/users/${requester_id}`);
+				return response.ok;
+			},
+		    // ADMINS
+            getAdmins: () => {
+                fetchHelper(
+                    process.env.BACKEND_URL + "/api/admins", // url como siempre
+                    {}, 									// la configuración del request, en este caso vacía porque es un GET
+                    (data) => setStore({ admins: data })		// función a realizar despues de que una respuesta sea buena
+                )
+            },
+
+            deleteAdmin: (id) => {
+                const config = { 
+                    method: "DELETE",
+                    headers: { 'Accept': 'application/json' }
+                }
+
+                fetchHelper(
+                    process.env.BACKEND_URL + `/api/admins/${id}`,
+                    config,
+                    () => getActions().getAdmins(),
+                )
+            },
+
+            addAdmin: (email, password) => {
+                const newAdmin = {
+                    "email": email,
+                    "password": password,
+                }
+
+                const config = { 
+                    method: "POST",
+                    body: JSON.stringify(newAdmin),
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                }
+
+                fetchHelper(
+                    process.env.BACKEND_URL + `/api/admins`,
+                    config,
+                    () => getActions().getAdmins()
+                );
+            },
+
+            editAdmin: (id, email, password) => {
+                const admin = {
+                    "email": email,
+                    "password": password,
+                }
+
+                const config = { 
+                    method: "PUT",
+                    body: JSON.stringify(admin),
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                }
+
+                fetchHelper(
+                    process.env.BACKEND_URL + `/api/admins/${id}`,
+                    config,
+                    () => getActions().getAdmins()
+                );
+            },
+            
+            // LOGIN
+            login: async (email, password) => {
+                const config = { 
+                    method: "POST",
+                    body: JSON.stringify({ email, password }),
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                };
+
+                try {
+                    const response = await fetch(`${process.env.BACKEND_URL}/api/login`, config);
+                    const data = await response.json();
+                    if (response.ok) {
+                        setStore({ token: data.access_token, auth: true, error: "" });
+                        return true;
+                    } else {
+                        setStore({ error: data.error || "An error occurred", auth: false });
+                        return false;
+                    }
+                } catch (error) {
+                    console.error(error);
+                    setStore({ error: "An error occurred", auth: false });
+                    return false;
+                }
+            },
+			
 		}
 	};
 };

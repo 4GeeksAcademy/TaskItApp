@@ -13,10 +13,12 @@ import { Seekers } from "./pages/seekers";
 import Addresses from "./pages/addresses";
 import injectContext from "./store/appContext";
 import CategoryList from "./pages/categories";
-import RatingPage from "./component/rating/rating.jsx"; // Actualiza la importación aquí
+import RatingPage from "./component/rating/rating.jsx";
+import AdminUserManagement from "./component/adminlogin/AdminUserManagement.jsx"; // Asegúrate de que la ruta sea correcta
 
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
+import Login from "./component/adminlogin/login.jsx";
 
 const Layout = () => {
     const basename = process.env.BASENAME || "";
@@ -38,8 +40,10 @@ const Layout = () => {
                         <Route element={<Seekers />} path="/seekers" />
                         <Route element={<User />} path="/users/:theusername" />
                         <Route element={<Addresses />} path="/addresses" />
-                        <Route element={<RatingPage />} path="/ratings" /> {/* Asegúrate de usar RatingPage */}
-                        <Route element={<h1>Not found!</h1>} />
+                        <Route element={<RatingPage />} path="/ratings" />
+                        <Route element={<Login />} path="/login" />
+                        <Route element={<AdminUserManagement />} path="/admin-management" /> {/* Añadir la ruta para AdminUserManagement */}
+                        <Route element={<h1>Not found!</h1>} path="*" />
                     </Routes>
                     <Footer />
                 </ScrollToTop>
