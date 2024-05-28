@@ -92,6 +92,7 @@ class Task(db.Model):
     creation_date = db.Column(db.DateTime, default=func.now(), nullable=False)
     due_date = db.Column(db.DateTime, nullable=False)
     status = db.Column(db.Enum(StatusEnum), nullable=False, default=StatusEnum.PENDING)
+    budget = db.Column(db.String(10), unique=False, nullable=False)
     delivery_location = db.Column(db.String(120), nullable=False)
     pickup_location = db.Column(db.String(120), nullable=False)
     requester_id = db.Column(db.Integer, db.ForeignKey('requester.id'), nullable=False)
@@ -117,12 +118,15 @@ class Task(db.Model):
             "seeker_id": self.seeker_id if self.seeker else None,
             "requester_id": self.requester_id,
             "category_id": self.category_id,
-            "category_name": self.category.name
+            "category_name": self.category.name,
+            "budget": self.budget
         }
 
     
 class Address(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship('User', backref=db.backref('addresses', lazy=True))
     address = db.Column(db.String(120), unique=True, nullable=False)
     latitude = db.Column(db.Float, unique=False, nullable=False)
     longitude = db.Column(db.Float, unique=False, nullable=False)
@@ -136,6 +140,8 @@ class Address(db.Model):
             "address": self.address,
             "latitude": self.latitude,
             "longitude": self.longitude,
+            "user_id": self.user_id,
+            "username": self.user.username
         }
     
 class Category(db.Model):

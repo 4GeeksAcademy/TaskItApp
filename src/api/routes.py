@@ -28,8 +28,9 @@ def add_task():
     due_date_str = data.get('due_date')
     requester_id = data.get('requester_id')
     category_id = data.get('category_id')
+    budget = data.get('budget')
 
-    if not title or not description or not delivery_location or not pickup_location or not due_date_str or not requester_id or not category_id:
+    if not title or not description or not delivery_location or not pickup_location or not due_date_str or not requester_id or not category_id or not budget:
         return jsonify({ 'error': 'Missing fields.'}), 400
     
     existing_requester = Requester.query.filter_by(user_id=requester_id).first()
@@ -43,7 +44,7 @@ def add_task():
     except ValueError:
         return jsonify({"error": "Invalid due date format"}), 400
     
-    new_task = Task(title=title, description=description, delivery_location=delivery_location, pickup_location=pickup_location, due_date=due_date, requester=existing_requester, category=existing_category)
+    new_task = Task(title=title, description=description, delivery_location=delivery_location, pickup_location=pickup_location, due_date=due_date, requester=existing_requester, category=existing_category, budget=budget)
     
     db.session.add(new_task)
     db.session.commit()
@@ -88,6 +89,7 @@ def edit_task(id):
     new_requester_id = data.get('requester_id')
     new_category_id = data.get('category_id')
     new_seeker_id = data.get('seeker_id')
+    new_budget = data.get('budget')
 
     existing_requester = Requester.query.get(new_requester_id)
     if not existing_requester: return jsonify({ 'error': 'Requester not found.'}), 404
@@ -119,6 +121,7 @@ def edit_task(id):
     if existing_requester: task.requester = existing_requester
     if existing_category: task.category = existing_category
     if existing_seeker: task.seeker = existing_seeker
+    if new_budget: task.budget = new_budget
 
     db.session.commit()
 
@@ -128,9 +131,7 @@ def edit_task(id):
 @api.route('/addresses', methods=['GET'])
 def get_addresses():
     all_addresses = Address.query.all()
-    print(all_addresses)
     results = list(map(lambda address: address.serialize(), all_addresses))
-    print(results)
 
     return jsonify(results), 200
 
@@ -143,17 +144,24 @@ def get_address(address_id):
 @api.route('/addresses', methods=['POST'])
 def create_address():
     data = request.json
-    if not "address" in data:
-        return jsonify({"message": "You must enter an address"}), 400
-    if data["address"] == "":
-        return jsonify({"message": "The address cannot be empty"}), 400
-    # Create new street
-    addre = Address(**data)
-    db.session.add(addre)
+    address = data.get('address')
+    latitude = data.get('latitude')
+    longitude = data.get('longitude')
+    user_id = data.get('user_id')
+
+    if not address or not latitude or not longitude or not user_id:
+        return jsonify({"error": "Missing fields."}), 400
+    
+    existing_user = User.query.get(user_id)
+    if not existing_user:  return jsonify({"error": "User not found."}), 404
+    
+    address = Address(address=address, longitude=longitude, latitude=latitude, user=existing_user)
+    
+    db.session.add(address)
     db.session.commit()
 
     response_body = {
-        "message": "Address created"
+        "message": "Address created."
     }
 
     return jsonify(response_body), 200
