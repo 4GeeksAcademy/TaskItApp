@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState(null); // Estado para el mensaje de error
     const { store, actions } = useContext(Context);
     const navigate = useNavigate();
 
@@ -13,6 +14,8 @@ const Login = () => {
         const success = await actions.login(email, password);
         if (success) {
             navigate("/random-name"); // Ajusta la ruta a /random-name
+        } else {
+            setError("Usuario no registrado o contraseña incorrecta."); // Mensaje de error
         }
     };
 
@@ -45,6 +48,7 @@ const Login = () => {
                 </div>
                 <button type="submit" className="btn btn-success w-100">Login</button>
             </form>
+            {error && <div className="alert alert-danger mt-3">{error}</div>} {/* Mensaje de error */}
         </div>
     );
 };
