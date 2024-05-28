@@ -17,6 +17,7 @@ import RatingPage from "./component/rating/rating.jsx"; // Actualiza la importac
 
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
+import Postulants from "./pages/postulants";
 
 const Layout = () => {
     const basename = process.env.BASENAME || "";
@@ -39,6 +40,7 @@ const Layout = () => {
                         <Route element={<User />} path="/users/:theusername" />
                         <Route element={<Addresses />} path="/addresses" />
                         <Route element={<RatingPage />} path="/ratings" /> {/* Asegúrate de usar RatingPage */}
+                        <Route element={<Postulants />} path="/postulants" />
                         <Route element={<h1>Not found!</h1>} />
                     </Routes>
                     <Footer />
