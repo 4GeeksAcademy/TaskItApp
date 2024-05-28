@@ -13,6 +13,8 @@ export const Navbar = () => {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
+	const userRole = store.user && store.user.length > 0 ? store.user[0].role : "guest";
+
 	return (
 		<nav className="navbar navbar-light bg-white py-5 px-3">
 			<div className="container-fluid">
@@ -45,7 +47,7 @@ export const Navbar = () => {
 				</div>
 				: <div className="ml-auto">
 					<ul className="nav d-flex align-items-center">
-						{ store.user[0].role == "both" || store.user[0].role == "requester" &&
+						{ (userRole === "both" || userRole === "requester") &&
 							<li className="nav-item">
 								<button className="btn btn-dark smooth" onClick={handleShow}>Post Task</button>	
 							</li>

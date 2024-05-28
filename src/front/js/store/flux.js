@@ -27,7 +27,6 @@ const getState = ({ getStore, getActions, setStore }) => {
             editing: false,
             ratings: [],
             auth: false,
-            admins: [], // Añadido para almacenar los admins
         },
         actions: {
             setEditing: (bool) => { setStore({ editing: bool }) },
@@ -611,32 +610,49 @@ const getState = ({ getStore, getActions, setStore }) => {
                 );
             },
             
-            // LOGIN
-            login: async (email, password) => {
-                const config = { 
-                    method: "POST",
-                    body: JSON.stringify({ email, password }),
+            // Login action
+			login: async (email, password) => {
+				const config = { 
+					method: "POST",
+					body: JSON.stringify({ email, password }),
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					}
+				};
+
+				try {
+					const response = await fetch(`${process.env.BACKEND_URL}/api/login`, config);
+					const data = await response.json();
+					if (response.ok) {
+						setStore({ token: data.access_token, auth: true, error: "" });
+						return true;
+					} else {
+						setStore({ error: data.error || "An error occurred", auth: false });
+						return false;
+					}
+				} catch (error) {
+					console.error(error);
+					setStore({ error: "An error occurred", auth: false });
+					return false;
+				}
+			},
+			// PROTECTED DATA
+            getProtectedData: () => {
+                const config = {
+                    method: "GET",
                     headers: {
+                        'Authorization': `Bearer ${getStore().token}`,
                         'Accept': 'application/json',
                         'Content-Type': 'application/json'
                     }
                 };
 
-                try {
-                    const response = await fetch(`${process.env.BACKEND_URL}/api/login`, config);
-                    const data = await response.json();
-                    if (response.ok) {
-                        setStore({ token: data.access_token, auth: true, error: "" });
-                        return true;
-                    } else {
-                        setStore({ error: data.error || "An error occurred", auth: false });
-                        return false;
-                    }
-                } catch (error) {
-                    console.error(error);
-                    setStore({ error: "An error occurred", auth: false });
-                    return false;
-                }
+                fetchHelper(
+                    process.env.BACKEND_URL + "/api/random-name",
+                    config,
+                    (data) => console.log(data)
+                );
             },
 			
 		}

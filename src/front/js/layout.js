@@ -14,7 +14,10 @@ import Addresses from "./pages/addresses";
 import injectContext from "./store/appContext";
 import CategoryList from "./pages/categories";
 import RatingPage from "./component/rating/rating.jsx";
-import AdminUserManagement from "./component/adminlogin/AdminUserManagement.jsx"; // Asegúrate de que la ruta sea correcta
+import AdminUserManagement from "./component/adminlogin/AdminUserManagement.jsx";
+import ProtectedPage from "./component/adminlogin/ProtectedPage.jsx";
+
+
 
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
@@ -43,6 +46,7 @@ const Layout = () => {
                         <Route element={<RatingPage />} path="/ratings" />
                         <Route element={<Login />} path="/login" />
                         <Route element={<AdminUserManagement />} path="/admin-management" /> {/* Añadir la ruta para AdminUserManagement */}
+                        <Route element={<ProtectedPage />} path="/random-name" />
                         <Route element={<h1>Not found!</h1>} path="*" />
                     </Routes>
                     <Footer />

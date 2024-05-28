@@ -12,7 +12,7 @@ const Login = () => {
         e.preventDefault();
         const success = await actions.login(email, password);
         if (success) {
-            navigate("/"); // Ajusta la ruta a la que deseas redirigir después del login
+            navigate("/random-name"); // Ajusta la ruta a /random-name
         }
     };
 
