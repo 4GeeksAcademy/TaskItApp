@@ -18,6 +18,7 @@ export const Home = () => {
 			<Link className="px-5" to="/addresses">addresses</Link>
 			<Link className="px-5" to="/requesters">requesters</Link>
 			<Link className="px-5" to="/seekers">seekers</Link>
+			<Link className="px-5" to="/postulants">postulants</Link>
 			<h1>Hello Rigo!!</h1>
 			<p>
 				<img src={rigoImageUrl} />

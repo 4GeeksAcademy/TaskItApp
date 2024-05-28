@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Task, StatusEnum, Address, Category, RoleEnum, Requester, TaskSeeker, Rating
+from api.models import db, User, Task, StatusEnum, Address, Category, RoleEnum, Requester, TaskSeeker, Rating, Postulant
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from datetime import datetime
@@ -580,3 +580,79 @@ def delete_rating(rating_id):
     return jsonify({'message': 'Rating deleted successfully'}), 200
 
 
+# POSTULANT
+
+@api.route('/postulants', methods=['GET'])
+def get_postulants():
+    all_postulants = Postulant.query.all()
+    print(all_postulants)
+    results = list(map(lambda postulant: postulant.serialize(), all_postulants))
+    print(results)
+
+
+    return jsonify(results), 200
+
+
+@api.route('/postulants/<int:postulant_id>', methods=['GET'])
+def get_postulant(postulant_id):
+    postulant = Postulant.query.filter_by(id=postulant_id).first()
+    if not postulant:
+        return jsonify({'error': 'Postulant not found'}), 404
+    return jsonify(postulant.serialize()), 200
+
+
+@api.route('/postulants', methods=['POST'])
+def create_postulant():
+    data = request.json
+    status = data.get('status')
+    seeker_id = data.get('seeker_id')
+    price=data.get('price')
+    task_id = data.get('task_id')
+
+    if not status or not seeker_id or not price: 
+        return jsonify({ 'error': 'Missing fields.'}), 400
+    
+    existing_seeker = TaskSeeker.query.filter_by(user_id=seeker_id).first()
+    if not existing_seeker: return jsonify({ 'error': 'Task seeker with given user ID not found.'}), 404
+
+    existing_task = Task.query.get(task_id)
+    if not existing_task: return jsonify({ 'error': 'Task ID not found.'}), 404
+    
+    postul = Postulant(status=status, seeker=existing_seeker, price=price, task=existing_task)
+    db.session.add(postul)
+    db.session.commit()
+
+    response_body = {
+        "message": "Postulant created"
+    }
+
+    return jsonify(response_body), 200
+
+@api.route('/postulants/<int:id>', methods=['PUT'])
+def update_postulant(id):
+    postulant = Postulant.query.get(id)
+    if postulant is None:
+        return jsonify({"error": "Postulant not found"}), 404
+
+    data = request.json
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    for key in data:
+        if hasattr(postulant, key):
+            setattr(postulant, key, data[key])
+
+    db.session.commit()
+    return jsonify({"message": "Postulant successfully updated"}), 200
+
+@api.route('/postulants/<int:id>', methods=['DELETE'])
+def delete_postulant(id):
+    postulant = Postulant.query.get(id)
+
+    if not postulant:
+        return jsonify({'error': 'Postulant not found.'}), 404
+
+    db.session.delete(postulant)
+    db.session.commit()
+
+    return jsonify({'message': 'Postulant deleted successfully.'}), 200
