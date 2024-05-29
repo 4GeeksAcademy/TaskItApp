@@ -116,9 +116,9 @@ class Task(db.Model):
             "due_date": self.due_date.isoformat(),
             "status": self.status.value,
             "delivery_location_id": self.delivery_location_id,
-            "delivery_address": self.delivery_address.address,
+            "delivery_address": self.delivery_address.serialize(),
             "pickup_location_id": self.pickup_location_id,
-            "pickup_address": self.pickup_address.address,
+            "pickup_address": self.pickup_address.serialize(),
             "seeker_id": self.seeker_id if self.seeker else None,
             "requester_id": self.requester_id,
             "category_id": self.category_id,
@@ -144,8 +144,8 @@ class Address(db.Model):
             "address": self.address,
             "latitude": self.latitude,
             "longitude": self.longitude,
-            "user_id": self.user_id,
-            "username": self.user.username
+            "user_id": self.user_id if self.user else None,
+            "username": self.user.username if self.user else None
         }
     
 class Category(db.Model):
