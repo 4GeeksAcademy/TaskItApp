@@ -93,8 +93,10 @@ class Task(db.Model):
     due_date = db.Column(db.DateTime, nullable=False)
     status = db.Column(db.Enum(StatusEnum), nullable=False, default=StatusEnum.PENDING)
     budget = db.Column(db.String(10), unique=False, nullable=False)
-    delivery_location = db.Column(db.String(120), nullable=False)
-    pickup_location = db.Column(db.String(120), nullable=False)
+    delivery_location_id = db.Column(db.Integer, db.ForeignKey('address.id'), nullable=False)
+    delivery_address = db.relationship('Address', foreign_keys=[delivery_location_id], backref=db.backref('dropoffs', lazy=True))
+    pickup_location_id = db.Column(db.Integer, db.ForeignKey('address.id'), nullable=False)
+    pickup_address = db.relationship('Address', foreign_keys=[pickup_location_id], backref=db.backref('pickups', lazy=True))
     requester_id = db.Column(db.Integer, db.ForeignKey('requester.id'), nullable=False)
     requester = db.relationship('Requester', backref=db.backref('tasks', lazy=True))
     seeker_id = db.Column(db.Integer, db.ForeignKey('task_seeker.id'), nullable=True)
@@ -113,8 +115,10 @@ class Task(db.Model):
             "creation_date": self.creation_date.isoformat(),
             "due_date": self.due_date.isoformat(),
             "status": self.status.value,
-            "delivery_location": self.delivery_location,
-            "pickup_location": self.pickup_location,
+            "delivery_location_id": self.delivery_location_id,
+            "delivery_address": self.delivery_address.address,
+            "pickup_location_id": self.pickup_location_id,
+            "pickup_address": self.pickup_address.address,
             "seeker_id": self.seeker_id if self.seeker else None,
             "requester_id": self.requester_id,
             "category_id": self.category_id,
@@ -125,7 +129,7 @@ class Task(db.Model):
     
 class Address(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     user = db.relationship('User', backref=db.backref('addresses', lazy=True))
     address = db.Column(db.String(120), unique=True, nullable=False)
     latitude = db.Column(db.Float, unique=False, nullable=False)

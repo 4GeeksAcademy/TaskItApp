@@ -10,6 +10,7 @@ const Task = ({ taskInfo }) => {
         return new Date(dateString).toLocaleDateString(undefined, options);
     };
 
+    console.log(taskInfo)
     const [show, setShow] = useState(false);
 
     const handleClose = () => setShow(false);
@@ -22,8 +23,8 @@ const Task = ({ taskInfo }) => {
                 <p>{taskInfo.description}</p>
                 <p><b>Creation date: </b>{formatDate(taskInfo.creation_date)}</p>
                 <p><b>Due date: </b>{formatDate(taskInfo.due_date)}</p>
-                <p><b>Delivery location: </b>{taskInfo.delivery_location}</p>
-                <p><b>Pickup location: </b>{taskInfo.pickup_location}</p>
+                <p><b>Delivery location: </b>{taskInfo.delivery_address}</p>
+                <p><b>Pickup location: </b>{taskInfo.pickup_address}</p>
                 <button className="btn btn-primary" onClick={handleShow}>Edit</button>
                 <button className="btn btn-danger" onClick={() => actions.deleteTask(taskInfo.id)}>Delete</button>
             </div>

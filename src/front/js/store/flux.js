@@ -37,6 +37,28 @@ const getState = ({ getStore, getActions, setStore }) => {
 				setStore({ user: user, auth: true })
 			},
 
+			getCoordinates: async (address) => {
+				const formattedAddress = address.replace(/\s+/g, '+');
+				const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${formattedAddress}&key=AIzaSyAbDzpCV-I2_PaflkmFtXby6R0WelVOapw`;
+		
+				try {
+					const response = await fetch(url);
+					const data = await response.json();
+		
+					if (data.status === 'OK') {
+						const lat = data.results[0].geometry.location.lat;
+						const lgt = data.results[0].geometry.location.lng;
+						return { lat, lgt };
+					} else {
+						console.error('Geocoding failed:', data.status);
+						return null;
+					}
+				} catch (error) {
+					console.error('Error:', error);
+					return null;
+				}
+			},
+
 			// TASKS
             getTasks: () => {
 				fetchHelper(
@@ -59,17 +81,23 @@ const getState = ({ getStore, getActions, setStore }) => {
 				)
 			},
 
-            addTask: (title, description, deliveryLocation, pickupLocation, dueDate, category, budget) => {
+            addTask: (title, description, deliveryLocation, pickupLocation, dueDate, category, budget, deliveryLat, deliveryLgt, pickupLat, pickupLgt) => {
 				const newTask = {
 					"title": title,
 					"description": description,
 					"delivery_location": deliveryLocation,
+					"delivery_lat": deliveryLat,
+					"delivery_lgt": deliveryLgt,
 					"pickup_location": pickupLocation,
+					"pickup_lat": pickupLat,
+					"pickup_lgt": pickupLgt,
 					"due_date": dueDate,
 					"category_id": category,
 					"requester_id": getStore().user[0].id,
 					"budget": budget
 				}
+
+				console.log(newTask)
 
 				const config = { 
 					method: "POST",
@@ -77,7 +105,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 					headers: {
 						'Accept': 'application/json',
 						'Content-Type': 'application/json'
-					}
+					},
+					mode: 'cors'
 				}
 
 				fetchHelper(
@@ -87,12 +116,16 @@ const getState = ({ getStore, getActions, setStore }) => {
 				);
 			},
 
-			editTask: (id, title, description, deliveryLocation, pickupLocation, dueDate, category, seekerID, budget) => {
+			editTask: (id, title, description, deliveryLocation, pickupLocation, dueDate, category, seekerID, budget, deliveryLat, deliveryLgt, pickupLat, pickupLgt) => {
 				const task = {
 					"title": title,
 					"description": description,
 					"delivery_location": deliveryLocation,
+					"delivery_lat": deliveryLat,
+					"delivery_lgt": deliveryLgt,
 					"pickup_location": pickupLocation,
+					"pickup_lat": pickupLat,
+					"pickup_lgt": pickupLgt,
 					"due_date": dueDate,
 					"category": category,
 					"seeker_id": seekerID,
@@ -137,11 +170,11 @@ const getState = ({ getStore, getActions, setStore }) => {
                 );
             },
 
-            addAddress: (address, latitude, longitude, userID) => {
+            addAddress: (address, lat, lgt, userID) => {
                 const newAddress = {
                     address,
-                    latitude,
-                    longitude,
+                    lat,
+                    lgt,
 					user_id: userID,
                 };
 
@@ -161,11 +194,11 @@ const getState = ({ getStore, getActions, setStore }) => {
                 );
             },
 
-            editAddress: (id, address, latitude, longitude, userID) => {
+            editAddress: (id, address, lat, lgt, userID) => {
                 const addressObj = {
                     address,
-                    latitude,
-                    longitude,
+                    lat,
+                    lgt,
 					user_id: userID
                 };
 
