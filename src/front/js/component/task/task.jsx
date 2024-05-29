@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import { Context } from "../../store/appContext";
 import TaskForm from "./task_form.jsx";
+import Map from "../geocoding/map.jsx";
 
 const Task = ({ taskInfo }) => {
     const { actions } = useContext(Context);
@@ -22,10 +23,11 @@ const Task = ({ taskInfo }) => {
                 <p>{taskInfo.description}</p>
                 <p><b>Creation date: </b>{formatDate(taskInfo.creation_date)}</p>
                 <p><b>Due date: </b>{formatDate(taskInfo.due_date)}</p>
-                <p><b>Delivery location: </b>{taskInfo.delivery_location}</p>
-                <p><b>Pickup location: </b>{taskInfo.pickup_location}</p>
+                <p><b>Delivery location: </b>{taskInfo.delivery_address.address}</p>
+                <p><b>Pickup location: </b>{taskInfo.pickup_address.address}</p>
                 <button className="btn btn-primary" onClick={handleShow}>Edit</button>
                 <button className="btn btn-danger" onClick={() => actions.deleteTask(taskInfo.id)}>Delete</button>
+                <Map markers={[[taskInfo.delivery_address.latitude, taskInfo.delivery_address.longitude], [taskInfo.pickup_address.latitude, taskInfo.pickup_address.longitude]]}></Map>
             </div>
 
             <TaskForm show={show} handleClose={handleClose} currentTask={taskInfo}></TaskForm>

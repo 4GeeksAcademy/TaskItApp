@@ -24,14 +24,18 @@ def add_task():
     title = data.get('title')
     description = data.get("description")
     delivery_location = data.get('delivery_location')
+    delivery_lat = data.get('delivery_lat')
+    delivery_lgt = data.get('delivery_lgt')
     pickup_location = data.get('pickup_location')
+    pickup_lat = data.get('pickup_lat')
+    pickup_lgt = data.get('pickup_lgt')
     due_date_str = data.get('due_date')
     requester_id = data.get('requester_id')
     category_id = data.get('category_id')
     budget = data.get('budget')
 
-    if not title or not description or not delivery_location or not pickup_location or not due_date_str or not requester_id or not category_id or not budget:
-        return jsonify({ 'error': 'Missing fields.'}), 400
+    if not all([title, description, due_date_str, requester_id, category_id, budget, delivery_location, delivery_lat, delivery_lgt, pickup_location, pickup_lat, pickup_lgt]):
+            return jsonify({'error': 'Missing fields.'}), 400
     
     existing_requester = Requester.query.filter_by(user_id=requester_id).first()
     if not existing_requester: return jsonify({ 'error': 'Requester with given user ID not found.'}), 404
@@ -44,7 +48,21 @@ def add_task():
     except ValueError:
         return jsonify({"error": "Invalid due date format"}), 400
     
-    new_task = Task(title=title, description=description, delivery_location=delivery_location, pickup_location=pickup_location, due_date=due_date, requester=existing_requester, category=existing_category, budget=budget)
+    existing_delivery = Address.query.filter_by(address=delivery_location).first()
+    if existing_delivery: delivery_address = existing_delivery
+    else: 
+        delivery_address = Address(address=delivery_location, latitude=delivery_lat, longitude=delivery_lgt)
+        db.session.add(delivery_address)
+
+    existing_pickup = Address.query.filter_by(address=pickup_location).first()
+    if existing_pickup: pickup_address = existing_pickup
+    else: 
+        pickup_address = Address(address=pickup_location, latitude=pickup_lat, longitude=pickup_lgt)
+        db.session.add(pickup_address)
+
+    db.session.commit()
+    
+    new_task = Task(title=title, description=description, delivery_address=delivery_address, pickup_address=pickup_address, due_date=due_date, requester=existing_requester, category=existing_category, budget=budget)    
     
     db.session.add(new_task)
     db.session.commit()
@@ -76,7 +94,6 @@ def delete_task(id):
 @api.route('/tasks/<int:id>', methods=['PUT'])
 def edit_task(id):  
     task = Task.query.get(id)
-
     if not task: return jsonify({'error': 'Task not found.'}), 404
 
     data = request.json
@@ -86,19 +103,9 @@ def edit_task(id):
     new_pickup_location = data.get('pickup_location')
     new_due_date_str = data.get('due_date')
     new_status = data.get('status')
-    new_requester_id = data.get('requester_id')
     new_category_id = data.get('category_id')
     new_seeker_id = data.get('seeker_id')
     new_budget = data.get('budget')
-
-    existing_requester = Requester.query.get(new_requester_id)
-    if not existing_requester: return jsonify({ 'error': 'Requester not found.'}), 404
-
-    existing_seeker = TaskSeeker.query.get(new_seeker_id)
-    if not existing_seeker: return jsonify({ 'error': 'Task seeker not found.'}), 404
-
-    existing_category = Category.query.get(new_category_id)
-    if not existing_category: return jsonify({ 'error': 'Category not found.'}), 404
 
     if new_due_date_str:
         try:
@@ -106,7 +113,7 @@ def edit_task(id):
             task.due_date = new_due_date
         except ValueError:
             return jsonify({"error": "Invalid due date format."}), 400
-        
+
     if new_status:
         try:
             new_status_enum = StatusEnum(new_status)
@@ -114,13 +121,30 @@ def edit_task(id):
         except ValueError:
             return jsonify({"error": "Invalid status value."}), 400
 
+    if new_category_id:
+        existing_category = Category.query.get(new_category_id)
+        if not existing_category:
+            return jsonify({'error': 'Category not found.'}), 404
+        task.category = existing_category
+
+    if new_seeker_id:
+        existing_seeker = TaskSeeker.query.get(new_seeker_id)
+        if not existing_seeker:
+            return jsonify({'error': 'Task seeker not found.'}), 404
+        task.seeker = existing_seeker
+
     if new_title: task.title = new_title
     if new_description: task.description = new_description
-    if new_delivery_location: task.delivery_location = new_delivery_location
-    if new_pickup_location: task.pickup_location = new_pickup_location
-    if existing_requester: task.requester = existing_requester
-    if existing_category: task.category = existing_category
-    if existing_seeker: task.seeker = existing_seeker
+    if new_delivery_location:
+        delivery_address = Address(address=new_delivery_location, latitude=data.get('delivery_lat'), longitude=data.get('delivery_lgt'))
+        db.session.add(delivery_address)
+        db.session.commit()
+        task.delivery_location_id = delivery_address.id
+    if new_pickup_location:
+        pickup_address = Address(address=new_pickup_location, latitude=data.get('pickup_lat'), longitude=data.get('pickup_lgt'))
+        db.session.add(pickup_address)
+        db.session.commit()
+        task.pickup_location_id = pickup_address.id
     if new_budget: task.budget = new_budget
 
     db.session.commit()

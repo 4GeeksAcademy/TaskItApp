@@ -5,34 +5,9 @@ const AddressInput = (props) => {
     const { store, actions } = useContext(Context);
     const [suggestions, setSuggestions] = useState([]);
 
-    function replaceSpacesWithPlus(text) {
-        return text.replace(/\s+/g, '+');
-    }
-
     useEffect(() => {
         actions.getAddresses();
     }, []);
-
-    const getCoordinates = async (address) => {
-        const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${replaceSpacesWithPlus(address)}&key=AIzaSyAbDzpCV-I2_PaflkmFtXby6R0WelVOapw`;
-
-        try {
-            const response = await fetch(url);
-            const data = await response.json();
-
-            if (data.status === 'OK') {
-                const latitude = data.results[0].geometry.location.lat;
-                const longitude = data.results[0].geometry.location.lng;
-                return { latitude, longitude };
-            } else {
-                console.error('Geocoding failed:', data.status);
-                return null;
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            return null;
-        }
-    };
 
     const getSuggestions = async (address) => {
         if (address.length > 7) {
@@ -64,8 +39,7 @@ const AddressInput = (props) => {
 
     const saveAddress = async (event) => {
         event.preventDefault();
-        const coordinates = await getCoordinates(props.value);
-        console.log(coordinates)
+        const coordinates = await actions.getCoordinates(props.value);
         if (coordinates) {
             const { latitude, longitude } = coordinates;
             actions.addAddress(props.value, latitude, longitude, store.user[0].id);

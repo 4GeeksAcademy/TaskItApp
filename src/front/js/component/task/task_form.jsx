@@ -27,10 +27,62 @@ const TaskForm = (props) => {
         }
     }, [])
 
-    const handleSubmit = () => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        if(props.currentTask) actions.editTask(props.currentTask.id, title, description, pickupAddress, deliveryAddress, dueDate, category, null, budget);
-        else actions.addTask(title, description, pickupAddress, deliveryAddress, dueDate, category, budget);
+        
+        if (props.currentTask) {
+            let pickupCoordinates = {};
+            let deliveryCoordinates = {};
+    
+            if (pickupAddress !== props.pickupAddress) {
+                pickupCoordinates = await actions.getCoordinates(pickupAddress);
+            }
+    
+            if (deliveryAddress !== props.deliveryAddress) {
+                deliveryCoordinates = await actions.getCoordinates(deliveryAddress);
+            }
+    
+            const { lat: pickupLat, lgt: pickupLgt } = pickupCoordinates || {};
+            const { lat: deliveryLat, lgt: deliveryLgt } = deliveryCoordinates || {};
+    
+            actions.editTask(
+                props.currentTask.id, 
+                title, 
+                description, 
+                pickupAddress, 
+                deliveryAddress, 
+                dueDate, 
+                category, 
+                null, 
+                budget, 
+                deliveryLat, 
+                deliveryLgt, 
+                pickupLat, 
+                pickupLgt
+            );
+        } else {
+            const pickupCoordinates = await actions.getCoordinates(pickupAddress);
+            const deliveryCoordinates = await actions.getCoordinates(deliveryAddress);
+    
+            if (pickupCoordinates && deliveryCoordinates) {
+                const { lat: pickupLat, lgt: pickupLgt } = pickupCoordinates;
+                const { lat: deliveryLat, lgt: deliveryLgt } = deliveryCoordinates;
+    
+                actions.addTask(
+                    title, 
+                    description, 
+                    pickupAddress, 
+                    deliveryAddress, 
+                    dueDate, 
+                    category, 
+                    budget, 
+                    deliveryLat, 
+                    deliveryLgt, 
+                    pickupLat, 
+                    pickupLgt
+                );
+            }
+        }
     };
 
     const handlePickupAddressChange = (newAddress) => {
@@ -85,8 +137,8 @@ const TaskForm = (props) => {
                             <label htmlFor='budget'>Budget</label>
                             <div className='input-group'>
                                 <input type="text" className="form-control" id='budget' aria-label="budget" aria-describedby="basic-addon1" value={budget} onChange={(e) => setBudget(e.target.value)} />
-                                <div class="input-group-append">
-                                    <span class="input-group-text" id="basic-addon2">€</span>
+                                <div className="input-group-append">
+                                    <span className="input-group-text" id="basic-addon2">€</span>
                                 </div>
                             </div>
                         </div>
@@ -95,7 +147,7 @@ const TaskForm = (props) => {
             </Modal.Body>
             <Modal.Footer>
                 <button type="button" className="btn btn-secondary" onClick={props.handleClose}>Close</button>
-                <button type="submit" form="task-form" className="btn btn-primary" onClick={handleSubmit}>Post</button>
+                <button type="submit" form="task-form" className="btn btn-primary" onClick={(event) => handleSubmit(event)}>Post</button>
             </Modal.Footer>
         </Modal>
     );
