@@ -97,8 +97,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 					"budget": budget
 				}
 
-				console.log(newTask)
-
 				const config = { 
 					method: "POST",
 					body: JSON.stringify(newTask),

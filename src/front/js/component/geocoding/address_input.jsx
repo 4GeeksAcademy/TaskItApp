@@ -40,7 +40,6 @@ const AddressInput = (props) => {
     const saveAddress = async (event) => {
         event.preventDefault();
         const coordinates = await actions.getCoordinates(props.value);
-        console.log(coordinates)
         if (coordinates) {
             const { latitude, longitude } = coordinates;
             actions.addAddress(props.value, latitude, longitude, store.user[0].id);

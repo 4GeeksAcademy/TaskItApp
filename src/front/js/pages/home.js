@@ -11,7 +11,6 @@ export const Home = () => {
 	return (
 		<div className="text-center mt-5">
 			<UserSelect></UserSelect>
-			<button className="btn btn-primary" onClick={() => actions.setAuth(!store.auth)}>Auth</button>
 			<Link className="px-5" to="/users">users</Link>
 			<Link className="px-5" to="/tasks">tasks</Link>
 			<Link className="px-5" to="/categories">categories</Link>
