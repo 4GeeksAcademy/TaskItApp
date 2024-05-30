@@ -36,6 +36,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				const user = getStore().users.filter((userInfo) => userInfo.username == username);
 				setStore({ user: user, auth: true })
 			},
+			resetMessages: () => { setStore({ message: "", error: "" }) },
 
 			getCoordinates: async (address) => {
 				const formattedAddress = address.replace(/\s+/g, '+');
