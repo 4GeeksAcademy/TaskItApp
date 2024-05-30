@@ -16,6 +16,7 @@ const TaskForm = (props) => {
     const [budget, setBudget] = useState(0);
 
     useEffect(() => {
+        actions.resetMessages();
         if (Object.keys(store.categories).length == 0) actions.getCategories();
         if(props.currentTask) {
             setTitle(props.currentTask.title);
@@ -24,8 +25,23 @@ const TaskForm = (props) => {
             setDeliveryAddress(props.currentTask.delivery_location);
             setDueDate(props.currentTask.due_date.split("T")[0]);
             setCategory(props.currentTask.category);
-        }
+            setBudget(props.currentTask.budget);
+        } else resetStates();
     }, [])
+
+    useEffect(() => {
+        if(store.message == "Task posted successfully.") props.handleClose();
+    }, [store.message])
+
+    const resetStates = () => {
+        setTitle("");
+        setDescription("");
+        setPickupAddress("");
+        setDeliveryAddress("");
+        setDueDate("");
+        setCategory("");
+        setBudget(0);
+    }
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -61,8 +77,11 @@ const TaskForm = (props) => {
                 pickupLgt
             );
         } else {
-            const pickupCoordinates = await actions.getCoordinates(pickupAddress);
-            const deliveryCoordinates = await actions.getCoordinates(deliveryAddress);
+            let pickupCoordinates = null;
+            let deliveryCoordinates = null;
+
+            if(pickupAddress) pickupCoordinates = await actions.getCoordinates(pickupAddress);
+            if(deliveryAddress) deliveryCoordinates = await actions.getCoordinates(deliveryAddress);
     
             if (pickupCoordinates && deliveryCoordinates) {
                 const { lat: pickupLat, lgt: pickupLgt } = pickupCoordinates;
@@ -81,7 +100,7 @@ const TaskForm = (props) => {
                     pickupLat, 
                     pickupLgt
                 );
-            }
+            } else actions.setError("Missing fields.");
         }
     };
 
