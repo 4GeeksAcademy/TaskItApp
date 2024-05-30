@@ -209,14 +209,14 @@ const getState = ({ getStore, getActions, setStore }) => {
                 );
             },
 
-            addAddress: (address, lat, lgt, userID) => {
+            addAddress: (address, latitude, longitude, userID) => {
                 const newAddress = {
                     address,
-                    lat,
-                    lgt,
+                    latitude,
+                    longitude,
 					user_id: userID,
                 };
-
+				
                 const config = {
                     method: "POST",
                     body: JSON.stringify(newAddress),
