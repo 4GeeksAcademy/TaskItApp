@@ -10,6 +10,7 @@ import { TaskFeed } from "./pages/task_feed";
 import { Users } from "./pages/users";
 import { Requesters } from "./pages/requesters";
 import { Seekers } from "./pages/seekers";
+import { Task } from "./pages/task.js";
 import Addresses from "./pages/addresses";
 import injectContext from "./store/appContext";
 import CategoryList from "./pages/categories";
@@ -34,6 +35,7 @@ const Layout = () => {
                         <Route element={<Home />} path="/" />
                         <Route element={<Demo />} path="/demo" />
                         <Route element={<TaskFeed />} path="/tasks" />
+                        <Route element={<Task />} path="/tasks/:theid" />
                         <Route element={<Users />} path="/users" />
                         <Route element={<Requesters />} path="/requesters" />
                         <Route element={<Seekers />} path="/seekers" />
