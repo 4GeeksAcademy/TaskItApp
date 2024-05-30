@@ -8,6 +8,7 @@ const Rating = () => {
     const [newSeekerId, setNewSeekerId] = useState("");
     const [newRequesterId, setNewRequesterId] = useState("");
     const [newTaskId, setNewTaskId] = useState("");
+    const [newReview, setNewReview] = useState("");
     const [ratingKey, setRatingKey] = useState(0);
     const { store, actions } = useContext(Context);
 
@@ -54,11 +55,12 @@ const Rating = () => {
             }
         }
 
-        actions.addRating(stars, seeker_id, requester_id, task_id);
+        actions.addRating(stars, seeker_id, requester_id, task_id, newReview);
         setNewRatingStars(0);
         setNewSeekerId("");
         setNewRequesterId("");
         setNewTaskId("");
+        setNewReview("");
         setRatingKey(prevKey => prevKey + 1);
     };
 
@@ -117,6 +119,8 @@ const Rating = () => {
                         ))}
                     </select>
                 </div>
+                <label htmlFor='review'>Review</label>
+                <input type="text" className="form-control" placeholder="review" id='review' value={newReview} onChange={(e) => setNewReview(e.target.value)} />
                 <button type="button" className="btn btn-primary mb-2" onClick={handleAddRating}>
                     Add Rating
                 </button>
@@ -129,7 +133,8 @@ const Rating = () => {
                             <span className="ml-3">
                                 {rating.seeker_id ? `Seeker ID: ${rating.seeker_id} - Seeker Username: ${rating.seeker_username || 'N/A'}` : ''}
                                 {rating.requester_id ? `Requester ID: ${rating.requester_id} - Requester Username: ${rating.requester_username || 'N/A'}` : ''}
-                                - Task ID: {rating.task_id} - Task Description: {rating.task_description || 'N/A'}
+                                - Task ID: {rating.task_id} - Task: {rating.task_title || 'N/A'}
+                                - Review {rating.review}
                             </span>
                         </div>
                         <div>

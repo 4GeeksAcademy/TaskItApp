@@ -172,11 +172,12 @@ class Rating(db.Model):
     seeker_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     requester_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     task_id = db.Column(db.Integer, db.ForeignKey('task.id'), nullable=False)
+    review = db.Column(db.String(500), unique=False, nullable=True)
     
     # Relationships
     seeker = db.relationship('User', foreign_keys=[seeker_id], backref=db.backref('seeker_ratings', lazy=True))
     requester = db.relationship('User', foreign_keys=[requester_id], backref=db.backref('requester_ratings', lazy=True))
-    task = db.relationship('Task', foreign_keys=[task_id], backref=db.backref('task_ratings', lazy=True))
+    task = db.relationship('Task', foreign_keys=[task_id])
 
     def __repr__(self):
         return f'<Rating id={self.id}, stars={self.stars}>'
@@ -190,7 +191,8 @@ class Rating(db.Model):
             "task_id": self.task_id,
             "seeker_username": self.seeker.username if self.seeker else None,  
             "requester_username": self.requester.username if self.requester else None,
-            "task_description": self.task.description if self.task else None   
+            "task_title": self.task.title if self.task else None,
+            "review": self.review,
         }
 
 class Postulant(db.Model):

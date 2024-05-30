@@ -569,10 +569,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 		},
 		
 
-			addRating: (stars, seeker_id, requester_id, task_id) => {
+			addRating: (stars, seeker_id, requester_id, task_id, review) => {
 				const config = { 
 					method: "POST",
-					body: JSON.stringify({ stars, seeker_id, requester_id, task_id }),
+					body: JSON.stringify({ stars, seeker_id, requester_id, task_id, review }),
 					headers: {
 						'Accept': 'application/json',
 						'Content-Type': 'application/json'
@@ -585,10 +585,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 				);
 			},
 
-			editRating: (id, stars) => {
+			editRating: (id, stars, review) => {
 				const config = { 
 					method: "PUT",
-					body: JSON.stringify({ stars }),
+					body: JSON.stringify({ stars, review }),
 					headers: {
 						'Accept': 'application/json',
 						'Content-Type': 'application/json'
