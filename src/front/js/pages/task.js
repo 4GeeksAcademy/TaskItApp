@@ -17,7 +17,6 @@ export const Task = () => {
 		const loadInfo = async () => {
 			const currentTask = await actions.getTask(params.theid);
 			setTask(currentTask);
-			console.log(typeof(currentTask.delivery_address.latitude))
 
 			const requesterData = await actions.getRequester(currentTask.requester_id);
             setRequester(requesterData);
@@ -25,6 +24,31 @@ export const Task = () => {
 
 		loadInfo();		
 	}, [])
+
+	const dueIn = (isoTime) => {
+		const now = new Date();
+		const time = new Date(isoTime);
+		const diff = time - now; 
+	
+		const seconds = Math.floor(diff / 1000);
+	
+		const intervals = {
+			day: 86400,
+			hour: 3600,
+			minute: 60
+		};
+	
+		for (const [unit, secondsInterval] of Object.entries(intervals)) {
+			const intervalCount = Math.floor(seconds / secondsInterval);
+			if (intervalCount >= 1) {
+				if (unit === 'day') return `in ${intervalCount} day${intervalCount === 1 ? '' : 's'} and ${Math.floor((seconds % secondsInterval) / 3600)} hours`;
+				else if (unit === 'hour') return `in ${intervalCount} hour${intervalCount === 1 ? '' : 's'} and ${Math.floor((seconds % secondsInterval) / 60)} minutes`;
+				else return `in ${intervalCount} minute${intervalCount === 1 ? '' : 's'}`;
+			}
+		}
+	
+		return 'Just now';
+	}
 
 	return (
 		<div className="container p-5 mx-auto">
@@ -43,14 +67,18 @@ export const Task = () => {
 					<div className="col-8 d-flex flex-column justify-content-between">
 						<div>
 							<h1>{task.title}</h1>
+							<p className="text-muted">{actions.timeAgo(task.creation_date)}</p>
 							<p>{task.description}</p>
 						</div>
-						<div className="d-flex justify-content-between align-items-end">
+						<div>
 							<div className="d-flex flex-column">
-								<span><Icon className="fs-2" icon="mingcute:location-2-line" /><b>Pick Up: </b>{task.pickup_address?.address}</span>
-								<span><Icon className="fs-2" icon="mingcute:location-2-fill" /><b>Drop Off: </b>{task.delivery_address?.address}</span>
+								<span><Icon className="fs-3" icon="mingcute:location-2-line" /><b>Pick Up: </b>{task.pickup_address?.address}</span>
+								<span><Icon className="fs-3" icon="mingcute:location-2-fill" /><b>Drop Off: </b>{task.delivery_address?.address}</span>
 							</div>
-							<span><Icon className="fs-2 me-2" icon="fa6-solid:money-bill-1-wave" /><b>Budget: </b>{task.budget}</span>
+							<div className="d-flex justify-content-between align-items-end">
+								<span><Icon className="fs-4 me-2" icon="fa6-solid:money-bill-1-wave" /><b>Budget: </b>{task.budget}</span>
+								<span><Icon className="fs-3 me-2" icon="solar:calendar-linear" /><b>Due: </b>{dueIn(task.due_date)}</span>
+							</div>
 						</div>
 					</div>
 				</div>
