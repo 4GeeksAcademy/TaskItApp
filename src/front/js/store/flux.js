@@ -37,6 +37,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				setStore({ user: user, auth: true })
 			},
 			resetMessages: () => { setStore({ message: "", error: "" }) },
+			setError: (error) => { setStore({ message: "", error: error }) },
 
 			getCoordinates: async (address) => {
 				const formattedAddress = address.replace(/\s+/g, '+');
