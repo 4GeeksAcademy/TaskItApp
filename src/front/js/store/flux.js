@@ -36,6 +36,33 @@ const getState = ({ getStore, getActions, setStore }) => {
 				const user = getStore().users.filter((userInfo) => userInfo.username == username);
 				setStore({ user: user, auth: true })
 			},
+			resetMessages: () => { setStore({ message: "", error: "" }) },
+			setError: (error) => { setStore({ message: "", error: error }) },
+			timeAgo: (isoTime) => {
+				const now = new Date();
+				const time = new Date(isoTime);
+				const diff = now - time;
+		
+				const seconds = Math.floor(diff / 1000);
+			
+				const intervals = {
+					year: 31536000,
+					month: 2592000,
+					week: 604800,
+					day: 86400,
+					hour: 3600,
+					minute: 60
+				};
+			
+				for (const [unit, secondsInterval] of Object.entries(intervals)) {
+					const intervalCount = Math.floor(seconds / secondsInterval);
+					if (intervalCount >= 1) {
+						return `${intervalCount} ${unit}${intervalCount === 1 ? '' : 's'} ago`;
+					}
+				}
+			
+				return 'Just now';
+			},
 
 			getCoordinates: async (address) => {
 				const formattedAddress = address.replace(/\s+/g, '+');
@@ -66,6 +93,20 @@ const getState = ({ getStore, getActions, setStore }) => {
 					{}, 									// la configuración del request, en este caso vacía porque es un GET
 					(data) => setStore({ tasks: data })		// función a realizar despues de que una respuesta sea buena
 				)
+			},
+
+			getTask: (id) => {
+				return new Promise((resolve, reject) => {
+					fetchHelper(
+						process.env.BACKEND_URL + `/api/tasks/${id}`, 
+						{}, 
+						(data) => resolve(data),
+						(error) => {
+							console.error(error);
+							reject(error);
+						}
+					);
+				});
 			},
 
 			deleteTask: (id) => {

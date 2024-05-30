@@ -89,7 +89,7 @@ class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(80), unique=False, nullable=False)
     description = db.Column(db.String(500), unique=False, nullable=False)
-    creation_date = db.Column(db.DateTime, default=func.now(), nullable=False)
+    creation_date = db.Column(db.DateTime(timezone=True), default=func.now(), nullable=False)
     due_date = db.Column(db.DateTime, nullable=False)
     status = db.Column(db.Enum(StatusEnum), nullable=False, default=StatusEnum.PENDING)
     budget = db.Column(db.String(10), unique=False, nullable=False)
@@ -108,6 +108,7 @@ class Task(db.Model):
         return f'<Task {self.title}>'
 
     def serialize(self):
+        applicants_data = [applicant.serialize() for applicant in self.applicants]
         return {
             "id": self.id,
             "title": self.title,
@@ -121,9 +122,11 @@ class Task(db.Model):
             "pickup_address": self.pickup_address.serialize(),
             "seeker_id": self.seeker_id if self.seeker else None,
             "requester_id": self.requester_id,
+            "requester_user": self.requester.user.serialize(),
             "category_id": self.category_id,
             "category_name": self.category.name,
-            "budget": self.budget
+            "budget": self.budget,
+            "applicants": applicants_data
         }
 
     
@@ -192,12 +195,12 @@ class Rating(db.Model):
 
 class Postulant(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    application_date = db.Column(db.DateTime, default=func.now(), nullable=False)
+    application_date = db.Column(db.DateTime(timezone=True), default=func.now(), nullable=False)
     status = db.Column(db.String(120), nullable=False)
     price = db.Column(db.String(120), nullable=False)
     task_id = db.Column(db.Integer, db.ForeignKey('task.id'), nullable=False)
     seeker_id = db.Column(db.Integer, db.ForeignKey('task_seeker.id'), nullable=False)
-    task = db.relationship('Task')
+    task = db.relationship('Task', backref=db.backref('applicants', lazy=True))
     seeker = db.relationship('TaskSeeker')
 
 
