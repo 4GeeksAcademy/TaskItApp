@@ -45,7 +45,7 @@ export const Navbar = () => {
 				</div>
 				: <div className="ml-auto">
 					<ul className="nav d-flex align-items-center">
-						{ store.user[0].role == "both" || store.user[0].role == "requester" &&
+						{ (store.user[0].role == "both" || store.user[0].role == "requester") &&
 							<li className="nav-item">
 								<button className="btn btn-dark smooth" onClick={handleShow}>Post Task</button>	
 							</li>
