@@ -68,6 +68,20 @@ const getState = ({ getStore, getActions, setStore }) => {
 				)
 			},
 
+			getTask: (id) => {
+				return new Promise((resolve, reject) => {
+					fetchHelper(
+						process.env.BACKEND_URL + `/api/tasks/${id}`, 
+						{}, 
+						(data) => resolve(data),
+						(error) => {
+							console.error(error);
+							reject(error);
+						}
+					);
+				});
+			},
+
 			deleteTask: (id) => {
 				const config = { 
 					method: "DELETE",
