@@ -38,6 +38,31 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 			resetMessages: () => { setStore({ message: "", error: "" }) },
 			setError: (error) => { setStore({ message: "", error: error }) },
+			timeAgo: (isoTime) => {
+				const now = new Date();
+				const time = new Date(isoTime);
+				const diff = now - time;
+		
+				const seconds = Math.floor(diff / 1000);
+			
+				const intervals = {
+					year: 31536000,
+					month: 2592000,
+					week: 604800,
+					day: 86400,
+					hour: 3600,
+					minute: 60
+				};
+			
+				for (const [unit, secondsInterval] of Object.entries(intervals)) {
+					const intervalCount = Math.floor(seconds / secondsInterval);
+					if (intervalCount >= 1) {
+						return `${intervalCount} ${unit}${intervalCount === 1 ? '' : 's'} ago`;
+					}
+				}
+			
+				return 'Just now';
+			},
 
 			getCoordinates: async (address) => {
 				const formattedAddress = address.replace(/\s+/g, '+');
