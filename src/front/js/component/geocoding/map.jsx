@@ -24,7 +24,7 @@ const MapComponent = (props) => {
             setCenter({ lat: centerLat, lng: centerLng });
 
             const GLOBE_WIDTH = 256; 
-            const WORLD_DIM = { height: 400, width: containerWidth };
+            const WORLD_DIM = { height: props.height, width: containerWidth };
 
             const latFraction = (maxLat - minLat) / 360;
             const lngDiff = maxLng - minLng;
@@ -34,6 +34,7 @@ const MapComponent = (props) => {
             const lngZoom = Math.log(WORLD_DIM.width / GLOBE_WIDTH / lngFraction) / Math.LN2;
 
             const newZoom = Math.min(latZoom, lngZoom) * 0.95;
+
             if (isMounted) {
                 setZoom(Math.floor(newZoom));
             }
@@ -50,10 +51,10 @@ const MapComponent = (props) => {
     }, [props.markers]);
     
     return(
-        <div ref={mapContainerRef} style={{ width: '100%', height: props.height }}>
+        <div ref={mapContainerRef} style={{ width: '100%', height: props.height + "px" }}>
             <APIProvider apiKey={'AIzaSyAbDzpCV-I2_PaflkmFtXby6R0WelVOapw'} libraries={['marker']}>
                 <Map
-                    style={{width: '100%', height: '400px'}}
+                    style={{width: '100%', height: props.height + "px" }}
                     defaultCenter={center}
                     defaultZoom={zoom}
                     gestureHandling={'greedy'}
