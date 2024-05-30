@@ -50,7 +50,7 @@ const MapComponent = (props) => {
     }, [props.markers]);
     
     return(
-        <div ref={mapContainerRef} style={{ width: '100%', height: '400px' }}>
+        <div ref={mapContainerRef} style={{ width: '100%', height: props.height }}>
             <APIProvider apiKey={'AIzaSyAbDzpCV-I2_PaflkmFtXby6R0WelVOapw'} libraries={['marker']}>
                 <Map
                     style={{width: '100%', height: '400px'}}
