@@ -1,15 +1,17 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Context } from "../store/appContext";
 import { Link } from "react-router-dom";
 import "../../styles/navbar.css";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import TaskForm from './task/task_form.jsx';
 
 export const Navbar = () => {
-    const { store, actions } = useContext(Context);
+	const { store } = useContext(Context);
 
-    const handleLogout = () => {
-        actions.logout();
-    };
+	const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
 
 	return (
 		<nav className="navbar navbar-light bg-white py-5 px-3">
@@ -30,12 +32,12 @@ export const Navbar = () => {
 							</Link>
 						</li>
 						<li className="nav-item">
-							<Link className="nav-link text-dark smooth" to="/sign-in">
+							<Link className="nav-link text-dark smooth" to="/login-user">
 								Sign In
 							</Link>
 						</li>
 						<li className="nav-item">
-							<Link to="/sign-up">
+							<Link to="/signup-user">
 								<button className="btn btn-dark smooth">Get Started</button>
 							</Link>
 						</li>
@@ -43,7 +45,7 @@ export const Navbar = () => {
 				</div>
 				: <div className="ml-auto">
 					<ul className="nav d-flex align-items-center">
-						{ store.user[0].role == "both" || store.user[0].role == "requester" &&
+						{ (store.user.role == "both" || store.user.role == "requester") &&
 							<li className="nav-item">
 								<button className="btn btn-dark smooth" onClick={handleShow}>Post Task</button>	
 							</li>
