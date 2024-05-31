@@ -138,7 +138,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					"pickup_lgt": pickupLgt,
 					"due_date": dueDate,
 					"category_id": category,
-					"requester_id": getStore().user[0].id,
+					"requester_id": getStore().user.id,
 					"budget": budget
 				}
 
@@ -707,7 +707,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					body: JSON.stringify(newUser),
 					headers: { 'Content-Type': 'application/json' }
 				};
-
+			
 				return fetch(process.env.BACKEND_URL + "/api/signup", config)
 					.then((response) => {
 						if (!response.ok) {
@@ -719,7 +719,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					})
 					.catch((error) => console.log(error));
 			},
-
+			
 			login: (username, password) => {
 				const credentials = { username, password };
 				const config = { 
@@ -740,18 +740,19 @@ const getState = ({ getStore, getActions, setStore }) => {
 						}
 					})
 					.then((data) => {
+						// Almacenar el token en localStorage
 						localStorage.setItem('access_token', data.access_token);
 						setStore({ access_token: data.access_token, user: data.user, auth: true, login_error: "", signup_error: "" });
+						console.log(data.user)
 					})
 					.catch((error) => console.log(error));
 			},
 			
-
 			logout: () => {
 				localStorage.removeItem('access_token');
 				setStore({ access_token: "", user: null, auth: false });
 			},
-
+			
 			validateToken: () => {
 				const token = localStorage.getItem('access_token');
 				if (!token) {
@@ -787,6 +788,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 						return false;
 					});
 			},
+			
 
 		}
 	};
