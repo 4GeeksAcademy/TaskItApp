@@ -89,7 +89,7 @@ class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(80), unique=False, nullable=False)
     description = db.Column(db.String(500), unique=False, nullable=False)
-    creation_date = db.Column(db.DateTime, default=func.now(), nullable=False)
+    creation_date = db.Column(db.DateTime(timezone=True), default=func.now(), nullable=False)
     due_date = db.Column(db.DateTime, nullable=False)
     status = db.Column(db.Enum(StatusEnum), nullable=False, default=StatusEnum.PENDING)
     budget = db.Column(db.String(10), unique=False, nullable=False)
@@ -108,6 +108,7 @@ class Task(db.Model):
         return f'<Task {self.title}>'
 
     def serialize(self):
+        applicants_data = [applicant.serialize() for applicant in self.applicants]
         return {
             "id": self.id,
             "title": self.title,
@@ -121,9 +122,11 @@ class Task(db.Model):
             "pickup_address": self.pickup_address.serialize(),
             "seeker_id": self.seeker_id if self.seeker else None,
             "requester_id": self.requester_id,
+            "requester_user": self.requester.user.serialize(),
             "category_id": self.category_id,
             "category_name": self.category.name,
-            "budget": self.budget
+            "budget": self.budget,
+            "applicants": applicants_data
         }
 
     
@@ -169,11 +172,12 @@ class Rating(db.Model):
     seeker_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     requester_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     task_id = db.Column(db.Integer, db.ForeignKey('task.id'), nullable=False)
+    review = db.Column(db.String(500), unique=False, nullable=True)
     
     # Relationships
     seeker = db.relationship('User', foreign_keys=[seeker_id], backref=db.backref('seeker_ratings', lazy=True))
     requester = db.relationship('User', foreign_keys=[requester_id], backref=db.backref('requester_ratings', lazy=True))
-    task = db.relationship('Task', foreign_keys=[task_id], backref=db.backref('task_ratings', lazy=True))
+    task = db.relationship('Task', foreign_keys=[task_id])
 
     def __repr__(self):
         return f'<Rating id={self.id}, stars={self.stars}>'
@@ -187,17 +191,18 @@ class Rating(db.Model):
             "task_id": self.task_id,
             "seeker_username": self.seeker.username if self.seeker else None,  
             "requester_username": self.requester.username if self.requester else None,
-            "task_description": self.task.description if self.task else None   
+            "task_title": self.task.title if self.task else None,
+            "review": self.review,
         }
 
 class Postulant(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    application_date = db.Column(db.DateTime, default=func.now(), nullable=False)
+    application_date = db.Column(db.DateTime(timezone=True), default=func.now(), nullable=False)
     status = db.Column(db.String(120), nullable=False)
     price = db.Column(db.String(120), nullable=False)
     task_id = db.Column(db.Integer, db.ForeignKey('task.id'), nullable=False)
     seeker_id = db.Column(db.Integer, db.ForeignKey('task_seeker.id'), nullable=False)
-    task = db.relationship('Task')
+    task = db.relationship('Task', backref=db.backref('applicants', lazy=True))
     seeker = db.relationship('TaskSeeker')
 
 

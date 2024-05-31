@@ -40,6 +40,33 @@ const getState = ({ getStore, getActions, setStore }) => {
 				const user = getStore().users.filter((userInfo) => userInfo.username == username);
 				setStore({ user: user, auth: true })
 			},
+			resetMessages: () => { setStore({ message: "", error: "" }) },
+			setError: (error) => { setStore({ message: "", error: error }) },
+			timeAgo: (isoTime) => {
+				const now = new Date();
+				const time = new Date(isoTime);
+				const diff = now - time;
+		
+				const seconds = Math.floor(diff / 1000);
+			
+				const intervals = {
+					year: 31536000,
+					month: 2592000,
+					week: 604800,
+					day: 86400,
+					hour: 3600,
+					minute: 60
+				};
+			
+				for (const [unit, secondsInterval] of Object.entries(intervals)) {
+					const intervalCount = Math.floor(seconds / secondsInterval);
+					if (intervalCount >= 1) {
+						return `${intervalCount} ${unit}${intervalCount === 1 ? '' : 's'} ago`;
+					}
+				}
+			
+				return 'Just now';
+			},
 
 			getCoordinates: async (address) => {
 				const formattedAddress = address.replace(/\s+/g, '+');
@@ -70,6 +97,20 @@ const getState = ({ getStore, getActions, setStore }) => {
 					{}, 									// la configuración del request, en este caso vacía porque es un GET
 					(data) => setStore({ tasks: data })		// función a realizar despues de que una respuesta sea buena
 				)
+			},
+
+			getTask: (id) => {
+				return new Promise((resolve, reject) => {
+					fetchHelper(
+						process.env.BACKEND_URL + `/api/tasks/${id}`, 
+						{}, 
+						(data) => resolve(data),
+						(error) => {
+							console.error(error);
+							reject(error);
+						}
+					);
+				});
 			},
 
 			deleteTask: (id) => {
@@ -172,14 +213,14 @@ const getState = ({ getStore, getActions, setStore }) => {
                 );
             },
 
-            addAddress: (address, lat, lgt, userID) => {
+            addAddress: (address, latitude, longitude, userID) => {
                 const newAddress = {
                     address,
-                    lat,
-                    lgt,
+                    latitude,
+                    longitude,
 					user_id: userID,
                 };
-
+				
                 const config = {
                     method: "POST",
                     body: JSON.stringify(newAddress),
@@ -532,10 +573,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 		},
 		
 
-			addRating: (stars, seeker_id, requester_id, task_id) => {
+			addRating: (stars, seeker_id, requester_id, task_id, review) => {
 				const config = { 
 					method: "POST",
-					body: JSON.stringify({ stars, seeker_id, requester_id, task_id }),
+					body: JSON.stringify({ stars, seeker_id, requester_id, task_id, review }),
 					headers: {
 						'Accept': 'application/json',
 						'Content-Type': 'application/json'
@@ -548,10 +589,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 				);
 			},
 
-			editRating: (id, stars) => {
+			editRating: (id, stars, review) => {
 				const config = { 
 					method: "PUT",
-					body: JSON.stringify({ stars }),
+					body: JSON.stringify({ stars, review }),
 					headers: {
 						'Accept': 'application/json',
 						'Content-Type': 'application/json'

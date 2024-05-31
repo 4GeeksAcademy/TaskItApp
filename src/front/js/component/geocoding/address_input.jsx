@@ -41,8 +41,8 @@ const AddressInput = (props) => {
         event.preventDefault();
         const coordinates = await actions.getCoordinates(props.value);
         if (coordinates) {
-            const { latitude, longitude } = coordinates;
-            actions.addAddress(props.value, latitude, longitude, store.user[0].id);
+            const { lat, lgt } = coordinates;
+            actions.addAddress(props.value, lat, lgt, store.user[0].id);
         }
     };
     
