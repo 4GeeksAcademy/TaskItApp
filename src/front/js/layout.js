@@ -1,8 +1,7 @@
-import React from "react";
+import React, { useEffect, useContext } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ScrollToTop from "./component/scrollToTop";
 import { BackendURL } from "./component/backendURL";
-
 import { Home } from "./pages/home";
 import { Demo } from "./pages/demo";
 import { User } from "./pages/user";
@@ -13,14 +12,22 @@ import { Seekers } from "./pages/seekers";
 import Addresses from "./pages/addresses";
 import injectContext from "./store/appContext";
 import CategoryList from "./pages/categories";
-import RatingPage from "./component/rating/rating.jsx"; // Actualiza la importación aquí
-
+import RatingPage from "./component/rating/rating.jsx"; 
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
 import Postulants from "./pages/postulants";
+import LoginUser from "./pages/login_user";
+import SignupUser from "./pages/signup_user";
+import UserPanel from "./pages/user_panel";
+import { Context } from "./store/appContext"; // Importa el contexto
 
 const Layout = () => {
     const basename = process.env.BASENAME || "";
+    const { actions } = useContext(Context); // Usa el contexto para acceder a las acciones
+
+    useEffect(() => {
+        actions.validateToken();
+    }, []);
 
     if (!process.env.BACKEND_URL || process.env.BACKEND_URL === "") return <BackendURL />;
 
@@ -39,8 +46,11 @@ const Layout = () => {
                         <Route element={<Seekers />} path="/seekers" />
                         <Route element={<User />} path="/users/:theusername" />
                         <Route element={<Addresses />} path="/addresses" />
-                        <Route element={<RatingPage />} path="/ratings" /> {/* Asegúrate de usar RatingPage */}
+                        <Route element={<RatingPage />} path="/ratings" />
                         <Route element={<Postulants />} path="/postulants" />
+                        <Route element={<LoginUser />} path="/login-user" />
+                        <Route element={<SignupUser />} path="/signup-user" />
+                        <Route element={<UserPanel />} path="/user-panel" />
                         <Route element={<h1>Not found!</h1>} />
                     </Routes>
                     <Footer />
