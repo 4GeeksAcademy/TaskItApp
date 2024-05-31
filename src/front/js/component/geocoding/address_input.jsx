@@ -42,7 +42,7 @@ const AddressInput = (props) => {
         const coordinates = await actions.getCoordinates(props.value);
         if (coordinates) {
             const { lat, lgt } = coordinates;
-            actions.addAddress(props.value, lat, lgt, store.user[0].id);
+            actions.addAddress(props.value, lat, lgt, store.user.id);
         }
     };
     
