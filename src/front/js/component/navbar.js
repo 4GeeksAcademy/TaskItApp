@@ -32,12 +32,12 @@ export const Navbar = () => {
 							</Link>
 						</li>
 						<li className="nav-item">
-							<Link className="nav-link text-dark smooth" to="/sign-in">
+							<Link className="nav-link text-dark smooth" to="/login-user">
 								Sign In
 							</Link>
 						</li>
 						<li className="nav-item">
-							<Link to="/sign-up">
+							<Link to="/signup-user">
 								<button className="btn btn-dark smooth">Get Started</button>
 							</Link>
 						</li>
@@ -45,7 +45,7 @@ export const Navbar = () => {
 				</div>
 				: <div className="ml-auto">
 					<ul className="nav d-flex align-items-center">
-						{ (store.user[0].role == "both" || store.user[0].role == "requester") &&
+						{ (store.user.role == "both" || store.user.role == "requester") &&
 							<li className="nav-item">
 								<button className="btn btn-dark smooth" onClick={handleShow}>Post Task</button>	
 							</li>

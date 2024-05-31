@@ -28,6 +28,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 			editing: false,
 			ratings: [],
 			auth: false,
+			access_token: "",
+			login_error: "",
+			signup_error: "",
+			valid_token: false,
 		},
 		actions: {
 			setEditing: (bool) => { setStore({ editing: bool })},
@@ -134,7 +138,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					"pickup_lgt": pickupLgt,
 					"due_date": dueDate,
 					"category_id": category,
-					"requester_id": getStore().user[0].id,
+					"requester_id": getStore().user.id,
 					"budget": budget
 				}
 
@@ -696,6 +700,95 @@ const getState = ({ getStore, getActions, setStore }) => {
 					() => getActions().getPostulants()
 				);
 			},
+			signup: (email, password, username, fullName, description) => {
+				const newUser = { username, email, password, full_name: fullName, description };
+				const config = { 
+					method: "POST",
+					body: JSON.stringify(newUser),
+					headers: { 'Content-Type': 'application/json' }
+				};
+			
+				return fetch(process.env.BACKEND_URL + "/api/signup", config)
+					.then((response) => {
+						if (!response.ok) {
+							return response.json().then((error) => {
+								setStore({ signup_error: error.error });
+								throw new Error(error.error);
+							});
+						}
+					})
+					.catch((error) => console.log(error));
+			},
+			
+			login: (username, password) => {
+				const credentials = { username, password };
+				const config = { 
+					method: "POST",
+					body: JSON.stringify(credentials),
+					headers: { 'Content-Type': 'application/json' }
+				};
+			
+				return fetch(process.env.BACKEND_URL + "/api/login", config)
+					.then((response) => {
+						if (!response.ok) {
+							return response.json().then((error) => {
+								setStore({ login_error: error.error });
+								throw new Error(error.error);
+							});
+						} else {
+							return response.json();
+						}
+					})
+					.then((data) => {
+						// Almacenar el token en localStorage
+						localStorage.setItem('access_token', data.access_token);
+						setStore({ access_token: data.access_token, user: data.user, auth: true, login_error: "", signup_error: "" });
+						console.log(data.user)
+					})
+					.catch((error) => console.log(error));
+			},
+			
+			logout: () => {
+				localStorage.removeItem('access_token');
+				setStore({ access_token: "", user: null, auth: false });
+			},
+			
+			validateToken: () => {
+				const token = localStorage.getItem('access_token');
+				if (!token) {
+					setStore({ valid_token: false, auth: false });
+					return Promise.resolve(false);
+				}
+			
+				const config = {
+					method: 'GET',
+					headers: { 'Authorization': `Bearer ${token}` }
+				};
+			
+				return fetch(process.env.BACKEND_URL + "/api/validate-token", config)
+					.then((response) => {
+						if (!response.ok) {
+							setStore({ valid_token: false });
+							return false;
+						} else {
+							return response.json();
+						}
+					})
+					.then((data) => {
+						if (data.valid) {
+							setStore({ valid_token: true, user: data.user, auth: true });
+						} else {
+							setStore({ valid_token: false, auth: false });
+						}
+						return data.valid;
+					})
+					.catch((error) => {
+						console.error(error);
+						setStore({ valid_token: false, auth: false });
+						return false;
+					});
+			},
+			
 
 		}
 	};
