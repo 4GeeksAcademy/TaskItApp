@@ -48,7 +48,7 @@ class Requester(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "username": self.user.username,
+            "user": self.user.serialize(),
             "user_id": self.user_id,
             "overall_rating": self.overall_rating,
             "total_reviews": self.total_reviews,
@@ -72,7 +72,7 @@ class TaskSeeker(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "username": self.user.username,
+            "user": self.user.serialize(),
             "user_id": self.user_id,
             "overall_rating": self.overall_rating,
             "total_reviews": self.total_reviews,
@@ -84,6 +84,7 @@ class StatusEnum(Enum):
     PENDING = "pending"
     IN_PROGRESS = "in_progress"
     COMPLETED = "completed"
+    CANCELLED = "cancelled"
 
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -159,11 +160,12 @@ class Category(db.Model):
         return f'<User %r {self.name}>'
 
     def serialize(self):
+        pending_tasks = [task.serialize() for task in self.tasks if task.status == StatusEnum.PENDING]
         return {
             "id": self.id,
             "name": self.name,
+            "tasks": pending_tasks,
         }
-    
 
 class Rating(db.Model):
     __tablename__ = 'ratings'

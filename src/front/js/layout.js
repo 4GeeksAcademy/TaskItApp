@@ -20,8 +20,8 @@ import Postulants from "./pages/postulants";
 import LoginUser from "./pages/login_user";
 import SignupUser from "./pages/signup_user";
 import UserPanel from "./pages/user_panel";
-import { Context } from "./store/appContext"; // Importa el contexto
-import { MarginTop } from "./component/margin-top.js";
+import { Context } from "./store/appContext"; 
+import { Category } from "./pages/category.js";
 import { SidebarComponent } from "./component/sidebar.js";
 
 const Layout = () => {
@@ -42,9 +42,9 @@ const Layout = () => {
                         { store.auth && <SidebarComponent></SidebarComponent> }
                         <div className="w-100">
                             <Navbar />
-                            <MarginTop></MarginTop>
                             <Routes>
                                 <Route element={<CategoryList />} path="/categories" />
+                                <Route element={<Category />} path="/categories/:thecategory" />
                                 <Route element={<Home />} path="/" />
                                 <Route element={<Demo />} path="/demo" />
                                 <Route element={<TaskFeed />} path="/tasks" />

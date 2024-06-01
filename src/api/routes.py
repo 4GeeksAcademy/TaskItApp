@@ -227,7 +227,6 @@ def update_address(id):
     db.session.commit()
     return jsonify({"message": "Address successfully updated"}), 200
 
-# CATEGORIES
 @api.route('/categories', methods=['POST'])
 def create_category():
     data = request.get_json()
@@ -245,6 +244,13 @@ def create_category():
 @api.route('/categories/<int:id>', methods=['GET'])
 def get_category(id):
     category = Category.query.get(id)
+    if not category:
+        return jsonify({'error': 'Category not found'}), 404
+    return jsonify({'category': category.serialize()}), 200
+
+@api.route('/categories/<string:name>', methods=['GET'])
+def get_category_by_name(name):
+    category = Category.query.filter_by(name=name).first()
     if not category:
         return jsonify({'error': 'Category not found'}), 404
     return jsonify({'category': category.serialize()}), 200

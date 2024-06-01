@@ -27,15 +27,20 @@ export const SidebarComponent = () => {
                     <MenuItem icon={<Icon className='fs-2' icon="ant-design:home-filled" /> }> 
                         {!collapsed && <span className='ms-2'>Home</span>}
                     </MenuItem>
+                    { (store.user.role == "both" || store.user.role == "task_seeker") && 
+                        <MenuItem icon={<Icon className='fs-2' icon="mingcute:task-2-fill" /> } component={<Link to="/tasks" />} > 
+                            {!collapsed && <span className='ms-2'>All Tasks</span>}
+                        </MenuItem>
+                    }
                     { (store.user.role == "both" || store.user.role == "requester") && 
                         <SubMenu defaultOpen label="Categories" icon={<Icon className='fs-2' icon="bxs:category" />}>
                             { store.categories.map((category) => {
-                                return <MenuItem key={category.id}> {category.name}</MenuItem>
+                                return <MenuItem key={category.id} component={<Link to={`/categories/${category.name.replace(/\s+/g,"-")}`}></Link>}> {category.name}</MenuItem>
                             })}
                         </SubMenu>
                     }
                     { (store.user.role == "both" || store.user.role == "requester") && 
-                        <MenuItem icon={<Icon className='fs-2' icon="bi:people-fill" /> }> 
+                        <MenuItem icon={<Icon className='fs-2' icon="bi:people-fill" /> } component={<Link to="/seekers" />} > 
                             {!collapsed && <span className='ms-2'>Seekers</span>}
                         </MenuItem>
                     }

@@ -8,14 +8,16 @@ const SeekerList = () => {
     useEffect(() => actions.getSeekers(), []);
 
     return (
-        <div>
-            {store.seekers.map((user) => {
-                return (
-                    <React.Fragment key={user.id}>
-                        <Seeker userInfo={user}></Seeker>
-                    </React.Fragment>
-                );
-            })}
+        <div className="container-fluid px-5">
+            <div className="row">
+                {store.seekers.map((user) => {
+                    return (
+                        <React.Fragment key={user.id}>
+                            <Seeker seekerInfo={user}></Seeker>
+                        </React.Fragment>
+                    );
+                })}
+            </div>
         </div>
     );
 }
