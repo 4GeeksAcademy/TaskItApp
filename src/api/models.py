@@ -218,5 +218,6 @@ class Postulant(db.Model):
             "status": self.status,
             "task_id": self.task_id,
             "seeker_id": self.seeker_id,
+            "seeker": self.seeker.serialize(),
             "price": self.price,
         }
