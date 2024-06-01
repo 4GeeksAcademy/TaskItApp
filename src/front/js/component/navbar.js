@@ -14,7 +14,7 @@ export const Navbar = () => {
     const handleShow = () => setShow(true);
 
 	return (
-		<nav className="navbar navbar-light bg-white py-5 px-3">
+		<nav className="navbar navbar-light bg-white py-5 px-3 fixed-top">
 			<div className="container-fluid">
 				<div className="d-flex align-items-center">
 
