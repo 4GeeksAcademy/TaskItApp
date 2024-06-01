@@ -14,11 +14,9 @@ export const Navbar = () => {
     const handleShow = () => setShow(true);
 
 	return (
-		<nav className="navbar navbar-light bg-white py-5 px-3 fixed-top">
+		<nav className="navbar navbar-light bg-white py-5 px-3">
 			<div className="container-fluid">
 				<div className="d-flex align-items-center">
-
-					{ store.auth && <Icon className="smooth me-2 fs-2" icon="solar:hamburger-menu-linear" />}
 					<Link to="/">
 						<span className="navbar-brand mb-0 h1">Task It App</span>
 					</Link>

@@ -22,10 +22,11 @@ import SignupUser from "./pages/signup_user";
 import UserPanel from "./pages/user_panel";
 import { Context } from "./store/appContext"; // Importa el contexto
 import { MarginTop } from "./component/margin-top.js";
+import { SidebarComponent } from "./component/sidebar.js";
 
 const Layout = () => {
     const basename = process.env.BASENAME || "";
-    const { actions } = useContext(Context); // Usa el contexto para acceder a las acciones
+    const { store, actions } = useContext(Context); // Usa el contexto para acceder a las acciones
 
     useEffect(() => {
         actions.validateToken();
@@ -37,27 +38,32 @@ const Layout = () => {
         <div>
             <BrowserRouter basename={basename}>
                 <ScrollToTop>
-                    <Navbar />
-                    <MarginTop></MarginTop>
-                    <Routes>
-                        <Route element={<CategoryList />} path="/categories" />
-                        <Route element={<Home />} path="/" />
-                        <Route element={<Demo />} path="/demo" />
-                        <Route element={<TaskFeed />} path="/tasks" />
-                        <Route element={<Task />} path="/tasks/:theid" />
-                        <Route element={<Users />} path="/users" />
-                        <Route element={<Requesters />} path="/requesters" />
-                        <Route element={<Seekers />} path="/seekers" />
-                        <Route element={<User />} path="/users/:theusername" />
-                        <Route element={<Addresses />} path="/addresses" />
-                        <Route element={<RatingPage />} path="/ratings" />
-                        <Route element={<Postulants />} path="/postulants" />
-                        <Route element={<LoginUser />} path="/login-user" />
-                        <Route element={<SignupUser />} path="/signup-user" />
-                        <Route element={<UserPanel />} path="/user-panel" />
-                        <Route element={<h1>Not found!</h1>} />
-                    </Routes>
-                    <Footer />
+                    <div className="d-flex container-fluid m-0 p-0">
+                        { store.auth && <SidebarComponent></SidebarComponent> }
+                        <div className="w-100">
+                            <Navbar />
+                            <MarginTop></MarginTop>
+                            <Routes>
+                                <Route element={<CategoryList />} path="/categories" />
+                                <Route element={<Home />} path="/" />
+                                <Route element={<Demo />} path="/demo" />
+                                <Route element={<TaskFeed />} path="/tasks" />
+                                <Route element={<Task />} path="/tasks/:theid" />
+                                <Route element={<Users />} path="/users" />
+                                <Route element={<Requesters />} path="/requesters" />
+                                <Route element={<Seekers />} path="/seekers" />
+                                <Route element={<User />} path="/users/:theusername" />
+                                <Route element={<Addresses />} path="/addresses" />
+                                <Route element={<RatingPage />} path="/ratings" />
+                                <Route element={<Postulants />} path="/postulants" />
+                                <Route element={<LoginUser />} path="/login-user" />
+                                <Route element={<SignupUser />} path="/signup-user" />
+                                <Route element={<UserPanel />} path="/user-panel" />
+                                <Route element={<h1>Not found!</h1>} />
+                            </Routes>
+                            <Footer />
+                        </div>
+                    </div>
                 </ScrollToTop>
             </BrowserRouter>
         </div>
