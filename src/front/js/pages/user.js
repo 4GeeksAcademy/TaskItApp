@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import PropTypes from "prop-types";
 import { useParams } from "react-router-dom";
 import { Context } from "../store/appContext";
+import StarRating from "../component/rating/StarRating.jsx";
 
 export const User = () => {
 	const { actions } = useContext(Context);
@@ -24,7 +25,7 @@ export const User = () => {
 	}, [])
 
 	return (
-		<div className="container-fluid">
+		<div className="container p-5 pt-0">
 			<div className="row d-flex justify-content-center mx-2">
 				<div className="col-6" >
 					<div className="rounded overflow-hidden p-0 float-start">
@@ -42,7 +43,10 @@ export const User = () => {
 						{ seekerInfo && Object.keys(seekerInfo).length > 0 && 
 							(<div className="d-flex justify-content-between">
 								<p className="text-muted fs-2">Task Seeker</p>
-								<p className="text-muted fs-2">{seekerInfo.overall_rating}★</p>
+								<div className="d-flex align-items-center">
+									<StarRating value={seekerInfo.overall_rating}></StarRating>
+									<span className="text-muted ms-1">({seekerInfo.total_reviews})</span>
+								</div>
 							</div>)
 						}
 						{ requesterInfo && Object.keys(requesterInfo).length > 0 && 
