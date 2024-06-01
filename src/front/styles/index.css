@@ -6,3 +6,7 @@
     overflow: hidden;
     box-shadow: -3px 3px 15px rgb(230, 230, 230);
 }
+
+.mt-6 {
+    margin-top: 10rem;
+}

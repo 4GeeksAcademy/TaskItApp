@@ -21,6 +21,7 @@ import LoginUser from "./pages/login_user";
 import SignupUser from "./pages/signup_user";
 import UserPanel from "./pages/user_panel";
 import { Context } from "./store/appContext"; // Importa el contexto
+import { MarginTop } from "./component/margin-top.js";
 
 const Layout = () => {
     const basename = process.env.BASENAME || "";
@@ -37,6 +38,7 @@ const Layout = () => {
             <BrowserRouter basename={basename}>
                 <ScrollToTop>
                     <Navbar />
+                    <MarginTop></MarginTop>
                     <Routes>
                         <Route element={<CategoryList />} path="/categories" />
                         <Route element={<Home />} path="/" />
