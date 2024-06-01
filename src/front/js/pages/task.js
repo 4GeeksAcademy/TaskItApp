@@ -7,7 +7,7 @@ import Map from "../component/geocoding/map.jsx";
 import { Icon } from "@iconify/react/dist/iconify.js";
 
 export const Task = () => {
-	const { actions } = useContext(Context);
+	const { store, actions } = useContext(Context);
 	const params = useParams();
 	
 	const [task, setTask] = useState({});
@@ -51,8 +51,8 @@ export const Task = () => {
 	}
 
 	return (
-		<div className="container p-5 mx-auto">
-			<div className="p-5">
+		<div className="container p-5 pt-0 mx-auto">
+			<div className="p-5 pt-0">
 				<div className="row d-flex justify-content-center">
 					<div className="col-2">
 						<div className="rounded bg-dark overflow-hidden" style={{ width: "100%", aspectRatio: "1/1" }}></div>
@@ -88,7 +88,7 @@ export const Task = () => {
 						<div className="w-100 card">review2</div>
 						<div className="w-100 card">review3</div>
 						<div className="w-100 d-flex justify-content-between">
-							<button className="btn btn-dark px-4"><Icon icon="iconoir:bookmark" /></button>
+							{ (store.user.role == "both" || store.user.role == "task-seeker") && <button className="btn btn-dark px-4">Apply</button>}
 							<button className="btn btn-dark px-4">Contact Requester</button>
 						</div>
 					</div>
