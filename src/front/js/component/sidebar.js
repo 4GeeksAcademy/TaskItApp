@@ -24,7 +24,7 @@ export const SidebarComponent = () => {
                             <Icon icon="charm:menu-hamburger" />
                         </button>
                     </div>
-                    <MenuItem icon={<Icon className='fs-2' icon="ant-design:home-filled" /> }> 
+                    <MenuItem icon={<Icon className='fs-2' icon="ant-design:home-filled" /> } component={<Link to='/' />} > 
                         {!collapsed && <span className='ms-2'>Home</span>}
                     </MenuItem>
                     { (store.user.role == "both" || store.user.role == "task_seeker") && 
