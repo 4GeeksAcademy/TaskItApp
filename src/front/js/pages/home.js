@@ -3,14 +3,11 @@ import { Context } from "../store/appContext";
 import rigoImageUrl from "../../img/rigo-baby.jpg";
 import "../../styles/home.css";
 import { Link } from "react-router-dom";
-import UserSelect from "../component/user_list_select.jsx";
-
 export const Home = () => {
-	const { store, actions } = useContext(Context);
+	const { store } = useContext(Context);
 
 	return (
 		<div className="text-center mt-5">
-			<UserSelect></UserSelect>
 			<Link className="px-5" to="/users">users</Link>
 			<Link className="px-5" to="/tasks">tasks</Link>
 			<Link className="px-5" to="/categories">categories</Link>
