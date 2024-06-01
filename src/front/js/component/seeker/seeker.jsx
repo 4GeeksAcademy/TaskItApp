@@ -1,32 +1,31 @@
-import React, { useContext, useState } from "react";
-import { Context } from "../../store/appContext.js";
-import SeekerForm from "./seeker_form.jsx";
+import React from "react";
+import StarRating from "../rating/StarRating.jsx";
+import { Link } from "react-router-dom";
 
-const User = ({ userInfo }) => {
-    const { actions } = useContext(Context);
-
-    const [show, setShow] = useState(false);
-
-    const handleClose = () => {
-        setShow(false);
-    }
-    const handleShow = () => {
-        setShow(true);
-    }
-
+const Seeker = ({ seekerInfo }) => {
+    console.log(seekerInfo)
     return (
-        <div className="container">
-            <div className="card mb-2">
-                <h2>{userInfo.username}</h2>
-                <p>{userInfo.overall_rating}</p>
-                <p>{userInfo.total_reviews}</p>
-                <p>{userInfo.total_completed_tasks}</p>
-                {show && <SeekerForm currentSeeker={userInfo} handleClose={handleClose}></SeekerForm>}
-                <button className="btn btn-primary" onClick={handleShow}>Edit</button>
-                <button className="btn btn-danger" onClick={() => actions.deleteSeeker(userInfo.id)}>Delete</button>
+        <div className="col-6 p-2">
+            <div className="card p-4">
+                <div className="d-flex align-items-center mb-2">
+                    <div className="rounded-circle bg-dark me-2" style={{ height: "60px", width: "60px" }}></div>
+                    <div className="d-flex flex-column justify-content-around">
+                        <span className="fs-5"><b>{seekerInfo.user.full_name}</b> <span className="text-muted"> ({seekerInfo.user.username})</span></span>
+                        <div className="d-flex align-items-center">
+							<StarRating value={seekerInfo.overall_rating}></StarRating>
+							<span className="text-muted ms-1">({seekerInfo.total_reviews})</span>
+						</div>
+                    </div>
+                </div>
+                <div>
+                    <button className="btn btn-dark smooth">Contact</button>
+                    <Link className="float-end" to={`/users/${seekerInfo.user.username}`}>
+                        <button className="btn btn-dark smooth">See Details</button>
+                    </Link>
+                </div>
             </div>
         </div>
     );
 }
 
-export default User;
+export default Seeker;
