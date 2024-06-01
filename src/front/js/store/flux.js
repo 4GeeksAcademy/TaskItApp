@@ -270,6 +270,20 @@ const getState = ({ getStore, getActions, setStore }) => {
 				)
 			},
 
+			getCategoryByName: (name) => {
+				return new Promise((resolve, reject) => {
+					fetchHelper(
+						`${process.env.BACKEND_URL}/api/categories/${name}`, 
+						{}, 
+						(data) => resolve(data),
+						(error) => {
+							console.error(error);
+							reject(error);
+						}
+					);
+				});
+			},
+
 			deleteCategory: (id) => {
 				const config = { 
 					method: "DELETE",
