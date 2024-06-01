@@ -3,7 +3,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ScrollToTop from "./component/scrollToTop";
 import { BackendURL } from "./component/backendURL";
 import { Home } from "./pages/home";
-import { Demo } from "./pages/demo";
 import { User } from "./pages/user";
 import { TaskFeed } from "./pages/tasks";
 import { Users } from "./pages/users";
@@ -23,6 +22,7 @@ import UserPanel from "./pages/user_panel";
 import { Context } from "./store/appContext"; 
 import { Category } from "./pages/category.js";
 import { SidebarComponent } from "./component/sidebar.js";
+import { Applicants } from "./pages/applicants.js";
 
 const Layout = () => {
     const basename = process.env.BASENAME || "";
@@ -46,9 +46,9 @@ const Layout = () => {
                                 <Route element={<CategoryList />} path="/categories" />
                                 <Route element={<Category />} path="/categories/:thecategory" />
                                 <Route element={<Home />} path="/" />
-                                <Route element={<Demo />} path="/demo" />
                                 <Route element={<TaskFeed />} path="/tasks" />
                                 <Route element={<Task />} path="/tasks/:theid" />
+                                <Route element={<Applicants />} path="/tasks/:theid/applicants" />
                                 <Route element={<Users />} path="/users" />
                                 <Route element={<Requesters />} path="/requesters" />
                                 <Route element={<Seekers />} path="/seekers" />
