@@ -731,7 +731,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 							});
 						}
 					})
-					.catch((error) => console.log(error));
+					.catch((error) => console.error(error));
 			},
 			
 			login: (username, password) => {
@@ -757,9 +757,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 						// Almacenar el token en localStorage
 						localStorage.setItem('access_token', data.access_token);
 						setStore({ access_token: data.access_token, user: data.user, auth: true, login_error: "", signup_error: "" });
-						console.log(data.user)
 					})
-					.catch((error) => console.log(error));
+					.catch((error) => console.error(error));
 			},
 			
 			logout: () => {

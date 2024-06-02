@@ -13,7 +13,6 @@ export const Applicants = () => {
 		const loadInfo = async () => {
 			const currentTask = await actions.getTask(params.theid);
 			setTask(currentTask);
-            console.log(currentTask)
 		}
 
 		loadInfo();		

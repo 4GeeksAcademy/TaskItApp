@@ -27,7 +27,6 @@ const TaskForm = (props) => {
             setCategory(props.currentTask.category || '');
             setBudget(props.currentTask.budget || 0);
         } else resetStates();
-        console.log(props.currentTask)
     }, [props.show])
 
     useEffect(() => {
