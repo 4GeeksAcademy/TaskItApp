@@ -140,15 +140,21 @@ def edit_task(id):
     if new_title: task.title = new_title
     if new_description: task.description = new_description
     if new_delivery_location:
-        delivery_address = Address(address=new_delivery_location, latitude=data.get('delivery_lat'), longitude=data.get('delivery_lgt'))
-        db.session.add(delivery_address)
-        db.session.commit()
-        task.delivery_location_id = delivery_address.id
+        existing_delivery = Address.query.filter_by(address=new_delivery_location)
+        if existing_delivery: task.delivery_location = existing_delivery
+        else: 
+            delivery_address = Address(address=new_delivery_location, latitude=data.get('delivery_lat'), longitude=data.get('delivery_lgt'))
+            db.session.add(delivery_address)
+            db.session.commit()
+            task.delivery_location_id = delivery_address.id
     if new_pickup_location:
-        pickup_address = Address(address=new_pickup_location, latitude=data.get('pickup_lat'), longitude=data.get('pickup_lgt'))
-        db.session.add(pickup_address)
-        db.session.commit()
-        task.pickup_location_id = pickup_address.id
+        existing_pickup = Address.query.filter_by(address=new_pickup_location)
+        if existing_pickup: task.pickup_location = existing_pickup
+        else:
+            pickup_address = Address(address=new_pickup_location, latitude=data.get('pickup_lat'), longitude=data.get('pickup_lgt'))
+            db.session.add(pickup_address)
+            db.session.commit()
+            task.pickup_location_id = pickup_address.id
     if new_budget: task.budget = new_budget
 
     db.session.commit()
