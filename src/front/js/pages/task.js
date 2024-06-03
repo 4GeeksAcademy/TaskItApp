@@ -92,7 +92,7 @@ export const Task = () => {
 						<div className="w-100 card">review1</div>
 						<div className="w-100 card">review2</div>
 						<div className="w-100 card">review3</div>
-						{store.user.id == task.user_id 
+						{store.user.id != task.requester_user?.id 
 							?<div className="w-100 d-flex justify-content-between">
 								{ (store.user.role == "both" || store.user.role == "task-seeker") && <button className="btn btn-dark px-4">Apply</button>}
 								<button className="btn btn-dark px-4">Contact Requester</button>

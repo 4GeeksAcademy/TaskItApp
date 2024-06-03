@@ -18,7 +18,7 @@ const Seeker = ({ seekerInfo, applicantInfo, applicants }) => {
 
     return (
         <div className={`${applicantInfo ? "col-7" : "col-6"} p-2`}>
-            <div className={`card p-4 ${applicantInfo.status == "accepted" ? "border border-success" : applicantInfo.status == "rejected" ? "border border-danger" : ""}`}>
+            <div className={`card p-4 ${applicantInfo?.status == "accepted" ? "border border-success" : applicantInfo?.status == "rejected" ? "border border-danger" : ""}`}>
                 <div className="d-flex justify-content-between align-items-center mb-2">
                     <div className="d-flex align-items-center">
                         <div className="rounded-circle bg-dark me-2" style={{ height: "60px", width: "60px" }}></div>
