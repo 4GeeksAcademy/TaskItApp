@@ -3,7 +3,7 @@ import TaskList from "../component/task/tasks_list.jsx";
 
 export const TaskFeed = () => {
 	return (
-		<div className="mt-5 p-5">
+		<div>
 			<TaskList></TaskList>
 		</div>
 	);

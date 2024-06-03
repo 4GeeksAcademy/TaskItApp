@@ -159,6 +159,44 @@ const getState = ({ getStore, getActions, setStore }) => {
 				);
 			},
 
+			changeTaskStatus: (id, status) => {
+				const task = { "status": status }
+			
+				const config = { 
+					method: "PUT",
+					body: JSON.stringify(task),
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					}
+				}
+			
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/tasks/${id}`,
+					config,
+					() => getActions().getTasks()
+				);
+			},
+
+			changeTaskSeeker: (id, seekerID) => {
+				const task = { "seeker_id": seekerID }
+			
+				const config = { 
+					method: "PUT",
+					body: JSON.stringify(task),
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					}
+				}
+			
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/tasks/${id}`,
+					config,
+					() => getActions().getTasks()
+				);
+			},
+
 			editTask: (id, title, description, deliveryLocation, pickupLocation, dueDate, category, seekerID, budget, deliveryLat, deliveryLgt, pickupLat, pickupLgt) => {
 				const task = {
 					"title": title,
@@ -690,6 +728,25 @@ const getState = ({ getStore, getActions, setStore }) => {
 				);
 			},
 
+			changePostulantStatus: (id, status) => {
+				const postulant = { "status": status }
+			
+				const config = { 
+					method: "PUT",
+					body: JSON.stringify(postulant),
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					}
+				}
+			
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/postulants/${id}`,
+					config,
+					() => getActions().getPostulants()
+				);
+			},
+
 			editPostulant: (id, taskId, seekerId, applicationDate, status, price) => {
 				const postulant = {
 					"task_id": taskId,
@@ -731,7 +788,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 							});
 						}
 					})
-					.catch((error) => console.log(error));
+					.catch((error) => console.error(error));
 			},
 			
 			login: (username, password) => {
@@ -757,9 +814,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 						// Almacenar el token en localStorage
 						localStorage.setItem('access_token', data.access_token);
 						setStore({ access_token: data.access_token, user: data.user, auth: true, login_error: "", signup_error: "" });
-						console.log(data.user)
 					})
-					.catch((error) => console.log(error));
+					.catch((error) => console.error(error));
 			},
 			
 			logout: () => {

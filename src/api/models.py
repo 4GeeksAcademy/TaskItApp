@@ -122,6 +122,7 @@ class Task(db.Model):
             "pickup_location_id": self.pickup_location_id,
             "pickup_address": self.pickup_address.serialize(),
             "seeker_id": self.seeker_id if self.seeker else None,
+            "seeker": self.seeker.serialize() if self.seeker else None,
             "requester_id": self.requester_id,
             "requester_user": self.requester.user.serialize(),
             "category_id": self.category_id,
@@ -218,5 +219,6 @@ class Postulant(db.Model):
             "status": self.status,
             "task_id": self.task_id,
             "seeker_id": self.seeker_id,
+            "seeker": self.seeker.serialize(),
             "price": self.price,
         }

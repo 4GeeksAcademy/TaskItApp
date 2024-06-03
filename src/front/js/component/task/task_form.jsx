@@ -19,18 +19,21 @@ const TaskForm = (props) => {
         actions.resetMessages();
         if (Object.keys(store.categories).length == 0) actions.getCategories();
         if(props.currentTask) {
-            setTitle(props.currentTask.title);
-            setDescription(props.currentTask.description);
-            setPickupAddress(props.currentTask.pickup_location);
-            setDeliveryAddress(props.currentTask.delivery_location);
-            setDueDate(props.currentTask.due_date.split("T")[0]);
-            setCategory(props.currentTask.category);
-            setBudget(props.currentTask.budget);
+            setTitle(props.currentTask.title || '');
+            setDescription(props.currentTask.description || '');
+            setPickupAddress(props.currentTask.pickup_address?.address || '');
+            setDeliveryAddress(props.currentTask.delivery_address?.address || '');
+            setDueDate(props.currentTask.due_date?.split("T")[0] || '');
+            setCategory(props.currentTask.category || '');
+            setBudget(props.currentTask.budget || 0);
         } else resetStates();
-    }, [])
+    }, [props.show])
 
     useEffect(() => {
-        if(store.message == "Task posted successfully.") props.handleClose();
+        if(store.message == "Task posted successfully." || store.message == "Task edited successfully.") {
+            if(props.loadInfo) props.loadInfo();
+            props.handleClose();
+        }
     }, [store.message])
 
     const resetStates = () => {
@@ -166,7 +169,7 @@ const TaskForm = (props) => {
             </Modal.Body>
             <Modal.Footer>
                 <button type="button" className="btn btn-secondary" onClick={props.handleClose}>Close</button>
-                <button type="submit" form="task-form" className="btn btn-primary" onClick={(event) => handleSubmit(event)}>Post</button>
+                <button type="submit" form="task-form" className="btn btn-primary" onClick={(event) => handleSubmit(event)}>{`${props.currentTask ? "Save" : "Post"}`}</button>
             </Modal.Footer>
         </Modal>
     );

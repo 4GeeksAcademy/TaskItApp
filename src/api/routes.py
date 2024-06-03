@@ -140,15 +140,21 @@ def edit_task(id):
     if new_title: task.title = new_title
     if new_description: task.description = new_description
     if new_delivery_location:
-        delivery_address = Address(address=new_delivery_location, latitude=data.get('delivery_lat'), longitude=data.get('delivery_lgt'))
-        db.session.add(delivery_address)
-        db.session.commit()
-        task.delivery_location_id = delivery_address.id
+        existing_delivery = Address.query.filter_by(address=new_delivery_location)
+        if existing_delivery: task.delivery_location = existing_delivery
+        else: 
+            delivery_address = Address(address=new_delivery_location, latitude=data.get('delivery_lat'), longitude=data.get('delivery_lgt'))
+            db.session.add(delivery_address)
+            db.session.commit()
+            task.delivery_location_id = delivery_address.id
     if new_pickup_location:
-        pickup_address = Address(address=new_pickup_location, latitude=data.get('pickup_lat'), longitude=data.get('pickup_lgt'))
-        db.session.add(pickup_address)
-        db.session.commit()
-        task.pickup_location_id = pickup_address.id
+        existing_pickup = Address.query.filter_by(address=new_pickup_location)
+        if existing_pickup: task.pickup_location = existing_pickup
+        else:
+            pickup_address = Address(address=new_pickup_location, latitude=data.get('pickup_lat'), longitude=data.get('pickup_lgt'))
+            db.session.add(pickup_address)
+            db.session.commit()
+            task.pickup_location_id = pickup_address.id
     if new_budget: task.budget = new_budget
 
     db.session.commit()
@@ -642,7 +648,7 @@ def get_postulant(postulant_id):
 @api.route('/postulants', methods=['POST'])
 def create_postulant():
     data = request.json
-    status = data.get('status')
+    status = "applied"
     seeker_id = data.get('seeker_id')
     price=data.get('price')
     task_id = data.get('task_id')
@@ -655,13 +661,15 @@ def create_postulant():
 
     existing_task = Task.query.get(task_id)
     if not existing_task: return jsonify({ 'error': 'Task ID not found.'}), 404
+
+    if existing_task.requester_id == existing_seeker.user_id: return jsonify({ 'error': "You can't apply to your own task."}), 400
     
     postul = Postulant(status=status, seeker=existing_seeker, price=price, task=existing_task)
     db.session.add(postul)
     db.session.commit()
 
     response_body = {
-        "message": "Postulant created"
+        "message": "Applied successfully."
     }
 
     return jsonify(response_body), 200
@@ -743,3 +751,12 @@ def validate_token():
 @jwt_required()
 def logout():
     return jsonify({'message': 'User logged out successfully.'}), 200
+
+@api.route('/users/<int:index>/tasks', methods=['GET'])
+def get_user_tasks(index):
+    requester = Requester.query.filter_by(user_id=index).first()
+    if not requester:
+        return jsonify({"error": "Requester not found"}), 404
+
+    tasks = Task.query.filter_by(requester_id=requester.id).all()
+    return jsonify([task.serialize() for task in tasks]), 200
