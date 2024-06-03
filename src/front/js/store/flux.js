@@ -159,6 +159,44 @@ const getState = ({ getStore, getActions, setStore }) => {
 				);
 			},
 
+			changeTaskStatus: (id, status) => {
+				const task = { "status": status }
+			
+				const config = { 
+					method: "PUT",
+					body: JSON.stringify(task),
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					}
+				}
+			
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/tasks/${id}`,
+					config,
+					() => getActions().getTasks()
+				);
+			},
+
+			changeTaskSeeker: (id, seekerID) => {
+				const task = { "seeker_id": seekerID }
+			
+				const config = { 
+					method: "PUT",
+					body: JSON.stringify(task),
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					}
+				}
+			
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/tasks/${id}`,
+					config,
+					() => getActions().getTasks()
+				);
+			},
+
 			editTask: (id, title, description, deliveryLocation, pickupLocation, dueDate, category, seekerID, budget, deliveryLat, deliveryLgt, pickupLat, pickupLgt) => {
 				const task = {
 					"title": title,
@@ -685,6 +723,25 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				fetchHelper(
 					process.env.BACKEND_URL + `/api/postulants`,
+					config,
+					() => getActions().getPostulants()
+				);
+			},
+
+			changePostulantStatus: (id, status) => {
+				const postulant = { "status": status }
+			
+				const config = { 
+					method: "PUT",
+					body: JSON.stringify(postulant),
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					}
+				}
+			
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/postulants/${id}`,
 					config,
 					() => getActions().getPostulants()
 				);
