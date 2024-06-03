@@ -19,9 +19,9 @@ export const Applicants = () => {
 	}, [])
 
 	return (
-		<div className="d-flex justify-content-center">
+		<div className="row d-flex justify-content-center">
 			{task.applicants?.map((applicant) => {
-                return <Seeker key={applicant.id} seekerInfo={applicant.seeker} applicantInfo={applicant} ></Seeker>
+                return <Seeker key={applicant.id} seekerInfo={applicant.seeker} applicantInfo={applicant} applicants={task.applicants}></Seeker>
             })}
 		</div>
 	);
