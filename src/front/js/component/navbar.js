@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import "../../styles/navbar.css";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import TaskForm from './task/task_form.jsx';
+import Notification from "./notification.js";
 
 export const Navbar = () => {
 	const { store } = useContext(Context);
@@ -50,6 +51,7 @@ export const Navbar = () => {
 						}
 						<li className="nav-item d-flex align-items-center fs-2 mx-2">
 							<Icon className="smooth" icon="mdi:bell-outline" />
+							<Notification></Notification>
 						</li>
 						<li>
 							<div className="bg-black rounded-circle smooth overflow-hidden" style={{ width: "3rem", height: "3rem" }}>
