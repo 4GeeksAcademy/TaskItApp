@@ -1,7 +1,6 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import { Context } from "../store/appContext";
 import { Link, useNavigate } from "react-router-dom";
-import Alert from "../component/alert.jsx"; 
 
 const LoginUser = () => {
     const [username, setUsername] = useState('');
@@ -21,7 +20,6 @@ const LoginUser = () => {
     return (
         <div>
             <form className="w-50 mx-auto" onSubmit={sendData}>
-                {(store.message || store.error) && <Alert message={store.message} error={store.error} />}
                 <div className="mb-3">
                     <label htmlFor="exampleInputUsername" className="form-label">Username</label>
                     <input 
