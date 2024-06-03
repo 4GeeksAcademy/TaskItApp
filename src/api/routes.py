@@ -751,3 +751,12 @@ def validate_token():
 @jwt_required()
 def logout():
     return jsonify({'message': 'User logged out successfully.'}), 200
+
+@api.route('/users/<int:index>/tasks', methods=['GET'])
+def get_user_tasks(index):
+    requester = Requester.query.filter_by(user_id=index).first()
+    if not requester:
+        return jsonify({"error": "Requester not found"}), 404
+
+    tasks = Task.query.filter_by(requester_id=requester.id).all()
+    return jsonify([task.serialize() for task in tasks]), 200
