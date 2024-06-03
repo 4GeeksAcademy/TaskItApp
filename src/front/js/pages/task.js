@@ -6,6 +6,7 @@ import StarRating from "../component/rating/StarRating.jsx";
 import Map from "../component/geocoding/map.jsx";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import TaskForm from "../component/task/task_form.jsx";
+import ApplicantForm from "../component/applicant/applicant_form.jsx"
 
 export const Task = () => {
 	const { store, actions } = useContext(Context);
@@ -13,10 +14,14 @@ export const Task = () => {
 	
 	const [task, setTask] = useState({});
 	const [requester, setRequester] = useState({});
-	const [show, setShow] = useState(false);
+	const [showTaskForm, setShowTaskForm] = useState(false);
+	const [showApplicationForm, setShowApplicationForm] = useState(false);
+	const [applied, setApplied] = useState(false);
 
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+    const handleCloseTaskForm = () => setShowTaskForm(false);
+    const handleShowTaskForm = () => setShowTaskForm(true);
+	const handleCloseApplicationForm = () => setShowApplicationForm(false);
+    const handleShowApplicationForm = () => setShowApplicationForm(true);
 
 	const loadInfo = async () => {
 		const currentTask = await actions.getTask(params.theid);
@@ -24,11 +29,19 @@ export const Task = () => {
 
 		const requesterData = await actions.getRequester(currentTask.requester_id);
 		setRequester(requesterData);
+		
+		alreadyApplied(currentTask);	
 	}
 
 	useEffect(() => {
-		loadInfo();		
+		loadInfo();	
 	}, [])
+
+	const alreadyApplied = (currentTask) => {
+		for(let applicant of currentTask.applicants) {
+			if(applicant.seeker.id == store.user.seeker?.id) setApplied(true);
+		}
+	}
 
 	const dueIn = (isoTime) => {
 		const now = new Date();
@@ -94,11 +107,11 @@ export const Task = () => {
 						<div className="w-100 card">review3</div>
 						{store.user.id != task.requester_user?.id 
 							?<div className="w-100 d-flex justify-content-between">
-								{ (store.user.role == "both" || store.user.role == "task-seeker") && <button className="btn btn-dark px-4">Apply</button>}
+								{ ((store.user.role == "both" || store.user.role == "task_seeker") && !applied) && <button className="btn btn-dark px-4" onClick={handleShowApplicationForm}>Apply</button>}
 								<button className="btn btn-dark px-4">Contact Requester</button>
 							</div>
 							:<div className="w-100 d-flex justify-content-between">
-								<button className="btn btn-dark px-4" onClick={handleShow}><Icon icon="mage:edit-fill" /> Edit</button>
+								<button className="btn btn-dark px-4" onClick={handleShowTaskForm}><Icon icon="mage:edit-fill" /> Edit</button>
 							</div>
 						}
 					</div>
@@ -108,7 +121,8 @@ export const Task = () => {
 				</div>
 			</div>
 
-			<TaskForm show={show} handleClose={handleClose} currentTask={task} loadInfo={loadInfo}></TaskForm>
+			<TaskForm show={showTaskForm} handleClose={handleCloseTaskForm} currentTask={task} loadInfo={loadInfo} ></TaskForm>
+			<ApplicantForm show={showApplicationForm} handleClose={handleCloseApplicationForm} taskID={task.id} setApplied={setApplied} ></ApplicantForm>
 		</div>
 	);
 };

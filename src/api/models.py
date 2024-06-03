@@ -19,6 +19,9 @@ class User(db.Model):
     role = db.Column(db.Enum(RoleEnum), nullable=True, default=RoleEnum.NONE)
     description = db.Column(db.String(500), unique=False, nullable=True)
 
+    requester = db.relationship('Requester', uselist=False, back_populates='user')
+    task_seeker = db.relationship('TaskSeeker', uselist=False, back_populates='user')
+
     def __repr__(self):
         return f'<User {self.username}>'
 
@@ -30,12 +33,14 @@ class User(db.Model):
             "full_name": self.full_name,
             "role": self.role.value,
             "description": self.description,
+            "seeker": self.task_seeker.serialize() if self.task_seeker else None,
+            "requester": self.requester.serialize() if self.requester else None
         }
     
 class Requester(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    user = db.relationship('User')
+    user = db.relationship('User', back_populates='requester')
     overall_rating = db.Column(db.Integer, unique=False, nullable=True, default=0)
     total_reviews = db.Column(db.Integer, unique=False, nullable=True, default=0)
     total_requested_tasks = db.Column(db.Integer, unique=False, nullable=True, default=0)
@@ -48,7 +53,14 @@ class Requester(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "user": self.user.serialize(),
+            "user": {
+                "id": self.user.id,
+                "username": self.user.username,
+                "email": self.user.email,
+                "full_name": self.user.full_name,
+                "description": self.user.description,
+                "role": self.user.role.value,
+            },
             "user_id": self.user_id,
             "overall_rating": self.overall_rating,
             "total_reviews": self.total_reviews,
@@ -60,7 +72,7 @@ class Requester(db.Model):
 class TaskSeeker(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    user = db.relationship('User')
+    user = db.relationship('User', back_populates='task_seeker')
     overall_rating = db.Column(db.Integer, unique=False, nullable=True, default=0)
     total_reviews = db.Column(db.Integer, unique=False, nullable=True, default=0)
     total_completed_tasks = db.Column(db.Integer, unique=False, nullable=True, default=0)
@@ -72,7 +84,14 @@ class TaskSeeker(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "user": self.user.serialize(),
+            "user": {
+                "id": self.user.id,
+                "username": self.user.username,
+                "email": self.user.email,
+                "full_name": self.user.full_name,
+                "description": self.user.description,
+                "role": self.user.role.value,
+            },
             "user_id": self.user_id,
             "overall_rating": self.overall_rating,
             "total_reviews": self.total_reviews,

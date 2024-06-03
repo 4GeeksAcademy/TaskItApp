@@ -653,26 +653,23 @@ def create_postulant():
     price=data.get('price')
     task_id = data.get('task_id')
 
-    if not status or not seeker_id or not price: 
+    if not seeker_id or not price: 
         return jsonify({ 'error': 'Missing fields.'}), 400
     
-    existing_seeker = TaskSeeker.query.filter_by(user_id=seeker_id).first()
+    existing_seeker = TaskSeeker.query.get(seeker_id)
     if not existing_seeker: return jsonify({ 'error': 'Task seeker with given user ID not found.'}), 404
 
     existing_task = Task.query.get(task_id)
     if not existing_task: return jsonify({ 'error': 'Task ID not found.'}), 404
 
-    if existing_task.requester_id == existing_seeker.user_id: return jsonify({ 'error': "You can't apply to your own task."}), 400
+    if existing_task.requester.user.id == existing_seeker.user.id:
+        return jsonify({ 'error': "You can't apply to your own task." }), 400
     
     postul = Postulant(status=status, seeker=existing_seeker, price=price, task=existing_task)
     db.session.add(postul)
     db.session.commit()
 
-    response_body = {
-        "message": "Applied successfully."
-    }
-
-    return jsonify(response_body), 200
+    return jsonify({"message": "Applied successfully."}), 200
 
 @api.route('/postulants/<int:id>', methods=['PUT'])
 def update_postulant(id):
@@ -760,3 +757,15 @@ def get_user_tasks(index):
 
     tasks = Task.query.filter_by(requester_id=requester.id).all()
     return jsonify([task.serialize() for task in tasks]), 200
+
+@api.route('/users/<int:index>/applied-to-tasks', methods=['GET'])
+def get_applied_to_tasks(index):
+    seeker = TaskSeeker.query.filter_by(user_id=index).first()
+    if not seeker:
+        return jsonify({"error": "Task seeker not found."}), 404
+    
+    postulants = Postulant.query.filter_by(seeker_id=seeker.id).all()
+
+    applied_tasks = [postulant.task.serialize() for postulant in postulants]
+
+    return jsonify(applied_tasks), 200
