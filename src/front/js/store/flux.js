@@ -702,12 +702,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 				)
 			},
 
-            addPostulant: (taskId, seekerId, applicationDate, status, price) => {
+            addPostulant: (taskId, seekerId, price) => {
 				const newPostulant = {
 					"task_id": taskId,
 					"seeker_id": seekerId,
-					"application_date": applicationDate,
-					"status": status,
 					"price": price,
 					
 				}
