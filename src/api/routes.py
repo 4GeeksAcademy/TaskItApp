@@ -648,7 +648,7 @@ def get_postulant(postulant_id):
 @api.route('/postulants', methods=['POST'])
 def create_postulant():
     data = request.json
-    status = data.get('status')
+    status = "applied"
     seeker_id = data.get('seeker_id')
     price=data.get('price')
     task_id = data.get('task_id')
@@ -661,13 +661,15 @@ def create_postulant():
 
     existing_task = Task.query.get(task_id)
     if not existing_task: return jsonify({ 'error': 'Task ID not found.'}), 404
+
+    if existing_task.requester_id == existing_seeker.user_id: return jsonify({ 'error': "You can't apply to your own task."}), 400
     
     postul = Postulant(status=status, seeker=existing_seeker, price=price, task=existing_task)
     db.session.add(postul)
     db.session.commit()
 
     response_body = {
-        "message": "Postulant created"
+        "message": "Applied successfully."
     }
 
     return jsonify(response_body), 200
