@@ -384,8 +384,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 					"password": password,
 					"full_name": fullName,
 					"description": description,
-				}
-
+				};
+			
 				const config = { 
 					method: "PUT",
 					body: JSON.stringify(user),
@@ -393,13 +393,15 @@ const getState = ({ getStore, getActions, setStore }) => {
 						'Accept': 'application/json',
 						'Content-Type': 'application/json'
 					}
-				}
-
-				fetchHelper(
-					process.env.BACKEND_URL + `/api/users/${id}`,
-					config,
-					() => getActions().getUsers()
-				);
+				};
+			
+				return fetch(process.env.BACKEND_URL + `/api/users/${id}`, config)
+					.then(response => response.json())
+					.then(() => {
+						// Actualiza el usuario en el store local
+						const updatedUser = { ...getStore().user, username, email, full_name: fullName, description };
+						setStore({ user: updatedUser });
+					});
 			},
 			
 

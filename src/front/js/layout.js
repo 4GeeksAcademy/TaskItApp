@@ -20,6 +20,7 @@ import Postulants from "./pages/postulants";
 import LoginUser from "./pages/login_user";
 import SignupUser from "./pages/signup_user";
 import UserPanel from "./pages/user_panel";
+import EditProfile from "./pages/edit_profile";  // Importa la nueva página
 import { Context } from "./store/appContext"; // Importa el contexto
 
 const Layout = () => {
@@ -53,6 +54,7 @@ const Layout = () => {
                         <Route element={<LoginUser />} path="/login-user" />
                         <Route element={<SignupUser />} path="/signup-user" />
                         <Route element={<UserPanel />} path="/user-panel" />
+                        <Route element={<EditProfile />} path="/edit-profile" />  // Nueva ruta para editar perfil
                         <Route element={<h1>Not found!</h1>} />
                     </Routes>
                     <Footer />
