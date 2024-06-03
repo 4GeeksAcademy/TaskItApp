@@ -7,15 +7,18 @@ const UserTaskList = () => {
     const [tasks, setTasks] = useState([]);
 
     useEffect(() => {
-        fetch(process.env.BACKEND_URL + `/api/users/${store.user.id}/tasks`)
-        .then(response => response.json())
-        .then(data => setTasks(data))
-        .catch(error => console.error(error));
+        if(store.user.role == "requester" || store.user.role == "both"){
+            fetch(process.env.BACKEND_URL + `/api/users/${store.user.id}/tasks`)
+            .then(response => response.json())
+            .then(data => setTasks(data))
+            .catch(error => console.error(error));
+        }
     }, [])
     
 
     return (
         <div className="container-fluid px-5">
+            <h3>My tasks</h3>
             <div className="row">
                 {tasks.map((task) => {
                     return (
