@@ -23,6 +23,7 @@ import { Context } from "./store/appContext";
 import { Category } from "./pages/category.js";
 import { SidebarComponent } from "./component/sidebar.js";
 import { Applicants } from "./pages/applicants.js";
+import EditProfile from "./pages/edit_profile";
 
 const Layout = () => {
     const basename = process.env.BASENAME || "";
@@ -38,7 +39,7 @@ const Layout = () => {
         <div>
             <BrowserRouter basename={basename}>
                 <ScrollToTop>
-                    <div className="d-flex container-fluid m-0 p-0">
+                <div className="d-flex container-fluid m-0 p-0">
                         { store.auth && <SidebarComponent></SidebarComponent> }
                         <div className="w-100">
                             <Navbar />
@@ -59,6 +60,7 @@ const Layout = () => {
                                 <Route element={<LoginUser />} path="/login-user" />
                                 <Route element={<SignupUser />} path="/signup-user" />
                                 <Route element={<UserPanel />} path="/user-panel" />
+                                <Route element={<EditProfile />} path="/edit-profile" />
                                 <Route element={<h1>Not found!</h1>} />
                             </Routes>
                             <Footer />
