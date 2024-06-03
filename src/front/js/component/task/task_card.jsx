@@ -12,13 +12,14 @@ const Task = ({ taskInfo }) => {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
-
     return (
         <div className="col-6 p-2">
             <div className="card p-4">
-                {store.user.id == taskInfo.requester_user?.id  && (
-                    <div className="w-100">
-                        <button className="btn btn-dark px-4 float-end smooth" onClick={handleShow}>
+                {(store.user.id == taskInfo.requester_user?.id && taskInfo.status != "cancelled") && (
+                    <div className="w-100 d-flex justify-content-end gap-2">
+                        <button className="btn btn-success px-4 smooth" onClick={() => actions.changeTaskStatus(taskInfo.id, "completed")}>Complete</button>
+                        <button className="btn btn-danger px-4 smooth" onClick={() => actions.changeTaskStatus(taskInfo.id, "cancelled")}>Cancel</button>
+                        <button className="btn btn-dark px-4 smooth" onClick={handleShow}>
                             <Icon icon="mage:edit-fill" /> Edit
                         </button>
                     </div>
@@ -27,16 +28,24 @@ const Task = ({ taskInfo }) => {
                     <div className="d-flex align-items-center mb-2">
                         <div className="rounded-circle bg-dark me-2" style={{ height: "60px", width: "60px" }}></div>
                         <div className="d-flex flex-column justify-content-around">
-                            <span className="fs-5"><b>{taskInfo.requester_user.username}</b> <span className="text-muted">in {taskInfo.category_name}</span></span>
+                            <span className="fs-5">
+                                <Link to={`/users/${taskInfo.requester_user.username}`}><b>{taskInfo.requester_user.username} </b></Link> 
+                                <span className="text-muted">in {taskInfo.category_name}</span>
+                            </span>
                             <span>{actions.timeAgo(taskInfo.creation_date)}</span>
                         </div>
                     </div>
                 }
                 <h2>{taskInfo.title}</h2>
                 <p className="text-muted">{taskInfo.description}</p>
-                <div className="d-flex align-items-center justify-content-between">
-                    { path != "/" 
+                <div className="d-flex align-items-end justify-content-between">
+                    { path != "/"
                     ? <span className="fs-3 d-flex align-items-center"><Icon className="me-2" icon="ph:user-bold" /> <span>{taskInfo.applicants.length} {taskInfo.applicants.length == 1 ? "applicant" : "applicants"}</span></span>
+                    : taskInfo.seeker_id 
+                    ? <div className="d-flex flex-column">
+                        <span><b>Status:</b> {taskInfo.status == "in_progress" ? "in progress" : taskInfo.status}</span>
+                        <span><b>Task Seeker:</b> <Link to={`/users/${taskInfo.seeker?.user?.username}`}>{taskInfo.seeker?.user?.username}</Link></span>
+                      </div>
                     : <Link to={`/tasks/${taskInfo.id}/applicants`}>
                         <button className="btn btn-dark smooth">
                             <span className="d-flex align-items-center">
