@@ -140,15 +140,21 @@ def edit_task(id):
     if new_title: task.title = new_title
     if new_description: task.description = new_description
     if new_delivery_location:
-        delivery_address = Address(address=new_delivery_location, latitude=data.get('delivery_lat'), longitude=data.get('delivery_lgt'))
-        db.session.add(delivery_address)
-        db.session.commit()
-        task.delivery_location_id = delivery_address.id
+        existing_delivery = Address.query.filter_by(address=new_delivery_location)
+        if existing_delivery: task.delivery_location = existing_delivery
+        else: 
+            delivery_address = Address(address=new_delivery_location, latitude=data.get('delivery_lat'), longitude=data.get('delivery_lgt'))
+            db.session.add(delivery_address)
+            db.session.commit()
+            task.delivery_location_id = delivery_address.id
     if new_pickup_location:
-        pickup_address = Address(address=new_pickup_location, latitude=data.get('pickup_lat'), longitude=data.get('pickup_lgt'))
-        db.session.add(pickup_address)
-        db.session.commit()
-        task.pickup_location_id = pickup_address.id
+        existing_pickup = Address.query.filter_by(address=new_pickup_location)
+        if existing_pickup: task.pickup_location = existing_pickup
+        else:
+            pickup_address = Address(address=new_pickup_location, latitude=data.get('pickup_lat'), longitude=data.get('pickup_lgt'))
+            db.session.add(pickup_address)
+            db.session.commit()
+            task.pickup_location_id = pickup_address.id
     if new_budget: task.budget = new_budget
 
     db.session.commit()
@@ -227,7 +233,6 @@ def update_address(id):
     db.session.commit()
     return jsonify({"message": "Address successfully updated"}), 200
 
-# CATEGORIES
 @api.route('/categories', methods=['POST'])
 def create_category():
     data = request.get_json()
@@ -245,6 +250,13 @@ def create_category():
 @api.route('/categories/<int:id>', methods=['GET'])
 def get_category(id):
     category = Category.query.get(id)
+    if not category:
+        return jsonify({'error': 'Category not found'}), 404
+    return jsonify({'category': category.serialize()}), 200
+
+@api.route('/categories/<string:name>', methods=['GET'])
+def get_category_by_name(name):
+    category = Category.query.filter_by(name=name).first()
     if not category:
         return jsonify({'error': 'Category not found'}), 404
     return jsonify({'category': category.serialize()}), 200
@@ -636,29 +648,28 @@ def get_postulant(postulant_id):
 @api.route('/postulants', methods=['POST'])
 def create_postulant():
     data = request.json
-    status = data.get('status')
+    status = "applied"
     seeker_id = data.get('seeker_id')
     price=data.get('price')
     task_id = data.get('task_id')
 
-    if not status or not seeker_id or not price: 
+    if not seeker_id or not price: 
         return jsonify({ 'error': 'Missing fields.'}), 400
     
-    existing_seeker = TaskSeeker.query.filter_by(user_id=seeker_id).first()
+    existing_seeker = TaskSeeker.query.get(seeker_id)
     if not existing_seeker: return jsonify({ 'error': 'Task seeker with given user ID not found.'}), 404
 
     existing_task = Task.query.get(task_id)
     if not existing_task: return jsonify({ 'error': 'Task ID not found.'}), 404
+
+    if existing_task.requester.user.id == existing_seeker.user.id:
+        return jsonify({ 'error': "You can't apply to your own task." }), 400
     
     postul = Postulant(status=status, seeker=existing_seeker, price=price, task=existing_task)
     db.session.add(postul)
     db.session.commit()
 
-    response_body = {
-        "message": "Postulant created"
-    }
-
-    return jsonify(response_body), 200
+    return jsonify({"message": "Applied successfully."}), 200
 
 @api.route('/postulants/<int:id>', methods=['PUT'])
 def update_postulant(id):
@@ -737,3 +748,24 @@ def validate_token():
 @jwt_required()
 def logout():
     return jsonify({'message': 'User logged out successfully.'}), 200
+
+@api.route('/users/<int:index>/tasks', methods=['GET'])
+def get_user_tasks(index):
+    requester = Requester.query.filter_by(user_id=index).first()
+    if not requester:
+        return jsonify({"error": "Requester not found"}), 404
+
+    tasks = Task.query.filter_by(requester_id=requester.id).all()
+    return jsonify([task.serialize() for task in tasks]), 200
+
+@api.route('/users/<int:index>/applied-to-tasks', methods=['GET'])
+def get_applied_to_tasks(index):
+    seeker = TaskSeeker.query.filter_by(user_id=index).first()
+    if not seeker:
+        return jsonify({"error": "Task seeker not found."}), 404
+    
+    postulants = Postulant.query.filter_by(seeker_id=seeker.id).all()
+
+    applied_tasks = [postulant.task.serialize() for postulant in postulants]
+
+    return jsonify(applied_tasks), 200

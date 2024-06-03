@@ -3,7 +3,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ScrollToTop from "./component/scrollToTop";
 import { BackendURL } from "./component/backendURL";
 import { Home } from "./pages/home";
-import { Demo } from "./pages/demo";
 import { User } from "./pages/user";
 import { TaskFeed } from "./pages/tasks";
 import { Users } from "./pages/users";
@@ -20,12 +19,15 @@ import Postulants from "./pages/postulants";
 import LoginUser from "./pages/login_user";
 import SignupUser from "./pages/signup_user";
 import UserPanel from "./pages/user_panel";
-import EditProfile from "./pages/edit_profile";  // Importa la nueva página
-import { Context } from "./store/appContext"; // Importa el contexto
+import { Context } from "./store/appContext"; 
+import { Category } from "./pages/category.js";
+import { SidebarComponent } from "./component/sidebar.js";
+import { Applicants } from "./pages/applicants.js";
+import EditProfile from "./pages/edit_profile";
 
 const Layout = () => {
     const basename = process.env.BASENAME || "";
-    const { actions } = useContext(Context); // Usa el contexto para acceder a las acciones
+    const { store, actions } = useContext(Context); // Usa el contexto para acceder a las acciones
 
     useEffect(() => {
         actions.validateToken();
@@ -37,27 +39,33 @@ const Layout = () => {
         <div>
             <BrowserRouter basename={basename}>
                 <ScrollToTop>
-                    <Navbar />
-                    <Routes>
-                        <Route element={<CategoryList />} path="/categories" />
-                        <Route element={<Home />} path="/" />
-                        <Route element={<Demo />} path="/demo" />
-                        <Route element={<TaskFeed />} path="/tasks" />
-                        <Route element={<Task />} path="/tasks/:theid" />
-                        <Route element={<Users />} path="/users" />
-                        <Route element={<Requesters />} path="/requesters" />
-                        <Route element={<Seekers />} path="/seekers" />
-                        <Route element={<User />} path="/users/:theusername" />
-                        <Route element={<Addresses />} path="/addresses" />
-                        <Route element={<RatingPage />} path="/ratings" />
-                        <Route element={<Postulants />} path="/postulants" />
-                        <Route element={<LoginUser />} path="/login-user" />
-                        <Route element={<SignupUser />} path="/signup-user" />
-                        <Route element={<UserPanel />} path="/user-panel" />
-                        <Route element={<EditProfile />} path="/edit-profile" />  // Nueva ruta para editar perfil
-                        <Route element={<h1>Not found!</h1>} />
-                    </Routes>
-                    <Footer />
+                <div className="d-flex container-fluid m-0 p-0">
+                        { store.auth && <SidebarComponent></SidebarComponent> }
+                        <div className="w-100">
+                            <Navbar />
+                            <Routes>
+                                <Route element={<CategoryList />} path="/categories" />
+                                <Route element={<Category />} path="/categories/:thecategory" />
+                                <Route element={<Home />} path="/" />
+                                <Route element={<TaskFeed />} path="/tasks" />
+                                <Route element={<Task />} path="/tasks/:theid" />
+                                <Route element={<Applicants />} path="/tasks/:theid/applicants" />
+                                <Route element={<Users />} path="/users" />
+                                <Route element={<Requesters />} path="/requesters" />
+                                <Route element={<Seekers />} path="/seekers" />
+                                <Route element={<User />} path="/users/:theusername" />
+                                <Route element={<Addresses />} path="/addresses" />
+                                <Route element={<RatingPage />} path="/ratings" />
+                                <Route element={<Postulants />} path="/postulants" />
+                                <Route element={<LoginUser />} path="/login-user" />
+                                <Route element={<SignupUser />} path="/signup-user" />
+                                <Route element={<UserPanel />} path="/user-panel" />
+                                <Route element={<EditProfile />} path="/edit-profile" />
+                                <Route element={<h1>Not found!</h1>} />
+                            </Routes>
+                            <Footer />
+                        </div>
+                    </div>
                 </ScrollToTop>
             </BrowserRouter>
         </div>

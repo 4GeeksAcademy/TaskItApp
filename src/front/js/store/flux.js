@@ -159,6 +159,44 @@ const getState = ({ getStore, getActions, setStore }) => {
 				);
 			},
 
+			changeTaskStatus: (id, status) => {
+				const task = { "status": status }
+			
+				const config = { 
+					method: "PUT",
+					body: JSON.stringify(task),
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					}
+				}
+			
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/tasks/${id}`,
+					config,
+					() => getActions().getTasks()
+				);
+			},
+
+			changeTaskSeeker: (id, seekerID) => {
+				const task = { "seeker_id": seekerID }
+			
+				const config = { 
+					method: "PUT",
+					body: JSON.stringify(task),
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					}
+				}
+			
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/tasks/${id}`,
+					config,
+					() => getActions().getTasks()
+				);
+			},
+
 			editTask: (id, title, description, deliveryLocation, pickupLocation, dueDate, category, seekerID, budget, deliveryLat, deliveryLgt, pickupLat, pickupLgt) => {
 				const task = {
 					"title": title,
@@ -268,6 +306,20 @@ const getState = ({ getStore, getActions, setStore }) => {
 					{}, 									
 					(data) => setStore({ categories: data.categories })		
 				)
+			},
+
+			getCategoryByName: (name) => {
+				return new Promise((resolve, reject) => {
+					fetchHelper(
+						`${process.env.BACKEND_URL}/api/categories/${name}`, 
+						{}, 
+						(data) => resolve(data),
+						(error) => {
+							console.error(error);
+							reject(error);
+						}
+					);
+				});
 			},
 
 			deleteCategory: (id) => {
@@ -652,12 +704,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 				)
 			},
 
-            addPostulant: (taskId, seekerId, applicationDate, status, price) => {
+            addPostulant: (taskId, seekerId, price) => {
 				const newPostulant = {
 					"task_id": taskId,
 					"seeker_id": seekerId,
-					"application_date": applicationDate,
-					"status": status,
 					"price": price,
 					
 				}
@@ -673,6 +723,25 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				fetchHelper(
 					process.env.BACKEND_URL + `/api/postulants`,
+					config,
+					() => getActions().getPostulants()
+				);
+			},
+
+			changePostulantStatus: (id, status) => {
+				const postulant = { "status": status }
+			
+				const config = { 
+					method: "PUT",
+					body: JSON.stringify(postulant),
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					}
+				}
+			
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/postulants/${id}`,
 					config,
 					() => getActions().getPostulants()
 				);
@@ -719,7 +788,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 							});
 						}
 					})
-					.catch((error) => console.log(error));
+					.catch((error) => console.error(error));
 			},
 			
 			login: (username, password) => {
@@ -745,9 +814,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 						// Almacenar el token en localStorage
 						localStorage.setItem('access_token', data.access_token);
 						setStore({ access_token: data.access_token, user: data.user, auth: true, login_error: "", signup_error: "" });
-						console.log(data.user)
 					})
-					.catch((error) => console.log(error));
+					.catch((error) => console.error(error));
 			},
 			
 			logout: () => {
