@@ -1,0 +1,40 @@
+.dropdown-menu {
+    position: absolute;
+    top: 4rem; /* Ajusta esta distancia según sea necesario */
+    right: 0;
+    width: 15rem; /* Ajusta el ancho según sea necesario */
+    z-index: 1000;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.dropdown-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    font-size: 0.9rem; /* Ajusta el tamaño del texto según sea necesario */
+}
+
+.dropdown-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    margin-bottom: 1rem;
+}
+
+.dropdown-item strong {
+    margin-bottom: 0.5rem;
+}
+
+
+.img-circle {
+    width: 100px; /* Ajusta el tamaño según sea necesario */
+    height: 100px; /* Ajusta el tamaño según sea necesario */
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 1rem;
+    object-fit: cover;
+}
