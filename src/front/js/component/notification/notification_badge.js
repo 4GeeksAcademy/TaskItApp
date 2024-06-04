@@ -4,12 +4,10 @@ import { Context } from '../../store/appContext';
 
 const Notification = () => {
     const [socket, setSocket] = useState(null);
-    const [notifications, setNotifications] = useState([]);
-    const { store } = useContext(Context);
+    const { store, actions } = useContext(Context);
 
     useEffect(() => {
         const newSocket = io(process.env.BACKEND_URL);
-        console.log("Connecting to", process.env.BACKEND_URL);
         setSocket(newSocket);
 
         return () => {
@@ -20,7 +18,7 @@ const Notification = () => {
     }, []);
 
     useEffect(() => {
-        if (!socket) return;
+        if (!socket || Object.keys(store.user).length <= 0) return;
 
         socket.on('connect', () => {
             console.log('Connected to server'); 
@@ -29,11 +27,7 @@ const Notification = () => {
 
         socket.on('notification', (data) => {
             console.log("Received notification:", data);
-            try {
-                setNotifications((prevNotifications) => [...prevNotifications, data.message]);
-            } catch (error) {
-                console.error('Error handling notification:', error);
-            }
+            actions.getNotifications();
         });
 
         socket.on('disconnect', () => {
@@ -50,13 +44,13 @@ const Notification = () => {
             socket.off('disconnect');
             socket.off('error');
         };
-    }, [socket]);
+    }, [socket, store.user]);
 
     return (
         <div>
-            {notifications.length > 0 && (
+            {store.notifications.length > 0 && (
                 <span className="position-absolute top-0 end-0 badge rounded-pill bg-danger" style={{ fontSize: "0.6rem" }}>
-                    {notifications.length}
+                    {store.notifications.length}
                 </span>
             )}
         </div>
