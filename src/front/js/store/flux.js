@@ -34,7 +34,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 			login_error: "",
 			signup_error: "",
 			valid_token: false,
-			socket: io(process.env.BACKEND_URL)
+			socket: io(process.env.BACKEND_URL),
+			notifications: [],
 		},
 		actions: {
 			resetMessages: () => { setStore({ message: "", error: "" }) },
@@ -173,7 +174,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 				fetchHelper(
 					process.env.BACKEND_URL + `/api/tasks/${id}`,
 					config,
-					() => getActions().getTasks()
+					() => {
+						getActions().getTasks();
+						getActions().sendNotification(`Task status successfully set to'${status}'.`, getStore().user.username);
+					}
 				);
 			},
 
@@ -770,6 +774,31 @@ const getState = ({ getStore, getActions, setStore }) => {
 					() => getActions().getPostulants()
 				);
 			},
+
+			getNotifications: () => {
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/users/${getStore().user.id}/unseen-notifications`,
+					{},
+					(data) => setStore({ notifications: data })
+				);
+			},
+
+			sendNotification: (notification, toUser) => {
+				const new_notification = { notification }; 
+
+				const config = {
+					method: "POST",
+					body: JSON.stringify(new_notification),
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					},
+				};
+				
+				fetch(process.env.BACKEND_URL + `/send_notification/${toUser}`, config)
+				.catch(error => console.error(error));
+			},
+
 			signup: (email, password, username, fullName, description) => {
 				const newUser = { username, email, password, full_name: fullName, description };
 				const config = { 
