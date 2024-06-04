@@ -26,6 +26,7 @@ class User(db.Model):
         return f'<User {self.username}>'
 
     def serialize(self):
+        
         return {
             "id": self.id,
             "username": self.username,
@@ -240,4 +241,24 @@ class Postulant(db.Model):
             "seeker_id": self.seeker_id,
             "seeker": self.seeker.serialize(),
             "price": self.price,
+        }
+    
+class Notification(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    creation_date = db.Column(db.DateTime(timezone=True), default=func.now(), nullable=False)
+    message = db.Column(db.String(120), nullable=False, unique=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    user = db.relationship('User', backref=db.backref('notifications', lazy=True))
+    seen = db.Column(db.Boolean, default=False)
+
+    def __repr__(self):
+        return f'<Notification {self.user.username} - {self.message} - Seen: {self.seen}>'
+    
+    def serialize(self):
+        return {
+            "id": self.id,
+            "date": self.creation_date,
+            "message": self.message,
+            "seen": self.seen,
+            "user_id": self.user_id,
         }
