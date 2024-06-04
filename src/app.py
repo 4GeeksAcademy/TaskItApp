@@ -6,12 +6,13 @@ from flask import Flask, request, jsonify, url_for, send_from_directory, render_
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from api.utils import APIException, generate_sitemap
-from api.models import db
+from api.models import db, Notification, User
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
 from flask_socketio import SocketIO, emit, send, join_room, leave_room
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 
 # from models import Person
 
@@ -23,7 +24,7 @@ app.url_map.strict_slashes = False
 
 app.config['JWT_SECRET_KEY'] = 'your_jwt_secret_key'  # Cambia esto a tu propia clave secreta
 jwt = JWTManager(app)
-
+CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 # database condiguration
@@ -119,6 +120,13 @@ def send_notification_to_room(room_name):
     data = request.json
     notification = data.get('notification')
     send_notification(room_name, notification)
+
+    existing_user = User.query.filter_by(username=room_name).first()
+    if not existing_user: return jsonify({ "error": "User does not exist." }), 404
+
+    new_notification = Notification(user=existing_user, message=notification)
+    db.session.add(new_notification)
+    db.session.commit()
     return "Notification sent to room: " + room_name
 
 def send_notification(room_name, notification):
@@ -127,6 +135,4 @@ def send_notification(room_name, notification):
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3001))
-    app.run(host='0.0.0.0', port=PORT, debug=True)
-    socketio.run(app, debug=True)
-
+    socketio.run(app, host='0.0.0.0', port=PORT, debug=True)
