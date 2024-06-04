@@ -5,15 +5,21 @@ import { Context } from "../../store/appContext.js";
 import { Icon } from "@iconify/react/dist/iconify.js";
 
 const Seeker = ({ seekerInfo, applicantInfo, applicants }) => {
-    const { actions } = useContext(Context);
+    const { store, actions } = useContext(Context);
 
     const acceptSeeker = () => {
         for(let applicant of applicants) {
-            if(applicant.id == applicantInfo.id) actions.changePostulantStatus(applicant.id, "accepted");
-            else actions.changePostulantStatus(applicant.id, "rejected");
+            if(applicant.id == applicantInfo.id) {
+                actions.changePostulantStatus(applicant.id, "accepted");
+                actions.sendNotification(`You have been accepted as the seeker of the task with ID: ${applicant.task_id}`, applicant.seeker.user.username);
+            } else {
+                actions.changePostulantStatus(applicant.id, "rejected");
+                actions.sendNotification(`You have been rejected as the seeker of the task with ID: ${applicant.task_id}`, applicant.seeker.user.username);
+            }
         }
         actions.changeTaskStatus(applicantInfo.task_id, "in_progress");
-        actions.changeTaskSeeker(applicantInfo.task_id, seekerInfo.id)
+        actions.changeTaskSeeker(applicantInfo.task_id, seekerInfo.id);
+        actions.sendNotification("Seeker successfully accepted and task status changed to 'in progress'.", store.user.username);
     }
 
     return (

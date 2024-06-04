@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Task, StatusEnum, Address, Category, RoleEnum, Requester, TaskSeeker, Rating, Postulant
+from api.models import db, User, Task, StatusEnum, Address, Category, RoleEnum, Requester, TaskSeeker, Rating, Postulant, Notification
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from datetime import datetime
@@ -769,3 +769,19 @@ def get_applied_to_tasks(index):
     applied_tasks = [postulant.task.serialize() for postulant in postulants]
 
     return jsonify(applied_tasks), 200
+
+@api.route('/users/<int:index>/unseen-notifications', methods=['GET'])
+def get_unseen_notifications(index):
+    existing_user = User.query.get(index)
+    if not existing_user: return jsonify({"error": "User does not exist."}), 404
+
+    unseen_notifications = Notification.query.filter_by(user_id=index, seen=False).all()
+    return jsonify([notification.serialize() for notification in unseen_notifications]), 200
+
+@api.route('/notifications/<int:index>', methods=['PUT'])
+def mark_as_seen(index):
+    notification = Notification.query.get(index)
+    if not notification: return jsonify({"error": "Notification not found."})
+    notification.seen = True
+    db.session.commit()
+    return jsonify({"message": "Notification marked as seen successfully."}), 200

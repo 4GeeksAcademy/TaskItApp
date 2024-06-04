@@ -30,9 +30,10 @@ const TaskForm = (props) => {
     }, [props.show])
 
     useEffect(() => {
-        if(store.message == "Task posted successfully." || store.message == "Task edited successfully.") {
+        if((store.message == "Task posted successfully." || store.message == "Task edited successfully.") && props.show) {
             if(props.loadInfo) props.loadInfo();
             props.handleClose();
+            actions.sendNotification(store.message, store.user.username);
         }
     }, [store.message])
 

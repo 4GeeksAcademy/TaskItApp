@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useContext } from "react";
-import "../../styles/accordion.css"; 
+import "../../../styles/accordion.css"; 
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { Context } from "../store/appContext";
+import { Context } from "../../store/appContext";
 import { useNavigate } from "react-router-dom";
 
 const SettingsUser = ({ dropdownVisible, setDropdownVisible }) => {

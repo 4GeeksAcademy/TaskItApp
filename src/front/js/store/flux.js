@@ -1,3 +1,5 @@
+import { io } from "socket.io-client";
+
 const getState = ({ getStore, getActions, setStore }) => {	
     const fetchHelper = async (url, config = {}, successCallback) => {
 		try {
@@ -21,7 +23,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             addresses: [],
 			categories: [],
 			users: [],								
-			user: { role: "both" }, 
+			user: {}, 
 			requesters: [],
 			seekers: [],
 			postulants: [],
@@ -32,16 +34,14 @@ const getState = ({ getStore, getActions, setStore }) => {
 			login_error: "",
 			signup_error: "",
 			valid_token: false,
+			socket: io(process.env.BACKEND_URL),
+			notifications: [],
 		},
 		actions: {
-			setEditing: (bool) => { setStore({ editing: bool })},
-			setAuth: (bool) => { setStore({ auth: bool })},
-			setUser: (username) => { 
-				const user = getStore().users.filter((userInfo) => userInfo.username == username);
-				setStore({ user: user, auth: true })
-			},
 			resetMessages: () => { setStore({ message: "", error: "" }) },
 			setError: (error) => { setStore({ message: "", error: error }) },
+			joinRoom: (room, username) => { getStore().socket.emit('join', { room: room, username: username }) },
+			leaveRoom: (room, username) => { getStore().socket.emit('leave', { room: room, username: username }) },
 			timeAgo: (isoTime) => {
 				const now = new Date();
 				const time = new Date(isoTime);
@@ -174,7 +174,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 				fetchHelper(
 					process.env.BACKEND_URL + `/api/tasks/${id}`,
 					config,
-					() => getActions().getTasks()
+					() => {
+						getActions().getTasks();
+						getActions().sendNotification(`Task status successfully set to'${status}'.`, getStore().user.username);
+					}
 				);
 			},
 
@@ -771,6 +774,31 @@ const getState = ({ getStore, getActions, setStore }) => {
 					() => getActions().getPostulants()
 				);
 			},
+
+			getNotifications: () => {
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/users/${getStore().user.id}/unseen-notifications`,
+					{},
+					(data) => setStore({ notifications: data })
+				);
+			},
+
+			sendNotification: (notification, toUser) => {
+				const new_notification = { notification }; 
+
+				const config = {
+					method: "POST",
+					body: JSON.stringify(new_notification),
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					},
+				};
+				
+				fetch(process.env.BACKEND_URL + `/send_notification/${toUser}`, config)
+				.catch(error => console.error(error));
+			},
+
 			signup: (email, password, username, fullName, description) => {
 				const newUser = { username, email, password, full_name: fullName, description };
 				const config = { 
@@ -814,11 +842,13 @@ const getState = ({ getStore, getActions, setStore }) => {
 						// Almacenar el token en localStorage
 						localStorage.setItem('access_token', data.access_token);
 						setStore({ access_token: data.access_token, user: data.user, auth: true, login_error: "", signup_error: "" });
+						getActions().joinRoom(username, username);
 					})
 					.catch((error) => console.error(error));
 			},
 			
 			logout: () => {
+				getActions().leaveRoom(getStore().user.username, getStore().user.username);
 				localStorage.removeItem('access_token');
 				setStore({ access_token: "", user: null, auth: false });
 			},
