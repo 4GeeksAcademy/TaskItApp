@@ -107,14 +107,12 @@ def handle_join(data):
     username = data['username']
     room = data['room']
     join_room(room)
-    print(f"{username} has joined the room: {room}")
 
 @socketio.on('leave')
 def handle_leave(data):
     username = data['username']
     room = data['room']
     leave_room(room)
-    print(f"{username} has left the room: {room}")
 
 @app.route('/send_notification/<string:room_name>', methods=['POST'])
 def send_notification_to_room(room_name):
