@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { Context } from "../store/appContext";
+import { Context } from "../../store/appContext";
 
 const EditUserForm = ({ setIsEditing }) => {
     const { store, actions } = useContext(Context);
