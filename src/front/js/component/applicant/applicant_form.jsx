@@ -3,7 +3,7 @@ import { Modal, ModalTitle } from 'react-bootstrap';
 import { Context } from '../../store/appContext.js';
 import Alert from '../alert.jsx';
 
-const TaskForm = (props) => {
+const ApplicantForm = (props) => {
     const { store, actions } = useContext(Context);
     const [price, setPrice] = useState(0);
 
@@ -12,10 +12,12 @@ const TaskForm = (props) => {
     }, [props.show])
 
     useEffect(() => {
-        if(store.message == "Applied successfully.") {
+        if(store.message == "Applied successfully." && props.show) {
             actions.resetMessages();
             props.setApplied(true);            
             props.handleClose();
+            actions.sendNotification("You have successfuly applied.", store.user.username);
+            actions.sendNotification(`${store.user.username} applied to your task with ID: ${props.taskID}`, props.taskRequester);
         }
     }, [store.message])
 
@@ -52,4 +54,4 @@ const TaskForm = (props) => {
     );
 }
 
-export default TaskForm;
+export default ApplicantForm;

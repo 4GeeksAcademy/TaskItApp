@@ -122,7 +122,7 @@ export const Task = () => {
 			</div>
 
 			<TaskForm show={showTaskForm} handleClose={handleCloseTaskForm} currentTask={task} loadInfo={loadInfo} ></TaskForm>
-			<ApplicantForm show={showApplicationForm} handleClose={handleCloseApplicationForm} taskID={task.id} setApplied={setApplied} ></ApplicantForm>
+			<ApplicantForm show={showApplicationForm} handleClose={handleCloseApplicationForm} taskID={task.id} setApplied={setApplied} taskRequester={task.requester_user?.username}></ApplicantForm>
 		</div>
 	);
 };
