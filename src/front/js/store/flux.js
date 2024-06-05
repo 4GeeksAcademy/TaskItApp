@@ -435,13 +435,14 @@ const getState = ({ getStore, getActions, setStore }) => {
 				});
 			},
 
-			editUser: (id, username, email, password, fullName, description) => {
+			editUser: (id, username, email, password, fullName, description, role = null) => {
 				const user = {
 					"username": username,
 					"email": email,
 					"password": password,
 					"full_name": fullName,
 					"description": description,
+					"role": role
 				};
 			
 				const config = { 
@@ -457,7 +458,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					.then(response => response.json())
 					.then(() => {
 						// Actualiza el usuario en el store local
-						const updatedUser = { ...getStore().user, username, email, full_name: fullName, description };
+						const updatedUser = { ...getStore().user, username, email, full_name: fullName, description, role };
 						setStore({ user: updatedUser });
 					});
 			},
