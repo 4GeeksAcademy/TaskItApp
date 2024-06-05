@@ -12,7 +12,7 @@ const LoginUser = () => {
         e.preventDefault();
         actions.login(username, password).then(() => {
             if (store.auth) {
-                navigate("/user-panel");
+                navigate("/");
             }
         });
     }
