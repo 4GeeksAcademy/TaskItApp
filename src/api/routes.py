@@ -4,8 +4,8 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 import cloudinary
 import cloudinary.uploader
 
-from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Task, StatusEnum, Address, Category, RoleEnum, Requester, TaskSeeker, Rating, Postulant, Notification
+from flask import Flask, request, jsonify, url_for, Blueprint, current_app
+from api.models import db, User, Task, StatusEnum, Address, Category, RoleEnum, Requester, TaskSeeker, Rating, Postulant, Notification, Chat, ChatMessage
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from datetime import datetime
@@ -792,3 +792,57 @@ def upload_image():
         db.session.commit()
         return jsonify({"message": "Image uploaded successfully", "url": upload_result['url']}), 200
     return jsonify({"error": "No file provided"}), 400
+
+@api.route('/chats', methods=['POST'])
+def create_chat():
+    data = request.get_json()
+    room_name = data.get('room_name')
+    requester_id = data.get('requester_id')
+    seeker_id = data.get('seeker_id')
+    task_id = data.get('task_id')
+    
+    if not room_name or not requester_id or not seeker_id or not task_id:
+        return jsonify({'error': 'Missing fields.'}), 400
+    
+    existing_requester = User.query.get(requester_id)
+    if not existing_requester: return jsonify({'error': 'Requester with given user id not found.'}), 404
+
+    existing_seeker = User.query.get(seeker_id)
+    if not existing_seeker: return jsonify({'error': 'Task seeker with given user id not found.'}), 404
+
+    existing_task = Task.query.get(task_id)
+    if not existing_task: return jsonify({'error': 'Task with given id not found.'}), 404
+    
+    chat = Chat(room_name=room_name, requester_id=requester_id, seeker_id=seeker_id, task_id=task_id)
+    db.session.add(chat)
+    db.session.commit()
+    
+    return jsonify({'message': 'Chat created successfully.'}), 200
+
+@api.route('users/<int:id>/chats', methods=['GET'])
+def get_user_chats(id):
+    chats = Chat.query.filter((Chat.requester_id == id) | (Chat.seeker_id == id)).all()
+    return jsonify([chat.serialize() for chat in chats]), 200
+
+
+@api.route('/chats/<int:id>/messages', methods=['POST'])
+def create_message(id):
+    data = request.get_json()
+    message = data.get('message')
+    sender_id = data.get('sender_id')
+    
+    if not message or not sender_id:
+        return jsonify({'error': 'Missing fields.'}), 400
+    
+    existing_sender = User.query.get(sender_id)
+    if not existing_sender: return jsonify({'error': 'Sender with given user id not found.'}), 404
+
+    existing_chat = Chat.query.get(id)
+    if not existing_chat: return jsonify({'error': 'Chat with given id not found.'}), 404
+    
+    message = ChatMessage(chat_id=id, sender_id=sender_id, message=message)
+
+    db.session.add(message)
+    db.session.commit()
+    
+    return jsonify({'message': 'Message sent successfully.'}), 200

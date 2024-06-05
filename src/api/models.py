@@ -276,3 +276,48 @@ class Notification(db.Model):
             "seen": self.seen,
             "user_id": self.user_id,
         }
+    
+class Chat(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    requester_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    requester_user = db.relationship('User', foreign_keys=[requester_user_id])
+    seeker_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    seeker_user = db.relationship('User', foreign_keys=[seeker_user_id])
+    task_id = db.Column(db.Integer, db.ForeignKey('task.id'))
+    task = db.relationship('Task')
+    room_name = db.Column(db.String, nullable=False)
+
+    def __repr__(self):
+        return f'<Chat {self.requester_user.username} - {self.seeker_user.username} >'
+    
+    def serialize(self):
+        messages_data = [message.serialize() for message in self.messages]
+        return {
+            "id": self.id,
+            "requester_user": self.requester_user.serialize(),
+            "seeker_user": self.seeker_user.serialize(),
+            "room_name": self.room_name,
+            "task_id": self.task_id,
+            "messages": messages_data,
+        }
+    
+class ChatMessage(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sender_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    sender_user = db.relationship('User')
+    chat_id = db.Column(db.Integer, db.ForeignKey('chat.id'), nullable=False)
+    chat = db.relationship('Chat', backref=db.backref('messages', lazy=True))
+    message = db.Column(db.String(500), nullable=False)
+    timestamp = db.Column(db.DateTime(timezone=True), default=func.now(), nullable=False)
+
+    def __repr__(self):
+        return f'<Chat {self.sender_user.username} - {self.message} >'
+    
+    def serialize(self):
+        return {
+            "id": self.id,
+            "sender_user_id": self.sender_user.id,
+            "chat_id": self.chat_id,
+            "message": self.message,
+            "timestamp": self.timestamp
+        }
