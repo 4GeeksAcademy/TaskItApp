@@ -306,16 +306,17 @@ def add_user():
     username = data.get('username')
     email = data.get("email")
     password = data.get('password')
-    full_name = data.get('full_name')
-    description = data.get('description')
     
-    if not username or not email or not password or not full_name:
+    if not username or not email or not password:
         return jsonify({ 'error': 'Missing fields.'}), 400
     
     existing_email = User.query.filter_by(email=email).first()
-    if existing_email: return jsonify({ 'error': 'Email already used.'}), 400
+    existing_username = User.query.filter_by(username=username).first()
+    if existing_email and existing_username: return jsonify({ 'error': 'Email and username already in use.'}), 400
+    if existing_username: return jsonify({ 'error': 'Username already in use.'}), 400
+    if existing_email: return jsonify({ 'error': 'Email already in use.'}), 400
 
-    new_user = User(username=username, email=email, password=password, full_name=full_name, description=description)
+    new_user = User(username=username, email=email, password=password)
     
     db.session.add(new_user)
     db.session.commit()
@@ -699,28 +700,6 @@ def delete_postulant(id):
     db.session.commit()
 
     return jsonify({'message': 'Postulant deleted successfully.'}), 200
-
-@api.route('/signup', methods=['POST'])
-def signup():
-    data = request.json
-    username = data.get('username')
-    email = data.get('email')
-    password = data.get('password')
-    full_name = data.get('full_name')
-    description = data.get('description')
-
-    if not username or not email or not password or not full_name:
-        return jsonify({'error': 'Missing fields.'}), 400
-
-    existing_user = User.query.filter_by(email=email).first()
-    if existing_user:
-        return jsonify({'error': 'Email already used.'}), 400
-
-    new_user = User(username=username, email=email, password=password, full_name=full_name, description=description)
-    db.session.add(new_user)
-    db.session.commit()
-
-    return jsonify({'message': 'User created successfully.'}), 201
 
 @api.route('/login', methods=['POST'])
 def login():

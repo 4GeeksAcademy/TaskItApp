@@ -407,29 +407,32 @@ const getState = ({ getStore, getActions, setStore }) => {
 				)
 			},
 
-            addUser: (username, email, password, fullName, description) => {
-				const newUser = {
-					"username": username,
-					"email": email,
-					"password": password,
-					"full_name": fullName,
-					"description": description,
-				}
-
-				const config = { 
-					method: "POST",
-					body: JSON.stringify(newUser),
-					headers: {
-						'Accept': 'application/json',
-						'Content-Type': 'application/json'
+            addUser: (username, email, password) => {
+				return new Promise((resolve) => {
+					const newUser = {
+						"username": username,
+						"email": email,
+						"password": password,
 					}
-				}
-
-				fetchHelper(
-					process.env.BACKEND_URL + `/api/users`,
-					config,
-					() => getActions().getUsers()
-				);
+			
+					const config = { 
+						method: "POST",
+						body: JSON.stringify(newUser),
+						headers: {
+							'Accept': 'application/json',
+							'Content-Type': 'application/json'
+						}
+					}
+			
+					fetchHelper(
+						`${process.env.BACKEND_URL}/api/users`,
+						config,
+						(data) => {
+							resolve(data);
+							getActions().getUsers();
+						},
+					);
+				});
 			},
 
 			editUser: (id, username, email, password, fullName, description) => {
@@ -799,26 +802,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 				.catch(error => console.error(error));
 			},
 
-			signup: (email, password, username, fullName, description) => {
-				const newUser = { username, email, password, full_name: fullName, description };
-				const config = { 
-					method: "POST",
-					body: JSON.stringify(newUser),
-					headers: { 'Content-Type': 'application/json' }
-				};
-			
-				return fetch(process.env.BACKEND_URL + "/api/signup", config)
-					.then((response) => {
-						if (!response.ok) {
-							return response.json().then((error) => {
-								setStore({ signup_error: error.error });
-								throw new Error(error.error);
-							});
-						}
-					})
-					.catch((error) => console.error(error));
-			},
-			
 			login: (username, password) => {
 				const credentials = { username, password };
 				const config = { 
