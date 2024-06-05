@@ -88,24 +88,11 @@ def handle_disconnect():
     print('Client disconnected')
 
 @socketio.on('message')
-def handle_message(msg):
-    print('Message: ' + msg)
-    send(msg, broadcast=True, include_self=True)
-
-@socketio.on('custom_event')
-def handle_custom_event(json):
-    print('Received event: ' + str(json))
-    emit('response_event', json, broadcast=True)
-
-@app.route('/notify', methods=['POST'])
-def notify():
-  data = request.get_json()
-  notification = data.get('notification')
-
-  print(f"Emitting notification: {notification}")
-
-  socketio.emit('notification', {'message': notification}, include_self=True)
-  return "Notification sent!"
+def handle_message(data):
+    print('Message received:', data)
+    msg = data.get('message', 'No message provided')
+    user = data.get('username')
+    send({'message': msg, 'username': user}, broadcast=True, include_self=True)
 
 @socketio.on('join')
 def handle_join(data):
@@ -137,9 +124,9 @@ def send_notification(room_name, notification):
     emit('notification', {'message': notification}, room=room_name, namespace='/')
 
 cloudinary.config(
-  cloud_name = 'doojwu2m7',
-  api_key = '768687592778116',
-  api_secret = 'V9KzZojFHOzBBT6R8IBFObKZmYc'
+    cloud_name = 'doojwu2m7',
+    api_key = '768687592778116',
+    api_secret = 'V9KzZojFHOzBBT6R8IBFObKZmYc'
 )
 
 # this only runs if `$ python src/main.py` is executed
