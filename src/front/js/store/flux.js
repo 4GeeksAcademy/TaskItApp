@@ -384,7 +384,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					fetchHelper(
 						`${process.env.BACKEND_URL}/api/users/${username}`, 
 						{}, 
-						(data) => resolve(data),
+						(data) => { resolve(data); setStore({ user: data })},
 						(error) => {
 							console.error(error);
 							reject(error);
@@ -457,9 +457,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 				return fetch(process.env.BACKEND_URL + `/api/users/${id}`, config)
 					.then(response => response.json())
 					.then(() => {
-						// Actualiza el usuario en el store local
 						const updatedUser = { ...getStore().user, username, email, full_name: fullName, description, role };
 						setStore({ user: updatedUser });
+						getActions().getUserByUsername(username);
 					});
 			},
 			
