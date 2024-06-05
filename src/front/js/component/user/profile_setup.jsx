@@ -7,11 +7,18 @@ const ProfileSetup = () => {
     const [fullName, setFullName] = useState('');
     const [description, setDescription] = useState('');
     const [role, setRole] = useState('');
+    const [file, setFile] = useState(null);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(fullName, description, role)
-        await actions.editUser(store.user.id, store.user.username, store.user.email, store.user.password, fullName, description, role);
+        await actions.editUser(store.user.id, store.user.username, store.user.email, '', fullName, description, role);
+        if (file) {
+            await actions.uploadProfilePicture(store.user.id, file);
+        }
+    };
+
+    const handleFileChange = (e) => {
+        setFile(e.target.files[0]);
     };
 
     return (
@@ -25,6 +32,15 @@ const ProfileSetup = () => {
                         </div>
                         <div className="card-body">
                             <form onSubmit={handleSubmit}>
+                                <div className="form-group">
+                                    <label htmlFor="profile-picture" className="form-label">Profile Picture</label>
+                                    <input
+                                        type="file"
+                                        className="form-control"
+                                        id="profile-picture"
+                                        onChange={handleFileChange}
+                                    />
+                                </div>
                                 <div className="form-group">
                                     <label htmlFor="full-name">Full Name:</label>
                                     <input

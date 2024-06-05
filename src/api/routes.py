@@ -373,7 +373,20 @@ def edit_user(id):
     if new_role_str:
         try:
             new_role = RoleEnum(new_role_str)
-            user.role = new_role
+            if new_role != user.role:
+                if user.requester:
+                    user.requester.archive()
+                if user.task_seeker:
+                    user.task_seeker.archive()
+                
+                if new_role == RoleEnum.REQUESTER or new_role == RoleEnum.BOTH:
+                    requester = Requester(user=user)
+                    db.session.add(requester)
+                if new_role == RoleEnum.TASK_SEEKER or new_role == RoleEnum.BOTH:
+                    task_seeker = TaskSeeker(user=user)
+                    db.session.add(task_seeker)
+                
+                user.role = new_role
         except ValueError:
             return jsonify({"error": "Invalid role value."}), 400
 
@@ -381,7 +394,7 @@ def edit_user(id):
     if new_email: user.email = new_email
     if new_password: user.password = new_password
     if new_full_name: user.full_name = new_full_name
-    if new_description: user.new_description = new_description
+    if new_description: user.description = new_description
 
     db.session.commit()
 

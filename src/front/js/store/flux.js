@@ -407,7 +407,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				)
 			},
 
-            addUser: (username, email, password) => {
+            addUser: (email, password, username) => {
 				return new Promise((resolve) => {
 					const newUser = {
 						"username": username,
@@ -435,7 +435,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				});
 			},
 
-			editUser: (id, username, email, password, fullName, description, role = null) => {
+			editUser: (id, username, email, password, fullName, description, role) => {
 				const user = {
 					"username": username,
 					"email": email,
@@ -444,7 +444,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					"description": description,
 					"role": role
 				};
-			
+
 				const config = { 
 					method: "PUT",
 					body: JSON.stringify(user),
@@ -872,6 +872,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 						return false;
 					});
 			},
+
 			uploadProfilePicture: async (userId, file) => {
                 const formData = new FormData();
                 formData.append('user_id', userId);
@@ -895,8 +896,6 @@ const getState = ({ getStore, getActions, setStore }) => {
                     console.error('Error uploading image:', error);
                 }
             },
-			
-
 		}
 	};
 };
