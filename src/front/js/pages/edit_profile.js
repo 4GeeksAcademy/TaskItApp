@@ -8,17 +8,30 @@ const EditProfile = () => {
     const [email, setEmail] = useState(store.user.email);
     const [fullName, setFullName] = useState(store.user.full_name);
     const [password, setPassword] = useState('');
+    const [file, setFile] = useState(null);
     const navigate = useNavigate();
+
+    const handleFileChange = (e) => {
+        setFile(e.target.files[0]);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         await actions.editUser(store.user.id, username, email, password, fullName);
-        navigate("/user-panel");  // Redirige al panel de usuario después de guardar
+        if (file) {
+            await actions.uploadProfilePicture(store.user.id, file);
+        }
+        navigate("/user-panel");
     };
 
     return (
         <div className="container mt-5">
             <h2>Edit Profile</h2>
+            {store.user.profile_picture && (
+                <div className="mb-3">
+                    <img src={store.user.profile_picture} alt="Profile" className="img-thumbnail" />
+                </div>
+            )}
             <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                     <label htmlFor="username" className="form-label">Username</label>
@@ -62,6 +75,15 @@ const EditProfile = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="Leave blank to keep current password"
+                    />
+                </div>
+                <div className="mb-3">
+                    <label htmlFor="profilePicture" className="form-label">Profile Picture</label>
+                    <input
+                        type="file"
+                        className="form-control"
+                        id="profilePicture"
+                        onChange={handleFileChange}
                     />
                 </div>
                 <button type="submit" className="btn btn-primary">Save Changes</button>

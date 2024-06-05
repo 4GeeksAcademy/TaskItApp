@@ -18,6 +18,7 @@ class User(db.Model):
     full_name = db.Column(db.String(120), unique=False, nullable=True)
     role = db.Column(db.Enum(RoleEnum), nullable=True, default=RoleEnum.NONE)
     description = db.Column(db.String(500), unique=False, nullable=True)
+    profile_picture = db.Column(db.String(500), unique=False, nullable=True)  # Nuevo campo
 
     requester = db.relationship('Requester', uselist=False, back_populates='user')
     task_seeker = db.relationship('TaskSeeker', uselist=False, back_populates='user')
@@ -34,6 +35,7 @@ class User(db.Model):
             "full_name": self.full_name,
             "role": self.role.value,
             "description": self.description,
+            "profile_picture": self.profile_picture,  # Nuevo campo
             "seeker": self.task_seeker.serialize() if self.task_seeker else None,
             "requester": self.requester.serialize() if self.requester else None
         }
