@@ -2,9 +2,11 @@ import React, { useContext, useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import { Context } from '../../store/appContext';
 
-const Notification = () => {
+const Chat = () => {
     const [socket, setSocket] = useState(null);
-    const { store, actions } = useContext(Context);
+    const [messages, setMessages] = useState([]);
+    const [messageInput, setMessageInput] = useState('');
+    const { store } = useContext(Context);
 
     useEffect(() => {
         const newSocket = io(process.env.BACKEND_URL);
@@ -22,12 +24,11 @@ const Notification = () => {
 
         socket.on('connect', () => {
             console.log('Connected to server'); 
-            socket.emit('join', { room: store.user.username, username: store.user.username });
         });
 
-        socket.on('notification', (data) => {
-            console.log("Received notification:", data);
-            actions.getNotifications();
+        socket.on('message', (data) => {
+            console.log("Received message:", data);
+            setMessages((prevMessages) => [...prevMessages, data]);
         });
 
         socket.on('disconnect', () => {
@@ -40,21 +41,37 @@ const Notification = () => {
 
         return () => {
             socket.off('connect');
-            socket.off('notification');
+            socket.off('message');
             socket.off('disconnect');
             socket.off('error');
         };
     }, [socket, store.user]);
 
+    const sendMessage = () => {
+        if (messageInput.trim() !== '') {
+            socket.emit('message', { text: messageInput, sender: store.user.username });
+            setMessageInput('');
+        }
+    };
+
     return (
         <div>
-            {store.notifications.length > 0 && (
-                <span className="position-absolute top-0 end-0 badge rounded-pill bg-danger" style={{ fontSize: "0.6rem" }}>
-                    {store.notifications.length}
-                </span>
-            )}
+            <div className="messages">
+                {messages.map((msg, index) => (
+                    <div key={index}>
+                        <span>{msg.sender}: </span>
+                        <span>{msg.text}</span>
+                    </div>
+                ))}
+            </div>
+            <input
+                type="text"
+                value={messageInput}
+                onChange={(e) => setMessageInput(e.target.value)}
+            />
+            <button onClick={sendMessage}>Send</button>
         </div>
     );
 }
 
-export default Notification;
+export default Chat;
