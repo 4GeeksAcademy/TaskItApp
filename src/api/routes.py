@@ -309,16 +309,17 @@ def add_user():
     username = data.get('username')
     email = data.get("email")
     password = data.get('password')
-    full_name = data.get('full_name')
-    description = data.get('description')
     
-    if not username or not email or not password or not full_name:
+    if not username or not email or not password:
         return jsonify({ 'error': 'Missing fields.'}), 400
     
     existing_email = User.query.filter_by(email=email).first()
-    if existing_email: return jsonify({ 'error': 'Email already used.'}), 400
+    existing_username = User.query.filter_by(username=username).first()
+    if existing_email and existing_username: return jsonify({ 'error': 'Email and username already in use.'}), 400
+    if existing_username: return jsonify({ 'error': 'Username already in use.'}), 400
+    if existing_email: return jsonify({ 'error': 'Email already in use.'}), 400
 
-    new_user = User(username=username, email=email, password=password, full_name=full_name, description=description)
+    new_user = User(username=username, email=email, password=password)
     
     db.session.add(new_user)
     db.session.commit()
@@ -372,7 +373,20 @@ def edit_user(id):
     if new_role_str:
         try:
             new_role = RoleEnum(new_role_str)
-            user.role = new_role
+            if new_role != user.role:
+                if user.requester:
+                    user.requester.archive()
+                if user.task_seeker:
+                    user.task_seeker.archive()
+                
+                if new_role == RoleEnum.REQUESTER or new_role == RoleEnum.BOTH:
+                    requester = Requester(user=user)
+                    db.session.add(requester)
+                if new_role == RoleEnum.TASK_SEEKER or new_role == RoleEnum.BOTH:
+                    task_seeker = TaskSeeker(user=user)
+                    db.session.add(task_seeker)
+                
+                user.role = new_role
         except ValueError:
             return jsonify({"error": "Invalid role value."}), 400
 
@@ -380,7 +394,7 @@ def edit_user(id):
     if new_email: user.email = new_email
     if new_password: user.password = new_password
     if new_full_name: user.full_name = new_full_name
-    if new_description: user.new_description = new_description
+    if new_description: user.description = new_description
 
     db.session.commit()
 
@@ -702,28 +716,6 @@ def delete_postulant(id):
     db.session.commit()
 
     return jsonify({'message': 'Postulant deleted successfully.'}), 200
-
-@api.route('/signup', methods=['POST'])
-def signup():
-    data = request.json
-    username = data.get('username')
-    email = data.get('email')
-    password = data.get('password')
-    full_name = data.get('full_name')
-    description = data.get('description')
-
-    if not username or not email or not password or not full_name:
-        return jsonify({'error': 'Missing fields.'}), 400
-
-    existing_user = User.query.filter_by(email=email).first()
-    if existing_user:
-        return jsonify({'error': 'Email already used.'}), 400
-
-    new_user = User(username=username, email=email, password=password, full_name=full_name, description=description)
-    db.session.add(new_user)
-    db.session.commit()
-
-    return jsonify({'message': 'User created successfully.'}), 201
 
 @api.route('/login', methods=['POST'])
 def login():

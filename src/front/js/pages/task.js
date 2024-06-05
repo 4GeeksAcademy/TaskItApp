@@ -73,9 +73,16 @@ export const Task = () => {
 			<div className="p-5 pt-0">
 				<div className="row d-flex justify-content-center">
 					<div className="col-2">
-						<div className="rounded bg-dark overflow-hidden" style={{ width: "100%", aspectRatio: "1/1" }}></div>
+						<div className="rounded bg-dark overflow-hidden" style={{ width: "100%", aspectRatio: "1/1" }}>
+							{ task.requester_user?.profile_picture && <img
+                                className="img-fluid"
+                                src={task.requester_user?.profile_picture}
+                                alt="User Profile"
+                                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                            />}
+						</div>
 						<Link to={`/users/${task.requester_user?.username}`}>
-							<h5 className="mb-0 pt-2" >{task.requester_user?.username || "username"}</h5>
+							<h5 className="mb-0 pt-2" >{task.requester_user?.username || "deleted"}</h5>
 						</Link>
 						<div className="d-flex align-items-center">
 							<StarRating value={requester.overall_rating}></StarRating>

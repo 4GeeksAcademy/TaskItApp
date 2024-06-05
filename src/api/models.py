@@ -49,6 +49,10 @@ class Requester(db.Model):
     total_requested_tasks = db.Column(db.Integer, unique=False, nullable=True, default=0)
     average_budget = db.Column(db.Integer, unique=False, nullable=True, default=0)
     total_open_tasks = db.Column(db.Integer, unique=False, nullable=True, default=0)
+    archived = db.Column(db.Boolean, default=False)
+
+    def archive(self):
+        self.archived = True
 
     def __repr__(self):
         return f'<Requester {self.user.username}>'
@@ -63,13 +67,15 @@ class Requester(db.Model):
                 "full_name": self.user.full_name,
                 "description": self.user.description,
                 "role": self.user.role.value,
+                "profile_picture": self.user.profile_picture,
             },
             "user_id": self.user_id,
             "overall_rating": self.overall_rating,
             "total_reviews": self.total_reviews,
             "total_requested_tasks": self.total_requested_tasks,
             "average_budget": self.average_budget,
-            "total_open_tasks": self.total_open_tasks
+            "total_open_tasks": self.total_open_tasks,
+            "archived": self.archived
         }
     
 class TaskSeeker(db.Model):
@@ -80,6 +86,10 @@ class TaskSeeker(db.Model):
     total_reviews = db.Column(db.Integer, unique=False, nullable=True, default=0)
     total_completed_tasks = db.Column(db.Integer, unique=False, nullable=True, default=0)
     total_ongoing_tasks = db.Column(db.Integer, unique=False, nullable=True, default=0)
+    archived = db.Column(db.Boolean, default=False)
+
+    def archive(self):
+        self.archived = True
 
     def __repr__(self):
         return f'<Seeker {self.user.username}>'
@@ -94,12 +104,14 @@ class TaskSeeker(db.Model):
                 "full_name": self.user.full_name,
                 "description": self.user.description,
                 "role": self.user.role.value,
+                "profile_picture": self.user.profile_picture,
             },
             "user_id": self.user_id,
             "overall_rating": self.overall_rating,
             "total_reviews": self.total_reviews,
             "total_completed_tasks": self.total_completed_tasks,
-            "total_ongoing_tasks": self.total_ongoing_tasks
+            "total_ongoing_tasks": self.total_ongoing_tasks,
+            "archived": self.archived,
         }
     
 class StatusEnum(Enum):
@@ -143,10 +155,10 @@ class Task(db.Model):
             "delivery_address": self.delivery_address.serialize(),
             "pickup_location_id": self.pickup_location_id,
             "pickup_address": self.pickup_address.serialize(),
-            "seeker_id": self.seeker_id if self.seeker else None,
-            "seeker": self.seeker.serialize() if self.seeker else None,
-            "requester_id": self.requester_id,
-            "requester_user": self.requester.user.serialize(),
+            "seeker_id": self.seeker_id if self.seeker and not self.seeker.archived else None,
+            "seeker": self.seeker.serialize() if self.seeker and not self.seeker.archived else None,
+            "requester_id": self.requester_id if self.requester and not self.requester.archived else None,
+            "requester_user": self.requester.user.serialize() if self.requester and not self.requester.archived else None,
             "category_id": self.category_id,
             "category_name": self.category.name,
             "budget": self.budget,

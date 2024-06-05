@@ -35,18 +35,20 @@ const SettingsUser = ({ dropdownVisible, setDropdownVisible }) => {
     return (
         <div ref={ref} className={`dropdown-menu ${dropdownVisible ? 'show' : ''}`} aria-labelledby="dropdownMenuButton">
             <div className="dropdown-item">
-                <strong>Profile</strong>
-                <img
-                    className="img-fluid img-circle"
-                    src="https://www.phillymag.com/wp-content/uploads/sites/3/2019/03/best-career-advice-900x600.jpg"
-                    alt="User Profile"
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                />
-                <ul>
-                    <li>Username: {store.user.username}</li>
-                    <li>Email: {store.user.email}</li>
-                    <li>Full Name: {store.user.full_name}</li>
-                </ul>
+                <div className="d-flex align-items-center mb-2">
+                    <div className="rounded-circle bg-dark me-2 overflow-hidden" style={{ height: "60px", width: "60px" }}>
+                        { store.user.profile_picture && <img
+                            className="img-fluid"
+                            src={store.user.profile_picture}
+                            alt="User Profile"
+                            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                        />}
+                    </div>
+                    <div className="d-flex flex-column justify-content-around">
+                        <span className="fs-5">{store.user.full_name}</span>
+                        <span className="fs-5">{store.user.username}</span>
+                    </div>
+                </div>
             </div>
             <div className="dropdown-item" type="button" onClick={handleEditProfileClick}>
                 <strong>Edit profile <Icon icon="mage:edit-fill" /></strong>

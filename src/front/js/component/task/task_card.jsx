@@ -26,10 +26,17 @@ const Task = ({ taskInfo }) => {
                 )}
                 { path != "/" &&
                     <div className="d-flex align-items-center mb-2">
-                        <div className="rounded-circle bg-dark me-2" style={{ height: "60px", width: "60px" }}></div>
+                        <div className="rounded-circle bg-dark me-2 overflow-hidden" style={{ height: "60px", width: "60px" }}>
+                            { taskInfo.requester_user?.profile_picture && <img
+                                className="img-fluid"
+                                src={taskInfo.requester_user?.profile_picture}
+                                alt="User Profile"
+                                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                            />}
+                        </div>
                         <div className="d-flex flex-column justify-content-around">
                             <span className="fs-5">
-                                <Link to={`/users/${taskInfo.requester_user.username}`}><b>{taskInfo.requester_user.username} </b></Link> 
+                                { taskInfo.requester_user ? <Link to={`/users/${taskInfo.requester_user.username}`}><b>{taskInfo.requester_user.username} </b></Link> : <span>deleted </span> }
                                 <span className="text-muted">in {taskInfo.category_name}</span>
                             </span>
                             <span>{actions.timeAgo(taskInfo.creation_date)}</span>

@@ -1,25 +1,24 @@
 import React, { useState, useContext } from "react";
 import { Context } from "../store/appContext";
 import { useNavigate, Link } from "react-router-dom";
+import Alert from "../component/alert.jsx"
 
 const SignupUser = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
-    const [fullName, setFullName] = useState('');
-    const [description, setDescription] = useState('');
     const { store, actions } = useContext(Context);
     const navigate = useNavigate();
 
-    function sendData(e) {
+    async function sendData(e) {
         e.preventDefault();
-        actions.signup(email, password, username, fullName, description).then(() => {
-            navigate("/login-user");
-        });
+        const newUser = await actions.addUser(email, password, username);
+        if(newUser) navigate("/login-user");
     }
 
     return (
         <div className="d-flex flex-column align-items-center">
+            {(store.message || store.error) && <Alert message={store.message} error={store.error} ></Alert>}
             <form className="w-50 mx-auto" onSubmit={sendData}>
                 <div className="mb-3">
                     <label htmlFor="exampleInputEmail" className="form-label">Email address</label>
@@ -46,18 +45,6 @@ const SignupUser = () => {
                     />
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="exampleInputFullName" className="form-label">Full Name</label>
-                    <input 
-                        value={fullName} 
-                        onChange={(e) => setFullName(e.target.value)} 
-                        type="text" 
-                        className="form-control" 
-                        id="exampleInputFullName" 
-                        placeholder="Enter full name"
-                        required
-                    />
-                </div>
-                <div className="mb-3">
                     <label htmlFor="exampleInputPassword" className="form-label">Password</label>
                     <input 
                         value={password} 
@@ -69,18 +56,7 @@ const SignupUser = () => {
                         required
                     />
                 </div>
-                <div className="mb-3">
-                    <label htmlFor="exampleInputDescription" className="form-label">Description</label>
-                    <input 
-                        value={description} 
-                        onChange={(e) => setDescription(e.target.value)} 
-                        type="text" 
-                        className="form-control" 
-                        id="exampleInputDescription" 
-                        placeholder="Description"
-                    />
-                </div>
-                <button type="submit" className="btn btn-success w-100">Signup</button>
+                <button type="submit" className="btn btn-success w-100">Sign Up</button>
             </form>
             <br />
             <Link to="/">
