@@ -29,12 +29,12 @@ export const User = () => {
 			<div className="row d-flex justify-content-center mx-2">
 				<div className="col-6" >
 					<div className="rounded overflow-hidden p-0 float-start">
-						<img 
+						{ user.profile_picture && <img 
 							className="img-fluid" 
-							src="https://www.phillymag.com/wp-content/uploads/sites/3/2019/03/best-career-advice-900x600.jpg" 
+							src={user.profile_picture} 
 							alt="User Profile"
 							style={{ height: "40rem", objectFit: "cover" }}
-						/>
+						/>}
 					</div>
 				</div>
 				<div className="col-6 d-flex flex-column justify-content-between">

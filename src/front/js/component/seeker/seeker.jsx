@@ -27,7 +27,14 @@ const Seeker = ({ seekerInfo, applicantInfo, applicants }) => {
             <div className={`card p-4 ${applicantInfo?.status == "accepted" ? "border border-success" : applicantInfo?.status == "rejected" ? "border border-danger" : ""}`}>
                 <div className="d-flex justify-content-between align-items-center mb-2">
                     <div className="d-flex align-items-center">
-                        <div className="rounded-circle bg-dark me-2" style={{ height: "60px", width: "60px" }}></div>
+                        <div className="rounded-circle bg-dark me-2 overflow-hidden" style={{ height: "60px", width: "60px" }}>
+                            { seekerInfo.user.profile_picture && <img
+                                className="img-fluid"
+                                src={seekerInfo.user.profile_picture}
+                                alt="User Profile"
+                                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                            />}
+                        </div>
                         <div className="d-flex flex-column justify-content-around">
                             <Link to={`/users/${seekerInfo.user.username}`}>
                                 <span className="fs-5"><b>{seekerInfo.user.full_name}</b> <span className="text-muted"> ({seekerInfo.user.username})</span></span>

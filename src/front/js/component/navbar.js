@@ -65,12 +65,12 @@ export const Navbar = () => {
                                     style={{ width: "3rem", height: "3rem" }}
                                     onClick={toggleDropdown}
                                 >
-                                    <img
+                                    { store.user.profile_picture && <img
                                         className="img-fluid"
-                                        src="https://www.phillymag.com/wp-content/uploads/sites/3/2019/03/best-career-advice-900x600.jpg"
+                                        src={store.user.profile_picture}
                                         alt="User Profile"
                                         style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                                    />
+                                    />}
                                 </div>
                                 <SettingsUser dropdownVisible={dropdownVisible} setDropdownVisible={setDropdownVisible} />
                             </li>
