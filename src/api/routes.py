@@ -1,6 +1,9 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
+import cloudinary
+import cloudinary.uploader
+
 from flask import Flask, request, jsonify, url_for, Blueprint
 from api.models import db, User, Task, StatusEnum, Address, Category, RoleEnum, Requester, TaskSeeker, Rating, Postulant, Notification
 from api.utils import generate_sitemap, APIException
@@ -764,3 +767,15 @@ def mark_as_seen(index):
     notification.seen = True
     db.session.commit()
     return jsonify({"message": "Notification marked as seen successfully."}), 200
+
+@api.route('/upload', methods=['POST'])
+def upload_image():
+    user_id = request.form.get('user_id')
+    file_to_upload = request.files['file']
+    if file_to_upload:
+        upload_result = cloudinary.uploader.upload(file_to_upload)
+        user = User.query.get(user_id)
+        user.profile_picture = upload_result['url']
+        db.session.commit()
+        return jsonify({"message": "Image uploaded successfully", "url": upload_result['url']}), 200
+    return jsonify({"error": "No file provided"}), 400

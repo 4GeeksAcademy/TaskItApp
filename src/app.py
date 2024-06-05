@@ -2,6 +2,10 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 import os
+
+import cloudinary
+import cloudinary.uploader
+
 from flask import Flask, request, jsonify, url_for, send_from_directory, render_template
 from flask_migrate import Migrate
 from flask_swagger import swagger
@@ -131,6 +135,12 @@ def send_notification_to_room(room_name):
 
 def send_notification(room_name, notification):
     emit('notification', {'message': notification}, room=room_name, namespace='/')
+
+cloudinary.config(
+  cloud_name = 'doojwu2m7',
+  api_key = '768687592778116',
+  api_secret = 'V9KzZojFHOzBBT6R8IBFObKZmYc'
+)
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':

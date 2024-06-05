@@ -872,6 +872,29 @@ const getState = ({ getStore, getActions, setStore }) => {
 						return false;
 					});
 			},
+			uploadProfilePicture: async (userId, file) => {
+                const formData = new FormData();
+                formData.append('user_id', userId);
+                formData.append('file', file);
+
+                const config = {
+                    method: 'POST',
+                    body: formData
+                };
+
+                try {
+                    const response = await fetch(process.env.BACKEND_URL + '/api/upload', config);
+                    const data = await response.json();
+                    if (response.ok) {
+                        const updatedUser = { ...getStore().user, profile_picture: data.url };
+                        setStore({ user: updatedUser });
+                    } else {
+                        console.error(data.error);
+                    }
+                } catch (error) {
+                    console.error('Error uploading image:', error);
+                }
+            },
 			
 
 		}
