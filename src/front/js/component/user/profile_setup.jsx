@@ -91,7 +91,7 @@ const ProfileSetup = () => {
                                             type="radio"
                                             id="seeker"
                                             name="role"
-                                            value="seeker"
+                                            value="task_seeker"
                                             checked={role === 'task_seeker'}
                                             onChange={(e) => setRole(e.target.value)}
                                             required
