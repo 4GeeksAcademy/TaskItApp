@@ -56,20 +56,11 @@ const Chat = () => {
 
     return (
         <div>
-            <div className="messages">
-                {messages.map((msg, index) => (
-                    <div key={index}>
-                        <span>{msg.sender}: </span>
-                        <span>{msg.text}</span>
-                    </div>
-                ))}
-            </div>
-            <input
-                type="text"
-                value={messageInput}
-                onChange={(e) => setMessageInput(e.target.value)}
-            />
-            <button onClick={sendMessage}>Send</button>
+            {store.notifications.length > 0 && (
+                <span className="position-absolute top-0 end-0 badge rounded-pill bg-danger" style={{ fontSize: "0.6rem" }}>
+                    {store.notifications.length}
+                </span>
+            )}
         </div>
     );
 }
