@@ -291,14 +291,12 @@ class Chat(db.Model):
         return f'<Chat {self.requester_user.username} - {self.seeker_user.username} >'
     
     def serialize(self):
-        messages_data = [message.serialize() for message in self.messages]
         return {
             "id": self.id,
             "requester_user": self.requester_user.serialize(),
             "seeker_user": self.seeker_user.serialize(),
             "room_name": self.room_name,
             "task_id": self.task_id,
-            "messages": messages_data,
         }
     
 class ChatMessage(db.Model):
@@ -317,6 +315,7 @@ class ChatMessage(db.Model):
         return {
             "id": self.id,
             "sender_user_id": self.sender_user.id,
+            "sender_user": self.sender_user.serialize(),
             "chat_id": self.chat_id,
             "message": self.message,
             "timestamp": self.timestamp
