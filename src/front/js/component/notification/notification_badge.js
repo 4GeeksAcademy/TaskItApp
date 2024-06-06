@@ -2,11 +2,9 @@ import React, { useContext, useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import { Context } from '../../store/appContext';
 
-const Chat = () => {
+const Notification = () => {
     const [socket, setSocket] = useState(null);
-    const [messages, setMessages] = useState([]);
-    const [messageInput, setMessageInput] = useState('');
-    const { store } = useContext(Context);
+    const { store, actions } = useContext(Context);
 
     useEffect(() => {
         const newSocket = io(process.env.BACKEND_URL);
@@ -24,11 +22,12 @@ const Chat = () => {
 
         socket.on('connect', () => {
             console.log('Connected to server'); 
+            socket.emit('join', { room: store.user.username, username: store.user.username });
         });
 
-        socket.on('message', (data) => {
-            console.log("Received message:", data);
-            setMessages((prevMessages) => [...prevMessages, data]);
+        socket.on('notification', (data) => {
+            console.log("Received notification:", data);
+            actions.getNotifications();
         });
 
         socket.on('disconnect', () => {
@@ -41,18 +40,11 @@ const Chat = () => {
 
         return () => {
             socket.off('connect');
-            socket.off('message');
+            socket.off('notification');
             socket.off('disconnect');
             socket.off('error');
         };
     }, [socket, store.user]);
-
-    const sendMessage = () => {
-        if (messageInput.trim() !== '') {
-            socket.emit('message', { text: messageInput, sender: store.user.username });
-            setMessageInput('');
-        }
-    };
 
     return (
         <div>
@@ -65,4 +57,4 @@ const Chat = () => {
     );
 }
 
-export default Chat;
+export default Notification;
