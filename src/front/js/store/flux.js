@@ -21,6 +21,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			message: "",
 			error: "",
 			tasks: [],
+			userTasks: [],
             addresses: [],
 			categories: [],
 			users: [],								
@@ -906,7 +907,14 @@ const getState = ({ getStore, getActions, setStore }) => {
 					.then(data => setStore({ chats: data }))
 					.catch(error => console.error(error)) 
 				}
-			}
+			},
+
+			getUserTasks: () => {
+				fetch(process.env.BACKEND_URL + `/api/users/${getStore().user.id}/tasks`)
+				.then(response => response.json())
+				.then(data => setStore({ userTasks: data }))
+				.catch(error => console.error(error));
+			},
 		}
 	};
 };
