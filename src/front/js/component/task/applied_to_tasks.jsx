@@ -20,13 +20,16 @@ const AppliedToTaskList = () => {
         <div className="container-fluid px-5">
             <h3>Applied to tasks</h3>
             <div className="row">
-                {tasks.map((task) => {
-                    return (
-                        <React.Fragment key={task.id}>
-                            <AppliedToTask taskInfo={task}></AppliedToTask>
-                        </React.Fragment>
-                    );
-                })}
+                { tasks.length == 0 
+                    ? <div>You haven't applied to tasks yet.</div>
+                    : tasks.slice().reverse().map((task) => {
+                        return (
+                            <React.Fragment key={task.id}>
+                                <AppliedToTask taskInfo={task}></AppliedToTask>
+                            </React.Fragment>
+                        );
+                    })
+                }
             </div>
         </div>
     );

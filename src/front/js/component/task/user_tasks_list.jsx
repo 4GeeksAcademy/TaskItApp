@@ -19,7 +19,7 @@ const UserTaskList = () => {
                 {store.userTasks.length === 0 ? (
                     <div>No tasks available</div>
                 ) : (
-                    store.userTasks.map((task) => {
+                    store.userTasks.slice().reverse().map((task) => {
                         return (
                             <React.Fragment key={task.id}>
                                 <Task taskInfo={task}></Task>
