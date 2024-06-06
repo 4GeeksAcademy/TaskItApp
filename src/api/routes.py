@@ -4,8 +4,8 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 import cloudinary
 import cloudinary.uploader
 
-from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Task, StatusEnum, Address, Category, RoleEnum, Requester, TaskSeeker, Rating, Postulant, Notification
+from flask import Flask, request, jsonify, url_for, Blueprint, current_app
+from api.models import db, User, Task, StatusEnum, Address, Category, RoleEnum, Requester, TaskSeeker, Rating, Postulant, Notification, Chat, ChatMessage
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from datetime import datetime
@@ -792,3 +792,36 @@ def upload_image():
         db.session.commit()
         return jsonify({"message": "Image uploaded successfully", "url": upload_result['url']}), 200
     return jsonify({"error": "No file provided"}), 400
+
+@api.route('users/<int:id>/chats', methods=['GET'])
+def get_user_chats(id):
+    chats = Chat.query.filter((Chat.requester_user_id == id) | (Chat.seeker_user_id == id)).all()
+    return jsonify([chat.serialize() for chat in chats]), 200
+
+@api.route('/chats/<int:id>/messages', methods=['POST'])
+def create_message(id):
+    data = request.get_json()
+    message = data.get('message')
+    sender_id = data.get('sender_id')
+    
+    if not message or not sender_id:
+        return jsonify({'error': 'Missing fields.'}), 400
+    
+    existing_sender = User.query.get(sender_id)
+    if not existing_sender: return jsonify({'error': 'Sender with given user id not found.'}), 404
+
+    existing_chat = Chat.query.get(id)
+    if not existing_chat: return jsonify({'error': 'Chat with given id not found.'}), 404
+    
+    message = ChatMessage(chat_id=id, sender_user_id=sender_id, message=message)
+
+    db.session.add(message)
+    db.session.commit()
+    
+    return jsonify({'message': 'Message sent successfully.'}), 200
+
+@api.route('/chats/<int:id>/messages', methods=['GET'])
+def get_messages(id):
+    existing_chat = Chat.query.get(id);
+    if not existing_chat: return jsonify({'error': 'Chat does not exist.'}), 404
+    return jsonify([message.serialize() for message in existing_chat.messages]), 200

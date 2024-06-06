@@ -20,6 +20,27 @@ const Seeker = ({ seekerInfo, applicantInfo, applicants }) => {
         actions.changeTaskStatus(applicantInfo.task_id, "in_progress");
         actions.changeTaskSeeker(applicantInfo.task_id, seekerInfo.id);
         actions.sendNotification("Seeker successfully accepted and task status changed to 'in progress'.", store.user.username);
+
+        createChat();        
+    }
+
+    const createChat = () => {
+        const newChat = { 
+            'room_name': store.user.id + seekerInfo.user.id + applicantInfo.task_id,
+            'requester_id': store.user.id,
+            'seeker_id': seekerInfo.user.id,
+            'task_id': applicantInfo.task_id,
+        };
+
+		const config = { 
+			method: "POST",
+			body: JSON.stringify(newChat),
+			headers: { 'Content-Type': 'application/json' }
+		};
+        
+        fetch(process.env.BACKEND_URL + '/chats', config)
+        .then(response => response.json())
+        .catch(error => console.error(error))
     }
 
     return (

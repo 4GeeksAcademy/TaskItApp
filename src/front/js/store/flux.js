@@ -11,6 +11,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				setStore({ message: data.message || prevMessage, error: "" });
 			} else setStore({ message: "", error: data.error || "An error occurred" });
 		} catch (error) {
+			console.log(url, config.method)
 			console.error(error);
 		}
 	};
@@ -36,6 +37,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			valid_token: false,
 			socket: io(process.env.BACKEND_URL),
 			notifications: [],
+			chats: [],
 		},
 		actions: {
 			resetMessages: () => { setStore({ message: "", error: "" }) },
@@ -896,6 +898,15 @@ const getState = ({ getStore, getActions, setStore }) => {
                     console.error('Error uploading image:', error);
                 }
             },
+
+			getChats: () => {
+				if (getStore().user.id) { 
+					fetch(process.env.BACKEND_URL + `/api/users/${getStore().user.id}/chats`)
+					.then(response => response.json())
+					.then(data => setStore({ chats: data }))
+					.catch(error => console.error(error)) 
+				}
+			}
 		}
 	};
 };

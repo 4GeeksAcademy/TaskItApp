@@ -10,7 +10,7 @@ from flask import Flask, request, jsonify, url_for, send_from_directory, render_
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from api.utils import APIException, generate_sitemap
-from api.models import db, Notification, User
+from api.models import db, Notification, User, Chat, Task
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
@@ -88,24 +88,11 @@ def handle_disconnect():
     print('Client disconnected')
 
 @socketio.on('message')
-def handle_message(msg):
-    print('Message: ' + msg)
-    send(msg, broadcast=True, include_self=True)
-
-@socketio.on('custom_event')
-def handle_custom_event(json):
-    print('Received event: ' + str(json))
-    emit('response_event', json, broadcast=True)
-
-@app.route('/notify', methods=['POST'])
-def notify():
-  data = request.get_json()
-  notification = data.get('notification')
-
-  print(f"Emitting notification: {notification}")
-
-  socketio.emit('notification', {'message': notification}, include_self=True)
-  return "Notification sent!"
+def handle_message(data):
+    print('Message received:', data)
+    msg = data.get('message', 'No message provided')
+    user = data.get('username')
+    send({'message': msg, 'username': user}, broadcast=True, include_self=True)
 
 @socketio.on('join')
 def handle_join(data):
@@ -136,10 +123,46 @@ def send_notification_to_room(room_name):
 def send_notification(room_name, notification):
     emit('notification', {'message': notification}, room=room_name, namespace='/')
 
+
+@app.route('/chats', methods=['POST'])
+def create_chat():
+    data = request.get_json()
+    room_name = data.get('room_name')
+    requester_id = data.get('requester_id')
+    seeker_id = data.get('seeker_id')
+    task_id = data.get('task_id')
+    
+    if not room_name or not requester_id or not seeker_id or not task_id:
+        return jsonify({'error': 'Missing fields.'}), 400
+    
+    existing_requester = User.query.get(requester_id)
+    if not existing_requester: return jsonify({'error': 'Requester with given user id not found.'}), 404
+
+    existing_seeker = User.query.get(seeker_id)
+    if not existing_seeker: return jsonify({'error': 'Task seeker with given user id not found.'}), 404
+
+    existing_task = Task.query.get(task_id)
+    if not existing_task: return jsonify({'error': 'Task with given id not found.'}), 404
+    
+    chat = Chat(room_name=room_name, requester_user_id=requester_id, seeker_user_id=seeker_id, task_id=task_id)
+    db.session.add(chat)
+    db.session.commit()
+
+    socketio.emit('new_chat', { 'room_name': room_name }, room=room_name)
+    socketio.emit('new_chat', { 'room_name': room_name }, room=room_name)
+    
+    return jsonify({'message': 'Chat created successfully.'}), 200
+
+@socketio.on('new_chat')
+def handle_new_chat(data):
+    room_name = data['room_name']
+    join_room(room_name)
+    emit('new_chat', {'message': f"New chat room '{room_name}' created"}, room=room_name)
+
 cloudinary.config(
-  cloud_name = 'doojwu2m7',
-  api_key = '768687592778116',
-  api_secret = 'V9KzZojFHOzBBT6R8IBFObKZmYc'
+    cloud_name = 'doojwu2m7',
+    api_key = '768687592778116',
+    api_secret = 'V9KzZojFHOzBBT6R8IBFObKZmYc'
 )
 
 # this only runs if `$ python src/main.py` is executed
