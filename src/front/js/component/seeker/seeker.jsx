@@ -3,9 +3,11 @@ import StarRating from "../rating/StarRating.jsx";
 import { Link } from "react-router-dom";
 import { Context } from "../../store/appContext.js";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import { useNavigate } from "react-router-dom";
 
 const Seeker = ({ seekerInfo, applicantInfo, applicants }) => {
     const { store, actions } = useContext(Context);
+    const navigate = useNavigate()
 
     const acceptSeeker = () => {
         for(let applicant of applicants) {
@@ -19,9 +21,10 @@ const Seeker = ({ seekerInfo, applicantInfo, applicants }) => {
         }
         actions.changeTaskStatus(applicantInfo.task_id, "in_progress");
         actions.changeTaskSeeker(applicantInfo.task_id, seekerInfo.id);
-        actions.sendNotification("Seeker successfully accepted and task status changed to 'in progress'.", store.user.username);
+        actions.sendNotification("Seeker successfully accepted.", store.user.username);
 
-        createChat();        
+        createChat();    
+        navigate('/');    
     }
 
     const createChat = () => {

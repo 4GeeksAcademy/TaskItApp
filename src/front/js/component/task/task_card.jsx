@@ -15,7 +15,7 @@ const Task = ({ taskInfo }) => {
     return (
         <div className="col-6 p-2">
             <div className="card p-4">
-                {(store.user.id == taskInfo.requester_user?.id && taskInfo.status != "cancelled") && (
+                {(store.user.id == taskInfo.requester_user?.id && taskInfo.status != "cancelled" && path == '/') && (
                     <div className="w-100 d-flex justify-content-end gap-2">
                         <button className="btn btn-success px-4 smooth" onClick={() => actions.changeTaskStatus(taskInfo.id, "completed")}>Complete</button>
                         <button className="btn btn-danger px-4 smooth" onClick={() => actions.changeTaskStatus(taskInfo.id, "cancelled")}>Cancel</button>
