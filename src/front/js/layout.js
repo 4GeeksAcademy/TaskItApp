@@ -24,6 +24,7 @@ import { Category } from "./pages/category.js";
 import { SidebarComponent } from "./component/sidebar.js";
 import { Applicants } from "./pages/applicants.js";
 import EditProfile from "./pages/edit_profile";
+import ChatList from "./component/chat/chat_list.jsx";
 
 const Layout = () => {
     const basename = process.env.BASENAME || "";
@@ -64,6 +65,7 @@ const Layout = () => {
                                 <Route element={<h1>Not found!</h1>} />
                             </Routes>
                             <Footer />
+                            { store.auth && <ChatList></ChatList> }
                         </div>
                     </div>
                 </ScrollToTop>
