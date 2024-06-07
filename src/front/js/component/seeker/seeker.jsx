@@ -3,9 +3,11 @@ import StarRating from "../rating/StarRating.jsx";
 import { Link } from "react-router-dom";
 import { Context } from "../../store/appContext.js";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import { useNavigate } from "react-router-dom";
 
 const Seeker = ({ seekerInfo, applicantInfo, applicants }) => {
     const { store, actions } = useContext(Context);
+    const navigate = useNavigate()
 
     const acceptSeeker = () => {
         for(let applicant of applicants) {
@@ -19,14 +21,15 @@ const Seeker = ({ seekerInfo, applicantInfo, applicants }) => {
         }
         actions.changeTaskStatus(applicantInfo.task_id, "in_progress");
         actions.changeTaskSeeker(applicantInfo.task_id, seekerInfo.id);
-        actions.sendNotification("Seeker successfully accepted and task status changed to 'in progress'.", store.user.username);
+        actions.sendNotification("Seeker successfully accepted.", store.user.username);
 
-        createChat();        
+        createChat();    
+        navigate('/');    
     }
 
     const createChat = () => {
         const newChat = { 
-            'room_name': store.user.id + seekerInfo.user.id + applicantInfo.task_id,
+            'room_name': String(store.user.id) + String(seekerInfo.user.id) + applicantInfo.task_id,
             'requester_id': store.user.id,
             'seeker_id': seekerInfo.user.id,
             'task_id': applicantInfo.task_id,
@@ -44,11 +47,11 @@ const Seeker = ({ seekerInfo, applicantInfo, applicants }) => {
     }
 
     return (
-        <div className={`${applicantInfo ? "col-7" : "col-6"} p-2`}>
+        <div className={`${applicantInfo ? "col-lg-7" : "col-lg-6"} col-md-8 col-12 p-2`}>
             <div className={`card p-4 ${applicantInfo?.status == "accepted" ? "border border-success" : applicantInfo?.status == "rejected" ? "border border-danger" : ""}`}>
                 <div className="d-flex justify-content-between align-items-center mb-2">
                     <div className="d-flex align-items-center">
-                        <div className="rounded-circle bg-dark me-2 overflow-hidden" style={{ height: "60px", width: "60px" }}>
+                        <div className="rounded-circle bg-dark me-2 overflow-hidden" style={{ height: "3rem", width: "3rem" }}>
                             { seekerInfo.user.profile_picture && <img
                                 className="img-fluid"
                                 src={seekerInfo.user.profile_picture}

@@ -52,7 +52,10 @@ export const User = () => {
 						{ requesterInfo && Object.keys(requesterInfo).length > 0 && 
 							(<div className="d-flex justify-content-between">
 								<p className="text-muted fs-2">Requester</p>
-								<p className="text-muted fs-2">{requesterInfo.overall_rating}★</p>
+								<div className="d-flex align-items-center">
+									<StarRating value={requesterInfo.overall_rating}></StarRating>
+									<span className="text-muted ms-1">({requesterInfo.total_reviews})</span>
+								</div>
 							</div>)
 						}
 						<p className="fs-3 text-muted">{user.description}</p>

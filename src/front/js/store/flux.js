@@ -21,6 +21,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			message: "",
 			error: "",
 			tasks: [],
+			userTasks: [],
             addresses: [],
 			categories: [],
 			users: [],								
@@ -381,12 +382,12 @@ const getState = ({ getStore, getActions, setStore }) => {
 				)
 			},
 
-			getUserByUsername: (username) => {
+			getUserByUsername: (username, changeStore = false) => {
 				return new Promise((resolve, reject) => {
 					fetchHelper(
 						`${process.env.BACKEND_URL}/api/users/${username}`, 
 						{}, 
-						(data) => { resolve(data); setStore({ user: data })},
+						(data) => { resolve(data); if(changeStore) setStore({ user: data })},
 						(error) => {
 							console.error(error);
 							reject(error);
@@ -461,7 +462,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					.then(() => {
 						const updatedUser = { ...getStore().user, username, email, full_name: fullName, description, role };
 						setStore({ user: updatedUser });
-						getActions().getUserByUsername(username);
+						getActions().getUserByUsername(username, true);
 					});
 			},
 			
@@ -990,9 +991,15 @@ const getState = ({ getStore, getActions, setStore }) => {
 					.then(data => setStore({ chats: data }))
 					.catch(error => console.error(error)) 
 				}
-			}
-			
+			},
 
+			getUserTasks: () => {
+				fetch(process.env.BACKEND_URL + `/api/users/${getStore().user.id}/tasks`)
+				.then(response => response.json())
+				.then(data => setStore({ userTasks: data }))
+				.catch(error => console.error(error));
+			},
+		
 		}
 	};
 };

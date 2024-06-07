@@ -27,7 +27,6 @@ class User(db.Model):
         return f'<User {self.username}>'
 
     def serialize(self):
-        
         return {
             "id": self.id,
             "username": self.username,
@@ -35,7 +34,7 @@ class User(db.Model):
             "full_name": self.full_name,
             "role": self.role.value,
             "description": self.description,
-            "profile_picture": self.profile_picture,  # Nuevo campo
+            "profile_picture": self.profile_picture or 'https://res.cloudinary.com/doojwu2m7/image/upload/v1717762751/u0tkpx1d2u7rybaq8y6y.jpg',  # Nuevo campo
             "seeker": self.task_seeker.serialize() if self.task_seeker else None,
             "requester": self.requester.serialize() if self.requester else None
         }
@@ -307,6 +306,7 @@ class ChatMessage(db.Model):
     chat = db.relationship('Chat', backref=db.backref('messages', lazy=True))
     message = db.Column(db.String(500), nullable=False)
     timestamp = db.Column(db.DateTime(timezone=True), default=func.now(), nullable=False)
+    seen = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
         return f'<Chat {self.sender_user.username} - {self.message} >'
@@ -317,8 +317,10 @@ class ChatMessage(db.Model):
             "sender_user_id": self.sender_user.id,
             "sender_user": self.sender_user.serialize(),
             "chat_id": self.chat_id,
+            "room_name": self.chat.room_name,
             "message": self.message,
-            "timestamp": self.timestamp
+            "timestamp": self.timestamp,
+            "seen": self.seen
         }
 
 class AdminUser(db.Model):

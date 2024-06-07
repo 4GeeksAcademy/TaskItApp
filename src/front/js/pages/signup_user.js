@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Context } from "../store/appContext";
 import { useNavigate, Link } from "react-router-dom";
 import Alert from "../component/alert.jsx"
@@ -15,6 +15,10 @@ const SignupUser = () => {
         const newUser = await actions.addUser(email, password, username);
         if(newUser) navigate("/login-user");
     }
+
+    useEffect(() => {
+        if(store.auth) navigate('/')
+    }, [store.auth])
 
     return (
         <div className="d-flex flex-column align-items-center">

@@ -25,9 +25,9 @@ const Notification = () => {
             socket.emit('join', { room: store.user.username, username: store.user.username });
         });
 
-        socket.on('notification', (data) => {
-            console.log("Received notification:", data);
+        socket.on('notification', () => {
             actions.getNotifications();
+            actions.getChats();
         });
 
         socket.on('disconnect', () => {

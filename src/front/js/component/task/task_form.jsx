@@ -34,6 +34,7 @@ const TaskForm = (props) => {
             if(props.loadInfo) props.loadInfo();
             props.handleClose();
             actions.sendNotification(store.message, store.user.username);
+            actions.getUserTasks();
         }
     }, [store.message])
 

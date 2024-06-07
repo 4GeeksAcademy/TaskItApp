@@ -10,7 +10,7 @@ const TaskList = () => {
     return (
         <div className="container-fluid px-5">
             <div className="row">
-                {store.tasks.map((task) => {
+                {store.tasks.slice().reverse().map((task) => {
                     return (
                         <React.Fragment key={task.id}>
                             <Task taskInfo={task}></Task>
