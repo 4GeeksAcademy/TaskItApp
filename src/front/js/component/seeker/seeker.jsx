@@ -29,7 +29,7 @@ const Seeker = ({ seekerInfo, applicantInfo, applicants }) => {
 
     const createChat = () => {
         const newChat = { 
-            'room_name': store.user.id + seekerInfo.user.id + applicantInfo.task_id,
+            'room_name': String(store.user.id) + String(seekerInfo.user.id) + applicantInfo.task_id,
             'requester_id': store.user.id,
             'seeker_id': seekerInfo.user.id,
             'task_id': applicantInfo.task_id,
