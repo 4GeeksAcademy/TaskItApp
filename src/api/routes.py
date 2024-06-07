@@ -825,3 +825,26 @@ def get_messages(id):
     existing_chat = Chat.query.get(id);
     if not existing_chat: return jsonify({'error': 'Chat does not exist.'}), 404
     return jsonify([message.serialize() for message in existing_chat.messages]), 200
+
+@api.route('/upload_multiple', methods=['POST'])
+def upload_multiple_images():
+    task_id = request.form.get('task_id')
+    files = request.files.getlist('files')
+
+    if len(files) > 3:
+        return jsonify({"error": "You can only upload a maximum of 3 files."}), 400
+
+    upload_results = []
+    for file_to_upload in files:
+        if file_to_upload:
+            upload_result = cloudinary.uploader.upload(file_to_upload)
+            upload_results.append(upload_result['url'])
+
+    task = Task.query.get(task_id)
+    if not task:
+        return jsonify({"error": "Task not found."}), 404
+
+    task.image_urls = upload_results
+    db.session.commit()
+    
+    return jsonify({"message": "Images uploaded successfully", "urls": upload_results}), 200

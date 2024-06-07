@@ -14,6 +14,8 @@ const TaskForm = (props) => {
     const [dueDate, setDueDate] = useState('');
     const [category, setCategory] = useState('');
     const [budget, setBudget] = useState(0);
+    const [files, setFiles] = useState([]);
+    const [fileNames, setFileNames] = useState([]);
 
     useEffect(() => {
         actions.resetMessages();
@@ -26,6 +28,7 @@ const TaskForm = (props) => {
             setDueDate(props.currentTask.due_date?.split("T")[0] || '');
             setCategory(props.currentTask.category || '');
             setBudget(props.currentTask.budget || 0);
+            setFiles(props.currentTask.image_urls || []);
         } else resetStates();
     }, [props.show])
 
@@ -45,39 +48,41 @@ const TaskForm = (props) => {
         setDueDate("");
         setCategory("");
         setBudget(0);
+        setFiles([]);
+        setFileNames([]);
     }
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        
+
         if (props.currentTask) {
             let pickupCoordinates = {};
             let deliveryCoordinates = {};
-    
+
             if (pickupAddress !== props.pickupAddress) {
                 pickupCoordinates = await actions.getCoordinates(pickupAddress);
             }
-    
+
             if (deliveryAddress !== props.deliveryAddress) {
                 deliveryCoordinates = await actions.getCoordinates(deliveryAddress);
             }
-    
+
             const { lat: pickupLat, lgt: pickupLgt } = pickupCoordinates || {};
             const { lat: deliveryLat, lgt: deliveryLgt } = deliveryCoordinates || {};
-    
+
             actions.editTask(
-                props.currentTask.id, 
-                title, 
-                description, 
-                pickupAddress, 
-                deliveryAddress, 
-                dueDate, 
-                category, 
-                null, 
-                budget, 
-                deliveryLat, 
-                deliveryLgt, 
-                pickupLat, 
+                props.currentTask.id,
+                title,
+                description,
+                pickupAddress,
+                deliveryAddress,
+                dueDate,
+                category,
+                null,
+                budget,
+                deliveryLat,
+                deliveryLgt,
+                pickupLat,
                 pickupLgt
             );
         } else {
@@ -86,34 +91,44 @@ const TaskForm = (props) => {
 
             if(pickupAddress) pickupCoordinates = await actions.getCoordinates(pickupAddress);
             if(deliveryAddress) deliveryCoordinates = await actions.getCoordinates(deliveryAddress);
-    
+
             if (pickupCoordinates && deliveryCoordinates) {
                 const { lat: pickupLat, lgt: pickupLgt } = pickupCoordinates;
                 const { lat: deliveryLat, lgt: deliveryLgt } = deliveryCoordinates;
-    
+
                 actions.addTask(
-                    title, 
-                    description, 
-                    pickupAddress, 
-                    deliveryAddress, 
-                    dueDate, 
-                    category, 
-                    budget, 
-                    deliveryLat, 
-                    deliveryLgt, 
-                    pickupLat, 
+                    title,
+                    description,
+                    pickupAddress,
+                    deliveryAddress,
+                    dueDate,
+                    category,
+                    budget,
+                    deliveryLat,
+                    deliveryLgt,
+                    pickupLat,
                     pickupLgt
                 );
             } else actions.setError("Missing fields.");
+        }
+
+        if (files.length > 0) {
+            actions.uploadMultipleImages(props.currentTask.id, files);
         }
     };
 
     const handlePickupAddressChange = (newAddress) => {
         setPickupAddress(newAddress);
     };
-    
+
     const handleDeliveryAddressChange = (newAddress) => {
         setDeliveryAddress(newAddress);
+    };
+
+    const handleFileChange = (e) => {
+        const selectedFiles = Array.from(e.target.files);
+        setFiles(selectedFiles);
+        setFileNames(selectedFiles.map(file => file.name));
     };
 
     return (
@@ -166,6 +181,14 @@ const TaskForm = (props) => {
                             </div>
                         </div>
                     </div>
+
+                    <label htmlFor='files'>Choose Files</label>
+                    <input type="file" id="files" className="form-control" multiple onChange={handleFileChange} />
+                    <ol>
+                        {fileNames.map((fileName, index) => (
+                            <li key={index}>{fileName}</li>
+                        ))}
+                    </ol>
                 </form>
             </Modal.Body>
             <Modal.Footer>

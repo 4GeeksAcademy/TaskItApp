@@ -906,7 +906,29 @@ const getState = ({ getStore, getActions, setStore }) => {
 					.then(data => setStore({ chats: data }))
 					.catch(error => console.error(error)) 
 				}
-			}
+			},
+			uploadMultipleImages: async (taskId, files) => {
+				const formData = new FormData();
+				formData.append('task_id', taskId);
+				files.forEach(file => formData.append('files', file));
+			
+				try {
+					const response = await fetch(process.env.BACKEND_URL + '/api/upload_multiple', {
+						method: 'POST',
+						body: formData,
+					});
+					const data = await response.json();
+					if (response.ok) {
+						console.log("Files uploaded successfully:", data.urls);
+					} else {
+						console.error("Error uploading files:", data.error);
+					}
+				} catch (error) {
+					console.error("Error uploading files:", error);
+				}
+			},
+			
+			
 		}
 	};
 };
