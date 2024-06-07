@@ -22,8 +22,8 @@ CORS(api)
 # TASKS BELOW
 @api.route('/tasks', methods=['GET'])
 def get_tasks():
-    return jsonify([task.serialize() for task in Task.query.all()]), 200
-
+    tasks = Task.query.filter(Task.status.notin_([StatusEnum.CANCELLED, StatusEnum.COMPLETED])).all()
+    return jsonify([task.serialize() for task in tasks]), 200
 
 @api.route('/tasks', methods=['POST'])
 def add_task():
@@ -750,7 +750,10 @@ def get_user_tasks(index):
     if not requester:
         return jsonify({"error": "Requester not found"}), 404
 
-    tasks = Task.query.filter_by(requester_id=requester.id).all()
+    tasks = Task.query.filter(
+        Task.requester_id == requester.id,
+        Task.status.notin_([StatusEnum.CANCELLED, StatusEnum.COMPLETED])
+    ).all()
     return jsonify([task.serialize() for task in tasks]), 200
 
 @api.route('/users/<int:index>/applied-to-tasks', methods=['GET'])
