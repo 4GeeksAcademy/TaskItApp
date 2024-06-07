@@ -9,10 +9,6 @@ const Chat = (props) => {
     const [message, setMessage] = useState('');
 
     useEffect(() => {
-        console.log(messages, props.chat.room_name)
-    },[messages])
-
-    useEffect(() => {
         const fetchMessages = async () => {
             try {
                 const response = await fetch(process.env.BACKEND_URL + `/api/chats/${props.chat.id}/messages`);
@@ -68,7 +64,7 @@ const Chat = (props) => {
                 </Button>
             </Card.Header>
 
-            <Card.Body className="chat-content">
+            <Card.Body className="chat-content container-fluid">
                 {messages.map((msg, index) => (
                     msg.room_name === props.chat.room_name && (
                         <Message
@@ -79,16 +75,18 @@ const Chat = (props) => {
                     )
                 ))}
             </Card.Body>
-
-            <Form className="d-flex p-3" onSubmit={sendMessage}>
-                <Form.Control
-                    type="text"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Enter message"
-                />
-                <Button variant="primary" type="submit">Send</Button>
-            </Form>
+            <Card.Footer>
+                <Form className="d-flex p-3" onSubmit={sendMessage}>
+                    <Form.Control
+                        className="me-3"
+                        type="text"
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        placeholder="Enter message"
+                    />
+                    <Button variant="primary" type="submit">Send</Button>
+                </Form>
+            </Card.Footer>
         </Card>
     );
 };

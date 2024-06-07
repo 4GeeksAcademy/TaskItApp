@@ -66,7 +66,7 @@ const ChatList = () => {
                                 <div>No chats available</div>
                             ) : (
                                 store.chats.map(chat => (
-                                    <div key={chat.id} className="d-flex py-2 border-bottom chat-item" onClick={() => handleOpenChat(chat)}>
+                                    <div key={chat.id} className="d-flex py-2 border-bottom chat-item rounded" onClick={() => handleOpenChat(chat)}>
                                         <div>{chat.requester_user.id == store.user.id ? chat.seeker_user.username : chat.requester_user.username} for task {chat.task_id}</div>
                                         {(unseenMessages[chat.room_name] && chat != currentChat) && <span className="badge bg-danger ms-2">New</span>}
                                     </div>
