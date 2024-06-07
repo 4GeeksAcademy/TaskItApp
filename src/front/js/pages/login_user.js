@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Context } from "../store/appContext";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -16,6 +16,10 @@ const LoginUser = () => {
             }
         });
     }
+
+    useEffect(() => {
+        if(store.auth) navigate('/')
+    }, [store.auth])
 
     return (
         <div>
