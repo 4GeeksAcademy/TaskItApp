@@ -220,3 +220,17 @@ class Postulant(db.Model):
             "seeker_id": self.seeker_id,
             "price": self.price,
         }
+    
+class AdminUser(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(80), nullable=False)
+
+    def __repr__(self):
+        return f'<AdminUser {self.email}>'
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "email": self.email,
+        }
