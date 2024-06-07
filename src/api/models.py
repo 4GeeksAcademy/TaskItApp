@@ -317,6 +317,7 @@ class ChatMessage(db.Model):
             "sender_user_id": self.sender_user.id,
             "sender_user": self.sender_user.serialize(),
             "chat_id": self.chat_id,
+            "room_name": self.chat.room_name,
             "message": self.message,
             "timestamp": self.timestamp,
             "seen": self.seen

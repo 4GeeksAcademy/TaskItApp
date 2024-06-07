@@ -9,6 +9,10 @@ const Chat = (props) => {
     const [message, setMessage] = useState('');
 
     useEffect(() => {
+        console.log(messages, props.chat.room_name)
+    },[messages])
+
+    useEffect(() => {
         const fetchMessages = async () => {
             try {
                 const response = await fetch(process.env.BACKEND_URL + `/api/chats/${props.chat.id}/messages`);
@@ -28,7 +32,7 @@ const Chat = (props) => {
         return () => {
             store.socket.off('message');
         };
-    }, []);
+    }, [props.chat]);
 
     const sendMessage = (e) => {
         e.preventDefault();
@@ -51,18 +55,28 @@ const Chat = (props) => {
         }
     };
 
+    function markMessageAsSeen(message_id) {
+        store.socket.emit('mark_message_as_seen', { message_id: message_id });
+    }
+
     return (
         <Card className='position-absolute bottom-0 start-70 card-messaging chat'>
              <Card.Header className='d-flex justify-content-between align-items-center'>
                 <h5 className="mb-0">{props.chat.requester_user.id == store.user.id ? props.chat.seeker_user.username : props.chat.requester_user.username} for task {props.chat.task_id}</h5>
-                <Button onClick={() => props.setOpen(false)} variant="" className="close p-0" aria-label="Close">
+                <Button onClick={props.handleClose} variant="" className="close p-0" aria-label="Close">
                     <span className="fs-3" aria-hidden="true">&times;</span>
                 </Button>
             </Card.Header>
 
             <Card.Body className="chat-content">
                 {messages.map((msg, index) => (
-                    <Message key={index} message={msg} />
+                    msg.room_name === props.chat.room_name && (
+                        <Message
+                            key={index}
+                            message={msg}
+                            markMessageAsSeen={markMessageAsSeen}
+                        />
+                    )
                 ))}
             </Card.Body>
 

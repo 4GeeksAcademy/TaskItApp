@@ -10,7 +10,7 @@ from flask import Flask, request, jsonify, url_for, send_from_directory, render_
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from api.utils import APIException, generate_sitemap
-from api.models import db, Notification, User, Chat, Task
+from api.models import db, Notification, User, Chat, Task, ChatMessage
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
@@ -92,17 +92,17 @@ def handle_message(data):
     print('Message received:', data)
     msg = data.get('message', 'No message provided')
     user = data.get('username')
-    send({'message': msg, 'username': user}, broadcast=True, include_self=True)
+    room = data.get('room')
+    send({'message': msg, 'username': user, 'room_name': room}, room=room)
+    emit('unseen_message', {'room': room}, room=room)
 
 @socketio.on('join')
 def handle_join(data):
-    username = data['username']
     room = data['room']
     join_room(room)
 
 @socketio.on('leave')
 def handle_leave(data):
-    username = data['username']
     room = data['room']
     leave_room(room)
 
@@ -158,6 +158,17 @@ def handle_new_chat(data):
     room_name = data['room_name']
     join_room(room_name)
     emit('new_chat', {'message': f"New chat room '{room_name}' created"}, room=room_name)
+
+@socketio.on('mark_message_as_seen')
+def handle_mark_message_as_seen(data):
+    message_id = data['message_id']
+    chat_message = ChatMessage.query.get(message_id)
+    if chat_message:
+        chat_message.seen = True
+        db.session.commit()
+        emit('message_seen', {'message_id': message_id}, room=chat_message.chat.room_name)
+    else:
+        emit('error', {'message': 'Message not found'})
 
 cloudinary.config(
     cloud_name = 'doojwu2m7',
