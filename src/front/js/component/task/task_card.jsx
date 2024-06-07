@@ -13,15 +13,19 @@ const Task = ({ taskInfo }) => {
     const handleShow = () => setShow(true);
 
     return (
-        <div className="col-6 p-2">
+        <div className="col-lg-6 col-md-8 col-sm-11 p-2">
             <div className="card p-4">
                 {(store.user.id == taskInfo.requester_user?.id && taskInfo.status != "cancelled" && path == '/') && (
                     <div className="w-100 d-flex justify-content-end gap-2">
-                        <button className="btn btn-success px-4 smooth" onClick={() => actions.changeTaskStatus(taskInfo.id, "completed")}>Complete</button>
-                        <button className="btn btn-danger px-4 smooth" onClick={() => actions.changeTaskStatus(taskInfo.id, "cancelled")}>Cancel</button>
-                        <button className="btn btn-dark px-4 smooth" onClick={handleShow}>
-                            <Icon icon="mage:edit-fill" /> Edit
-                        </button>
+                        <div className="rounded-circle overflow-hidden smooth" style={{ width: "auto" ,aspectRatio: "1/1" }}>
+                            <button className="btn btn-success h-100" onClick={() => actions.changeTaskStatus(taskInfo.id, "completed")}><Icon icon="fluent-mdl2:accept-medium" /></button>
+                        </div>
+                        <div className="rounded-circle overflow-hidden smooth" style={{ aspectRatio: "1/1", height: "auto", width: "auto" }}>
+                            <button className="btn btn-danger h-100 fs-3 close d-flex align-items-center" onClick={() => actions.changeTaskStatus(taskInfo.id, "cancelled")}><span>&times;</span></button>
+                        </div>
+                        <div className="rounded-circle overflow-hidden smooth d-flex align-items-center" style={{ width: "auto" ,aspectRatio: "1/1" }}>
+                            <button className="btn btn-dark h-100" onClick={handleShow}><Icon icon="mage:edit-fill" /></button>
+                        </div>
                     </div>
                 )}
                 { path != "/" &&

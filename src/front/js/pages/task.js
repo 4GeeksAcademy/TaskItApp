@@ -95,7 +95,7 @@ export const Task = () => {
 							<p className="text-muted">{actions.timeAgo(task.creation_date)}</p>
 							<p>{task.description}</p>
 						</div>
-						<div>
+						<div className="card p-2">
 							<div className="d-flex flex-column">
 								<span><Icon className="fs-3" icon="mingcute:location-2-line" /><b>Pick Up: </b>{task.pickup_address?.address}</span>
 								<span><Icon className="fs-3" icon="mingcute:location-2-fill" /><b>Drop Off: </b>{task.delivery_address?.address}</span>
