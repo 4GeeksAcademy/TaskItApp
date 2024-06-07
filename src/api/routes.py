@@ -22,7 +22,7 @@ CORS(api)
 # TASKS BELOW
 @api.route('/tasks', methods=['GET'])
 def get_tasks():
-    tasks = Task.query.filter(Task.status.notin_([StatusEnum.CANCELLED, StatusEnum.COMPLETED])).all()
+    tasks = Task.query.filter(Task.status.notin_([StatusEnum.CANCELLED, StatusEnum.COMPLETED, StatusEnum.IN_PROGRESS])).all()
     return jsonify([task.serialize() for task in tasks]), 200
 
 @api.route('/tasks', methods=['POST'])
