@@ -34,7 +34,7 @@ const SettingsUser = ({ dropdownVisible, setDropdownVisible }) => {
 
     return (
         <div ref={ref} className={`dropdown-menu ${dropdownVisible ? 'show' : ''}`} aria-labelledby="dropdownMenuButton">
-            <div className="dropdown-item">
+            <div className="dropdown-item" onClick={() => navigate(`/users/${store.user.username}`)}>
                 <div className="d-flex align-items-center mb-2">
                     <div className="rounded-circle bg-dark me-2 overflow-hidden" style={{ height: "60px", width: "60px" }}>
                         { store.user.profile_picture && <img
