@@ -5,7 +5,7 @@ import cloudinary
 import cloudinary.uploader
 
 from flask import Flask, request, jsonify, url_for, Blueprint, current_app
-from api.models import db, User, Task, StatusEnum, Address, Category, RoleEnum, Requester, TaskSeeker, Rating, Postulant, Notification, Chat, ChatMessage
+from api.models import db, User, Task, StatusEnum, Address, Category, RoleEnum, Requester, TaskSeeker, Rating, Postulant, Notification, Chat, ChatMessage, AdminUser
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from datetime import datetime
@@ -828,3 +828,117 @@ def get_messages(id):
     existing_chat = Chat.query.get(id);
     if not existing_chat: return jsonify({'error': 'Chat does not exist.'}), 404
     return jsonify([message.serialize() for message in existing_chat.messages]), 200
+
+# AdminUser CRUD Routes
+@api.route('/admin-users', methods=['GET'])
+def get_admin_users():
+    admin_users = AdminUser.query.all()
+    return jsonify([admin_user.serialize() for admin_user in admin_users]), 200
+
+# Get a single admin user by ID
+@api.route('/admin-users/<int:id>', methods=['GET'])
+def get_admin_user(id):
+    admin_user = AdminUser.query.get(id)
+    if not admin_user:
+        return jsonify({'error': 'AdminUser not found.'}), 404
+    return jsonify(admin_user.serialize()), 200
+
+# Create a new admin user
+@api.route('/admin-users', methods=['POST'])
+def create_admin_user():
+    data = request.json
+    email = data.get('email')
+    password = data.get('password')
+
+    if not email or not password:
+        return jsonify({'error': 'Missing email or password.'}), 400
+
+    if AdminUser.query.filter_by(email=email).first():
+        return jsonify({'error': 'Email already used.'}), 400
+
+    new_admin_user = AdminUser(email=email, password=password)
+    db.session.add(new_admin_user)
+    db.session.commit()
+
+    return jsonify(new_admin_user.serialize()), 201
+
+# Update an admin user
+@api.route('/admin-users/<int:id>', methods=['PUT'])
+def update_admin_user(id):
+    admin_user = AdminUser.query.get(id)
+    if not admin_user:
+        return jsonify({'error': 'AdminUser not found.'}), 404
+
+    data = request.json
+    email = data.get('email')
+    password = data.get('password')
+
+    if email:
+        if AdminUser.query.filter_by(email=email).first():
+            return jsonify({'error': 'Email already used.'}), 400
+        admin_user.email = email
+
+    if password:
+        admin_user.password = password
+
+    db.session.commit()
+    return jsonify(admin_user.serialize()), 200
+
+# Delete an admin user
+@api.route('/admin-users/<int:id>', methods=['DELETE'])
+def delete_admin_user(id):
+    admin_user = AdminUser.query.get(id)
+    if not admin_user:
+        return jsonify({'error': 'AdminUser not found.'}), 404
+
+    db.session.delete(admin_user)
+    db.session.commit()
+
+    return jsonify({'message': 'AdminUser deleted successfully.'}), 200
+
+@api.route('/admin/signup', methods=['POST'])
+def admin_signup():
+    data = request.json
+    email = data.get('email')
+    password = data.get('password')
+
+    if not email or not password:
+        return jsonify({'error': 'Missing fields.'}), 400
+
+    existing_admin = AdminUser.query.filter_by(email=email).first()
+    if existing_admin:
+        return jsonify({'error': 'Email already used.'}), 400
+
+    new_admin = AdminUser(email=email, password=password)
+    db.session.add(new_admin)
+    db.session.commit()
+
+    return jsonify({'message': 'Admin created successfully.'}), 201
+
+@api.route('/admin/login', methods=['POST'])
+def admin_login():
+    data = request.json
+    email = data.get('email')
+    password = data.get('password')
+
+    admin = AdminUser.query.filter_by(email=email).first()
+    if not admin or admin.password != password:
+        return jsonify({'error': 'Invalid email or password.'}), 401
+
+    access_token = create_access_token(identity=admin.id)
+    return jsonify(access_token=access_token, admin=admin.serialize()), 200
+
+@api.route('/admin/validate-token', methods=['GET'])
+@jwt_required()
+def admin_validate_token():
+    current_admin_id = get_jwt_identity()
+    admin = AdminUser.query.get(current_admin_id)
+    if not admin:
+        return jsonify(valid=False), 404
+    return jsonify(valid=True, admin=admin.serialize()), 200
+
+@api.route('/admin/logout', methods=['POST'])
+@jwt_required()
+def admin_logout():
+    # El cierre de sesión en JWT es manejado en el cliente, por lo tanto, aquí simplemente retornamos un mensaje.
+    return jsonify({'message': 'Admin logged out successfully.'}), 200

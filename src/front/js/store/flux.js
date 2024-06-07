@@ -875,7 +875,91 @@ const getState = ({ getStore, getActions, setStore }) => {
 						return false;
 					});
 			},
+			signupAdmin: (email, password) => {
+                const newAdmin = { email, password };
+                const config = { 
+                    method: "POST",
+                    body: JSON.stringify(newAdmin),
+                    headers: { 'Content-Type': 'application/json' }
+                };
 
+                return fetch(process.env.BACKEND_URL + "/api/admin/signup", config)
+                    .then((response) => {
+                        if (!response.ok) {
+                            return response.json().then((error) => {
+                                setStore({ signup_error: error.error });
+                                throw new Error(error.error);
+                            });
+                        }
+                    })
+                    .catch((error) => console.log(error));
+            },
+
+            loginAdmin: (email, password) => {
+                const credentials = { email, password };
+                const config = { 
+                    method: "POST",
+                    body: JSON.stringify(credentials),
+                    headers: { 'Content-Type': 'application/json' }
+                };
+
+                return fetch(process.env.BACKEND_URL + "/api/admin/login", config)
+                    .then((response) => {
+                        if (!response.ok) {
+                            return response.json().then((error) => {
+                                setStore({ login_error: error.error });
+                                throw new Error(error.error);
+                            });
+                        } else {
+                            return response.json();
+                        }
+                    })
+                    .then((data) => {
+                        // Almacenar el token en localStorage
+                        localStorage.setItem('access_token', data.access_token);
+                        setStore({ access_token: data.access_token, admin: data.admin, auth: true, login_error: "", signup_error: "" });
+                        console.log("Token generado:", data.access_token);
+                    })
+                    .catch((error) => console.log(error));
+            },
+
+            validateAdminToken: () => {
+                const token = localStorage.getItem('access_token');
+                if (!token) {
+                    setStore({ auth: false });
+                    return Promise.resolve(false);
+                }
+
+                const config = { 
+                    method: "GET", // Cambiar de "POST" a "GET"
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    }
+                };
+
+                return fetch(process.env.BACKEND_URL + "/api/admin/validate-token", config)
+                    .then((response) => {
+                        if (!response.ok) {
+                            throw new Error('Invalid token');
+                        }
+                        return response.json();
+                    })
+                    .then((data) => {
+                        setStore({ auth: true, admin: data.admin });
+                        return true;
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                        setStore({ auth: false });
+                        return false;
+                    });
+            },
+			logoutAdmin: () => {
+                localStorage.removeItem('access_token');
+                setStore({ access_token: null, admin: null, auth: false });
+                console.log("Logged out successfully");
+            },
 			uploadProfilePicture: async (userId, file) => {
                 const formData = new FormData();
                 formData.append('user_id', userId);
@@ -915,6 +999,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				.then(data => setStore({ userTasks: data }))
 				.catch(error => console.error(error));
 			},
+		
 		}
 	};
 };
