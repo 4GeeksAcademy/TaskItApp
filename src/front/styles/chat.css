@@ -1,0 +1,41 @@
+.card-messaging {
+    border: 0 !important;
+    overflow: hidden;
+    box-shadow: -3px 3px 15px rgb(170, 170, 170);
+    border-radius: 0.5rem;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.card-m-header {
+    background-color: grey;
+}
+
+.chat-item:hover {
+    background-color: azure;
+}
+
+.start-70 {
+    left: 60% !important;
+}
+
+.chat {
+    width: 25rem;
+}
+
+.chat-content {
+    overflow: auto;
+    height: 30rem;
+}
+
+@media (max-width: 1919px) {
+    .start-70 {
+        left: 40% !important;
+    }
+}
+
+@media (min-width: 1921px) {
+    .start-70 {
+        left: 70% !important;
+    }
+}

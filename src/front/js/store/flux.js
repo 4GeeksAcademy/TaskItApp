@@ -1,3 +1,5 @@
+import { io } from "socket.io-client";
+
 const getState = ({ getStore, getActions, setStore }) => {	
     const fetchHelper = async (url, config = {}, successCallback) => {
 		try {
@@ -9,6 +11,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				setStore({ message: data.message || prevMessage, error: "" });
 			} else setStore({ message: "", error: data.error || "An error occurred" });
 		} catch (error) {
+			console.log(url, config.method)
 			console.error(error);
 		}
 	};
@@ -21,7 +24,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             addresses: [],
 			categories: [],
 			users: [],								
-			user: { role: "both" }, 
+			user: {}, 
 			requesters: [],
 			seekers: [],
 			postulants: [],
@@ -32,16 +35,15 @@ const getState = ({ getStore, getActions, setStore }) => {
 			login_error: "",
 			signup_error: "",
 			valid_token: false,
+			socket: io(process.env.BACKEND_URL),
+			notifications: [],
+			chats: [],
 		},
 		actions: {
-			setEditing: (bool) => { setStore({ editing: bool })},
-			setAuth: (bool) => { setStore({ auth: bool })},
-			setUser: (username) => { 
-				const user = getStore().users.filter((userInfo) => userInfo.username == username);
-				setStore({ user: user, auth: true })
-			},
 			resetMessages: () => { setStore({ message: "", error: "" }) },
 			setError: (error) => { setStore({ message: "", error: error }) },
+			joinRoom: (room, username) => { getStore().socket.emit('join', { room: room, username: username }) },
+			leaveRoom: (room, username) => { getStore().socket.emit('leave', { room: room, username: username }) },
 			timeAgo: (isoTime) => {
 				const now = new Date();
 				const time = new Date(isoTime);
@@ -154,6 +156,47 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				fetchHelper(
 					process.env.BACKEND_URL + `/api/tasks`,
+					config,
+					() => getActions().getTasks()
+				);
+			},
+
+			changeTaskStatus: (id, status) => {
+				const task = { "status": status }
+			
+				const config = { 
+					method: "PUT",
+					body: JSON.stringify(task),
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					}
+				}
+			
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/tasks/${id}`,
+					config,
+					() => {
+						getActions().getTasks();
+						getActions().sendNotification(`Task status successfully set to'${status}'.`, getStore().user.username);
+					}
+				);
+			},
+
+			changeTaskSeeker: (id, seekerID) => {
+				const task = { "seeker_id": seekerID }
+			
+				const config = { 
+					method: "PUT",
+					body: JSON.stringify(task),
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					}
+				}
+			
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/tasks/${id}`,
 					config,
 					() => getActions().getTasks()
 				);
@@ -343,7 +386,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					fetchHelper(
 						`${process.env.BACKEND_URL}/api/users/${username}`, 
 						{}, 
-						(data) => resolve(data),
+						(data) => { resolve(data); setStore({ user: data })},
 						(error) => {
 							console.error(error);
 							reject(error);
@@ -366,39 +409,43 @@ const getState = ({ getStore, getActions, setStore }) => {
 				)
 			},
 
-            addUser: (username, email, password, fullName, description) => {
-				const newUser = {
-					"username": username,
-					"email": email,
-					"password": password,
-					"full_name": fullName,
-					"description": description,
-				}
-
-				const config = { 
-					method: "POST",
-					body: JSON.stringify(newUser),
-					headers: {
-						'Accept': 'application/json',
-						'Content-Type': 'application/json'
+            addUser: (email, password, username) => {
+				return new Promise((resolve) => {
+					const newUser = {
+						"username": username,
+						"email": email,
+						"password": password,
 					}
-				}
-
-				fetchHelper(
-					process.env.BACKEND_URL + `/api/users`,
-					config,
-					() => getActions().getUsers()
-				);
+			
+					const config = { 
+						method: "POST",
+						body: JSON.stringify(newUser),
+						headers: {
+							'Accept': 'application/json',
+							'Content-Type': 'application/json'
+						}
+					}
+			
+					fetchHelper(
+						`${process.env.BACKEND_URL}/api/users`,
+						config,
+						(data) => {
+							resolve(data);
+							getActions().getUsers();
+						},
+					);
+				});
 			},
 
-			editUser: (id, username, email, password, fullName, description) => {
+			editUser: (id, username, email, password, fullName, description, role) => {
 				const user = {
 					"username": username,
 					"email": email,
 					"password": password,
 					"full_name": fullName,
 					"description": description,
-				}
+					"role": role
+				};
 
 				const config = { 
 					method: "PUT",
@@ -407,13 +454,15 @@ const getState = ({ getStore, getActions, setStore }) => {
 						'Accept': 'application/json',
 						'Content-Type': 'application/json'
 					}
-				}
-
-				fetchHelper(
-					process.env.BACKEND_URL + `/api/users/${id}`,
-					config,
-					() => getActions().getUsers()
-				);
+				};
+			
+				return fetch(process.env.BACKEND_URL + `/api/users/${id}`, config)
+					.then(response => response.json())
+					.then(() => {
+						const updatedUser = { ...getStore().user, username, email, full_name: fullName, description, role };
+						setStore({ user: updatedUser });
+						getActions().getUserByUsername(username);
+					});
 			},
 			
 
@@ -664,12 +713,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 				)
 			},
 
-            addPostulant: (taskId, seekerId, applicationDate, status, price) => {
+            addPostulant: (taskId, seekerId, price) => {
 				const newPostulant = {
 					"task_id": taskId,
 					"seeker_id": seekerId,
-					"application_date": applicationDate,
-					"status": status,
 					"price": price,
 					
 				}
@@ -685,6 +732,25 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				fetchHelper(
 					process.env.BACKEND_URL + `/api/postulants`,
+					config,
+					() => getActions().getPostulants()
+				);
+			},
+
+			changePostulantStatus: (id, status) => {
+				const postulant = { "status": status }
+			
+				const config = { 
+					method: "PUT",
+					body: JSON.stringify(postulant),
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					}
+				}
+			
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/postulants/${id}`,
 					config,
 					() => getActions().getPostulants()
 				);
@@ -714,26 +780,31 @@ const getState = ({ getStore, getActions, setStore }) => {
 					() => getActions().getPostulants()
 				);
 			},
-			signup: (email, password, username, fullName, description) => {
-				const newUser = { username, email, password, full_name: fullName, description };
-				const config = { 
-					method: "POST",
-					body: JSON.stringify(newUser),
-					headers: { 'Content-Type': 'application/json' }
-				};
-			
-				return fetch(process.env.BACKEND_URL + "/api/signup", config)
-					.then((response) => {
-						if (!response.ok) {
-							return response.json().then((error) => {
-								setStore({ signup_error: error.error });
-								throw new Error(error.error);
-							});
-						}
-					})
-					.catch((error) => console.log(error));
+
+			getNotifications: () => {
+				fetchHelper(
+					process.env.BACKEND_URL + `/api/users/${getStore().user.id}/unseen-notifications`,
+					{},
+					(data) => setStore({ notifications: data })
+				);
 			},
-			
+
+			sendNotification: (notification, toUser) => {
+				const new_notification = { notification }; 
+
+				const config = {
+					method: "POST",
+					body: JSON.stringify(new_notification),
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					},
+				};
+				
+				fetch(process.env.BACKEND_URL + `/send_notification/${toUser}`, config)
+				.catch(error => console.error(error));
+			},
+
 			login: (username, password) => {
 				const credentials = { username, password };
 				const config = { 
@@ -757,12 +828,13 @@ const getState = ({ getStore, getActions, setStore }) => {
 						// Almacenar el token en localStorage
 						localStorage.setItem('access_token', data.access_token);
 						setStore({ access_token: data.access_token, user: data.user, auth: true, login_error: "", signup_error: "" });
-						console.log(data.user)
+						getActions().joinRoom(username, username);
 					})
-					.catch((error) => console.log(error));
+					.catch((error) => console.error(error));
 			},
 			
 			logout: () => {
+				getActions().leaveRoom(getStore().user.username, getStore().user.username);
 				localStorage.removeItem('access_token');
 				setStore({ access_token: "", user: null, auth: false });
 			},
@@ -887,8 +959,38 @@ const getState = ({ getStore, getActions, setStore }) => {
                 setStore({ access_token: null, admin: null, auth: false });
                 console.log("Logged out successfully");
             },
-        
-			
+			uploadProfilePicture: async (userId, file) => {
+                const formData = new FormData();
+                formData.append('user_id', userId);
+                formData.append('file', file);
+
+                const config = {
+                    method: 'POST',
+                    body: formData
+                };
+
+                try {
+                    const response = await fetch(process.env.BACKEND_URL + '/api/upload', config);
+                    const data = await response.json();
+                    if (response.ok) {
+                        const updatedUser = { ...getStore().user, profile_picture: data.url };
+                        setStore({ user: updatedUser });
+                    } else {
+                        console.error(data.error);
+                    }
+                } catch (error) {
+                    console.error('Error uploading image:', error);
+                }
+            },
+
+			getChats: () => {
+				if (getStore().user.id) { 
+					fetch(process.env.BACKEND_URL + `/api/users/${getStore().user.id}/chats`)
+					.then(response => response.json())
+					.then(data => setStore({ chats: data }))
+					.catch(error => console.error(error)) 
+				}
+			}
 			
 
 		}

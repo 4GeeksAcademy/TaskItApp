@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 6f912131c21d
+Revision ID: 7392e3f59d09
 Revises: 
-Create Date: 2024-05-29 06:22:53.355821
+Create Date: 2024-06-03 12:38:27.932671
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '6f912131c21d'
+revision = '7392e3f59d09'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -28,7 +28,7 @@ def upgrade():
     sa.Column('username', sa.String(length=24), nullable=False),
     sa.Column('email', sa.String(length=120), nullable=False),
     sa.Column('password', sa.String(length=80), nullable=False),
-    sa.Column('full_name', sa.String(length=120), nullable=False),
+    sa.Column('full_name', sa.String(length=120), nullable=True),
     sa.Column('role', sa.Enum('TASK_SEEKER', 'REQUESTER', 'BOTH', 'NONE', name='roleenum'), nullable=True),
     sa.Column('description', sa.String(length=500), nullable=True),
     sa.PrimaryKeyConstraint('id'),
@@ -70,9 +70,9 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('title', sa.String(length=80), nullable=False),
     sa.Column('description', sa.String(length=500), nullable=False),
-    sa.Column('creation_date', sa.DateTime(), nullable=False),
+    sa.Column('creation_date', sa.DateTime(timezone=True), nullable=False),
     sa.Column('due_date', sa.DateTime(), nullable=False),
-    sa.Column('status', sa.Enum('PENDING', 'IN_PROGRESS', 'COMPLETED', name='statusenum'), nullable=False),
+    sa.Column('status', sa.Enum('PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED', name='statusenum'), nullable=False),
     sa.Column('budget', sa.String(length=10), nullable=False),
     sa.Column('delivery_location_id', sa.Integer(), nullable=False),
     sa.Column('pickup_location_id', sa.Integer(), nullable=False),
@@ -88,7 +88,7 @@ def upgrade():
     )
     op.create_table('postulant',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('application_date', sa.DateTime(), nullable=False),
+    sa.Column('application_date', sa.DateTime(timezone=True), nullable=False),
     sa.Column('status', sa.String(length=120), nullable=False),
     sa.Column('price', sa.String(length=120), nullable=False),
     sa.Column('task_id', sa.Integer(), nullable=False),
@@ -103,6 +103,7 @@ def upgrade():
     sa.Column('seeker_id', sa.Integer(), nullable=True),
     sa.Column('requester_id', sa.Integer(), nullable=True),
     sa.Column('task_id', sa.Integer(), nullable=False),
+    sa.Column('review', sa.String(length=500), nullable=True),
     sa.ForeignKeyConstraint(['requester_id'], ['user.id'], ),
     sa.ForeignKeyConstraint(['seeker_id'], ['user.id'], ),
     sa.ForeignKeyConstraint(['task_id'], ['task.id'], ),

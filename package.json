@@ -76,6 +76,7 @@
 	"dependencies": {
 		"@vis.gl/react-google-maps": "^1.0.1",
 		"bootstrap": "^5.3.3",
+		"cloudinary": "^2.2.0",
 		"prop-types": "^15.6.1",
 		"react": "^16.8.4",
 		"react-bootstrap": "^2.10.2",
@@ -84,6 +85,7 @@
 		"react-pro-sidebar": "^1.1.0",
 		"react-rating-component": "^1.0.0",
 		"react-rating-stars-component": "^2.2.0",
-		"react-router-dom": "^6.3.0"
+		"react-router-dom": "^6.3.0",
+		"socket.io-client": "^4.7.5"
 	}
 }

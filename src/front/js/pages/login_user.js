@@ -12,7 +12,7 @@ const LoginUser = () => {
         e.preventDefault();
         actions.login(username, password).then(() => {
             if (store.auth) {
-                navigate("/user-panel");
+                navigate("/");
             }
         });
     }
@@ -44,10 +44,10 @@ const LoginUser = () => {
                         required
                     />
                 </div>
-                <button type="submit" className="btn btn-success w-100 mb-3">Login</button>
+                <button type="submit" className="btn btn-success w-100 mb-3">Sign In</button>
                 <p>or</p>
                 <Link to="/signup-user">
-                    <button className="btn btn-primary">Signup</button>
+                    <button className="btn btn-primary">Sign Up</button>
                 </Link>
             </form>
         </div>

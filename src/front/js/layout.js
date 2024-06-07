@@ -3,7 +3,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ScrollToTop from "./component/scrollToTop";
 import { BackendURL } from "./component/backendURL";
 import { Home } from "./pages/home";
-import { Demo } from "./pages/demo";
 import { User } from "./pages/user";
 import { TaskFeed } from "./pages/tasks";
 import { Users } from "./pages/users";
@@ -23,9 +22,11 @@ import UserPanel from "./pages/user_panel";
 import { Context } from "./store/appContext"; 
 import { Category } from "./pages/category.js";
 import { SidebarComponent } from "./component/sidebar.js";
+import { Applicants } from "./pages/applicants.js";
+import EditProfile from "./pages/edit_profile";
+import ChatList from "./component/chat/chat_list.jsx";
 import SignupAdmin from "./pages/SignupAdmin";
 import LoginAdmin from "./pages/LoginAdmin";
-
 
 
 const Layout = () => {
@@ -47,16 +48,18 @@ const Layout = () => {
             <BrowserRouter basename={basename}>
                 <ScrollToTop>
                     <div className="d-flex container-fluid m-0 p-0">
-                        {store.auth && <SidebarComponent></SidebarComponent>}
+                        { store.auth && <SidebarComponent></SidebarComponent> }
                         <div className="w-100">
                             <Navbar />
                             <Routes>
                                 <Route element={<Home />} path="/" />
                                 <Route element={<CategoryList />} path="/categories" />
-                                <Route element={<Demo />} path="/demo" />
+                                <Route element={<Category />} path="/categories/:thecategory" />
+                                <Route element={<Home />} path="/" />
                                 <Route element={<TaskFeed />} path="/tasks" />
                                 <Route element={<Category />} path="/categories/:thecategory" />
                                 <Route element={<Task />} path="/tasks/:theid" />
+                                <Route element={<Applicants />} path="/tasks/:theid/applicants" />
                                 <Route element={<Users />} path="/users" />
                                 <Route element={<Requesters />} path="/requesters" />
                                 <Route element={<Seekers />} path="/seekers" />
@@ -69,9 +72,11 @@ const Layout = () => {
                                 <Route element={<SignupAdmin />} path="/signup-admin" />
                                 <Route element={<LoginAdmin />} path="/login-admin" />
                                 <Route element={<UserPanel />} path="/user-panel" />
+                                <Route element={<EditProfile />} path="/edit-profile" />
                                 <Route element={<h1>Not found!</h1>} />
                             </Routes>
                             <Footer />
+                            { store.auth && <ChatList></ChatList> }
                         </div>
                     </div>
                 </ScrollToTop>

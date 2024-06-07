@@ -1,8 +1,11 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
-from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Task, StatusEnum, Address, Category, RoleEnum, Requester, TaskSeeker, Rating, Postulant, AdminUser
+import cloudinary
+import cloudinary.uploader
+
+from flask import Flask, request, jsonify, url_for, Blueprint, current_app
+from api.models import db, User, Task, StatusEnum, Address, Category, RoleEnum, Requester, TaskSeeker, Rating, Postulant, Notification, Chat, ChatMessage, AdminUser
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from datetime import datetime
@@ -140,15 +143,21 @@ def edit_task(id):
     if new_title: task.title = new_title
     if new_description: task.description = new_description
     if new_delivery_location:
-        delivery_address = Address(address=new_delivery_location, latitude=data.get('delivery_lat'), longitude=data.get('delivery_lgt'))
-        db.session.add(delivery_address)
-        db.session.commit()
-        task.delivery_location_id = delivery_address.id
+        existing_delivery = Address.query.filter_by(address=new_delivery_location)
+        if existing_delivery: task.delivery_location = existing_delivery
+        else: 
+            delivery_address = Address(address=new_delivery_location, latitude=data.get('delivery_lat'), longitude=data.get('delivery_lgt'))
+            db.session.add(delivery_address)
+            db.session.commit()
+            task.delivery_location_id = delivery_address.id
     if new_pickup_location:
-        pickup_address = Address(address=new_pickup_location, latitude=data.get('pickup_lat'), longitude=data.get('pickup_lgt'))
-        db.session.add(pickup_address)
-        db.session.commit()
-        task.pickup_location_id = pickup_address.id
+        existing_pickup = Address.query.filter_by(address=new_pickup_location)
+        if existing_pickup: task.pickup_location = existing_pickup
+        else:
+            pickup_address = Address(address=new_pickup_location, latitude=data.get('pickup_lat'), longitude=data.get('pickup_lgt'))
+            db.session.add(pickup_address)
+            db.session.commit()
+            task.pickup_location_id = pickup_address.id
     if new_budget: task.budget = new_budget
 
     db.session.commit()
@@ -300,16 +309,17 @@ def add_user():
     username = data.get('username')
     email = data.get("email")
     password = data.get('password')
-    full_name = data.get('full_name')
-    description = data.get('description')
     
-    if not username or not email or not password or not full_name:
+    if not username or not email or not password:
         return jsonify({ 'error': 'Missing fields.'}), 400
     
     existing_email = User.query.filter_by(email=email).first()
-    if existing_email: return jsonify({ 'error': 'Email already used.'}), 400
+    existing_username = User.query.filter_by(username=username).first()
+    if existing_email and existing_username: return jsonify({ 'error': 'Email and username already in use.'}), 400
+    if existing_username: return jsonify({ 'error': 'Username already in use.'}), 400
+    if existing_email: return jsonify({ 'error': 'Email already in use.'}), 400
 
-    new_user = User(username=username, email=email, password=password, full_name=full_name, description=description)
+    new_user = User(username=username, email=email, password=password)
     
     db.session.add(new_user)
     db.session.commit()
@@ -363,7 +373,20 @@ def edit_user(id):
     if new_role_str:
         try:
             new_role = RoleEnum(new_role_str)
-            user.role = new_role
+            if new_role != user.role:
+                if user.requester:
+                    user.requester.archive()
+                if user.task_seeker:
+                    user.task_seeker.archive()
+                
+                if new_role == RoleEnum.REQUESTER or new_role == RoleEnum.BOTH:
+                    requester = Requester(user=user)
+                    db.session.add(requester)
+                if new_role == RoleEnum.TASK_SEEKER or new_role == RoleEnum.BOTH:
+                    task_seeker = TaskSeeker(user=user)
+                    db.session.add(task_seeker)
+                
+                user.role = new_role
         except ValueError:
             return jsonify({"error": "Invalid role value."}), 400
 
@@ -371,7 +394,7 @@ def edit_user(id):
     if new_email: user.email = new_email
     if new_password: user.password = new_password
     if new_full_name: user.full_name = new_full_name
-    if new_description: user.new_description = new_description
+    if new_description: user.description = new_description
 
     db.session.commit()
 
@@ -642,29 +665,28 @@ def get_postulant(postulant_id):
 @api.route('/postulants', methods=['POST'])
 def create_postulant():
     data = request.json
-    status = data.get('status')
+    status = "applied"
     seeker_id = data.get('seeker_id')
     price=data.get('price')
     task_id = data.get('task_id')
 
-    if not status or not seeker_id or not price: 
+    if not seeker_id or not price: 
         return jsonify({ 'error': 'Missing fields.'}), 400
     
-    existing_seeker = TaskSeeker.query.filter_by(user_id=seeker_id).first()
+    existing_seeker = TaskSeeker.query.get(seeker_id)
     if not existing_seeker: return jsonify({ 'error': 'Task seeker with given user ID not found.'}), 404
 
     existing_task = Task.query.get(task_id)
     if not existing_task: return jsonify({ 'error': 'Task ID not found.'}), 404
+
+    if existing_task.requester.user.id == existing_seeker.user.id:
+        return jsonify({ 'error': "You can't apply to your own task." }), 400
     
     postul = Postulant(status=status, seeker=existing_seeker, price=price, task=existing_task)
     db.session.add(postul)
     db.session.commit()
 
-    response_body = {
-        "message": "Postulant created"
-    }
-
-    return jsonify(response_body), 200
+    return jsonify({"message": "Applied successfully."}), 200
 
 @api.route('/postulants/<int:id>', methods=['PUT'])
 def update_postulant(id):
@@ -695,28 +717,6 @@ def delete_postulant(id):
 
     return jsonify({'message': 'Postulant deleted successfully.'}), 200
 
-@api.route('/signup', methods=['POST'])
-def signup():
-    data = request.json
-    username = data.get('username')
-    email = data.get('email')
-    password = data.get('password')
-    full_name = data.get('full_name')
-    description = data.get('description')
-
-    if not username or not email or not password or not full_name:
-        return jsonify({'error': 'Missing fields.'}), 400
-
-    existing_user = User.query.filter_by(email=email).first()
-    if existing_user:
-        return jsonify({'error': 'Email already used.'}), 400
-
-    new_user = User(username=username, email=email, password=password, full_name=full_name, description=description)
-    db.session.add(new_user)
-    db.session.commit()
-
-    return jsonify({'message': 'User created successfully.'}), 201
-
 @api.route('/login', methods=['POST'])
 def login():
     data = request.json
@@ -744,8 +744,87 @@ def validate_token():
 def logout():
     return jsonify({'message': 'User logged out successfully.'}), 200
 
+@api.route('/users/<int:index>/tasks', methods=['GET'])
+def get_user_tasks(index):
+    requester = Requester.query.filter_by(user_id=index).first()
+    if not requester:
+        return jsonify({"error": "Requester not found"}), 404
 
+    tasks = Task.query.filter_by(requester_id=requester.id).all()
+    return jsonify([task.serialize() for task in tasks]), 200
 
+@api.route('/users/<int:index>/applied-to-tasks', methods=['GET'])
+def get_applied_to_tasks(index):
+    seeker = TaskSeeker.query.filter_by(user_id=index).first()
+    if not seeker:
+        return jsonify({"error": "Task seeker not found."}), 404
+    
+    postulants = Postulant.query.filter_by(seeker_id=seeker.id).all()
+
+    applied_tasks = [postulant.task.serialize() for postulant in postulants]
+
+    return jsonify(applied_tasks), 200
+
+@api.route('/users/<int:index>/unseen-notifications', methods=['GET'])
+def get_unseen_notifications(index):
+    existing_user = User.query.get(index)
+    if not existing_user: return jsonify({"error": "User does not exist."}), 404
+
+    unseen_notifications = Notification.query.filter_by(user_id=index, seen=False).all()
+    return jsonify([notification.serialize() for notification in unseen_notifications]), 200
+
+@api.route('/notifications/<int:index>', methods=['PUT'])
+def mark_as_seen(index):
+    notification = Notification.query.get(index)
+    if not notification: return jsonify({"error": "Notification not found."})
+    notification.seen = True
+    db.session.commit()
+    return jsonify({"message": "Notification marked as seen successfully."}), 200
+
+@api.route('/upload', methods=['POST'])
+def upload_image():
+    user_id = request.form.get('user_id')
+    file_to_upload = request.files['file']
+    if file_to_upload:
+        upload_result = cloudinary.uploader.upload(file_to_upload)
+        user = User.query.get(user_id)
+        user.profile_picture = upload_result['url']
+        db.session.commit()
+        return jsonify({"message": "Image uploaded successfully", "url": upload_result['url']}), 200
+    return jsonify({"error": "No file provided"}), 400
+
+@api.route('users/<int:id>/chats', methods=['GET'])
+def get_user_chats(id):
+    chats = Chat.query.filter((Chat.requester_user_id == id) | (Chat.seeker_user_id == id)).all()
+    return jsonify([chat.serialize() for chat in chats]), 200
+
+@api.route('/chats/<int:id>/messages', methods=['POST'])
+def create_message(id):
+    data = request.get_json()
+    message = data.get('message')
+    sender_id = data.get('sender_id')
+    
+    if not message or not sender_id:
+        return jsonify({'error': 'Missing fields.'}), 400
+    
+    existing_sender = User.query.get(sender_id)
+    if not existing_sender: return jsonify({'error': 'Sender with given user id not found.'}), 404
+
+    existing_chat = Chat.query.get(id)
+    if not existing_chat: return jsonify({'error': 'Chat with given id not found.'}), 404
+    
+    message = ChatMessage(chat_id=id, sender_user_id=sender_id, message=message)
+
+    db.session.add(message)
+    db.session.commit()
+    
+    return jsonify({'message': 'Message sent successfully.'}), 200
+
+@api.route('/chats/<int:id>/messages', methods=['GET'])
+def get_messages(id):
+    existing_chat = Chat.query.get(id);
+    if not existing_chat: return jsonify({'error': 'Chat does not exist.'}), 404
+    return jsonify([message.serialize() for message in existing_chat.messages]), 200
 
 # AdminUser CRUD Routes
 @api.route('/admin-users', methods=['GET'])
