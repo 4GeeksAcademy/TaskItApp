@@ -23,13 +23,21 @@ import UserPanel from "./pages/user_panel";
 import { Context } from "./store/appContext"; 
 import { Category } from "./pages/category.js";
 import { SidebarComponent } from "./component/sidebar.js";
+import SignupAdmin from "./pages/SignupAdmin";
+import LoginAdmin from "./pages/LoginAdmin";
+
+
 
 const Layout = () => {
     const basename = process.env.BASENAME || "";
-    const { store, actions } = useContext(Context); // Usa el contexto para acceder a las acciones
+    const { store, actions } = useContext(Context);
 
     useEffect(() => {
-        actions.validateToken();
+        // Verifica el token almacenado cuando la aplicación se carga
+        const token = localStorage.getItem('admin_access_token');
+        if (token) {
+            actions.validateAdminToken();
+        }
     }, []);
 
     if (!process.env.BACKEND_URL || process.env.BACKEND_URL === "") return <BackendURL />;
@@ -39,15 +47,15 @@ const Layout = () => {
             <BrowserRouter basename={basename}>
                 <ScrollToTop>
                     <div className="d-flex container-fluid m-0 p-0">
-                        { store.auth && <SidebarComponent></SidebarComponent> }
+                        {store.auth && <SidebarComponent></SidebarComponent>}
                         <div className="w-100">
                             <Navbar />
                             <Routes>
-                                <Route element={<CategoryList />} path="/categories" />
-                                <Route element={<Category />} path="/categories/:thecategory" />
                                 <Route element={<Home />} path="/" />
+                                <Route element={<CategoryList />} path="/categories" />
                                 <Route element={<Demo />} path="/demo" />
                                 <Route element={<TaskFeed />} path="/tasks" />
+                                <Route element={<Category />} path="/categories/:thecategory" />
                                 <Route element={<Task />} path="/tasks/:theid" />
                                 <Route element={<Users />} path="/users" />
                                 <Route element={<Requesters />} path="/requesters" />
@@ -58,6 +66,8 @@ const Layout = () => {
                                 <Route element={<Postulants />} path="/postulants" />
                                 <Route element={<LoginUser />} path="/login-user" />
                                 <Route element={<SignupUser />} path="/signup-user" />
+                                <Route element={<SignupAdmin />} path="/signup-admin" />
+                                <Route element={<LoginAdmin />} path="/login-admin" />
                                 <Route element={<UserPanel />} path="/user-panel" />
                                 <Route element={<h1>Not found!</h1>} />
                             </Routes>
