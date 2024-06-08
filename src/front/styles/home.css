@@ -5,3 +5,100 @@
     one more css for each page that will contain the selected used 
     on that page only (the ones not reused in other pages).
 */
+
+.hero {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1)),
+                url(https://cdn.discordapp.com/attachments/1248999894903947366/1249009395766001777/blondy0429_modern_flat_vector_art_of_a_person_grocery_shopping_12cc4790-b212-4048-a161-6c9eefce0a34.png?ex=6665be25&is=66646ca5&hm=7a357d9e73b58e0402e0efb8b524533ca5055183868111004c7416d22eb54881&);
+    background-size: cover, contain;
+    background-repeat: no-repeat;
+    background-position: center top;
+    background-attachment: fixed;
+    height: 83vh;
+}
+
+.fs-0 {
+    font-size: 4rem;
+}
+
+.fs-text {
+    font-size: calc(1.325rem + .9vw);
+}
+
+.mt-6 {
+    margin-top: 6rem;
+}
+
+.hero-btn {
+    border: 2px solid rgb(226, 98, 61);
+    font-weight: 900;
+    color: rgb(226, 98, 61);
+    transition: all 0.2s ease;
+    background-color: rgba(235, 235, 235, 0.2);
+}
+
+.hero-btn:hover {
+    border: 2px solid rgb(226, 98, 61);
+    background-color: rgb(226, 98, 61);
+    font-weight: 900;
+    color: black;
+}
+
+.feature-img {
+    height: 15rem;
+}
+
+.text-orange {
+    color: rgb(226, 98, 61);
+}
+
+@media (max-width: 1919px) {
+    .hero {
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1)),
+                    url(https://cdn.discordapp.com/attachments/1248999894903947366/1249009395766001777/blondy0429_modern_flat_vector_art_of_a_person_grocery_shopping_12cc4790-b212-4048-a161-6c9eefce0a34.png?ex=6665be25&is=66646ca5&hm=7a357d9e73b58e0402e0efb8b524533ca5055183868111004c7416d22eb54881&);
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: left top;
+        background-attachment: fixed;
+        height: 70vh;
+    }
+
+    .feature-img {
+        height: 8rem;
+    }
+
+    .fs-0 {
+        font-size: 3rem;
+    }
+
+    .fs-text {
+        font-size: 2.25rem;
+    }
+}
+
+@media (max-width: 1079px) {
+    .feature-img {
+        height: 16rem;
+    }
+
+    .fs-0 {
+        font-size: 3rem;
+    }
+
+    .fs-text {
+        font-size: 1.75rem;
+    }
+}
+
+@media (max-width: 800px) {
+    .feature-img {
+        height: 8rem;
+    }
+
+    .fs-0 {
+        font-size: 2rem;
+    }
+
+    .fs-text {
+        font-size: 1rem;
+    }
+}
