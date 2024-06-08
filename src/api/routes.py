@@ -125,6 +125,9 @@ def edit_task(id):
         try:
             new_status_enum = StatusEnum(new_status)
             task.status = new_status_enum
+            if task.status == StatusEnum.CANCELLED or task.status == StatusEnum.COMPLETED:
+                chat = Chat.query.filter_by(task_id=task.id).first()
+                chat.archived = True
         except ValueError:
             return jsonify({"error": "Invalid status value."}), 400
 
@@ -768,6 +771,32 @@ def get_applied_to_tasks(index):
 
     return jsonify(applied_tasks), 200
 
+@api.route('/users/<int:index>/seeker/completed-tasks', methods=['GET'])
+def get_seeker_completed_tasks(index):
+    seeker = TaskSeeker.query.filter_by(user_id=index).first()
+    if not seeker:
+        return jsonify({"error": "Task seeker not found."}), 404
+    
+    completed_tasks = Task.query.filter(
+        Task.seeker_id == seeker.id,
+        Task.status.in_([StatusEnum.COMPLETED])
+    ).all()
+
+    return jsonify([task.serialize() for task in completed_tasks]), 200
+
+@api.route('/users/<int:index>/requester/completed-tasks', methods=['GET'])
+def get_requester_completed_tasks(index):
+    requester = Requester.query.filter_by(user_id=index).first()
+    if not requester:
+        return jsonify({"error": "Requester not found."}), 404
+    
+    completed_tasks = Task.query.filter(
+        Task.requester_id == requester.id,
+        Task.status.in_([StatusEnum.COMPLETED])
+    ).all()
+
+    return jsonify([task.serialize() for task in completed_tasks]), 200
+
 @api.route('/users/<int:index>/unseen-notifications', methods=['GET'])
 def get_unseen_notifications(index):
     existing_user = User.query.get(index)
@@ -798,7 +827,10 @@ def upload_image():
 
 @api.route('users/<int:id>/chats', methods=['GET'])
 def get_user_chats(id):
-    chats = Chat.query.filter((Chat.requester_user_id == id) | (Chat.seeker_user_id == id)).all()
+    chats = Chat.query.filter(
+        ((Chat.requester_user_id == id) | (Chat.seeker_user_id == id)) &
+        (Chat.archived == False)
+    ).all()
     return jsonify([chat.serialize() for chat in chats]), 200
 
 @api.route('/chats/<int:id>/messages', methods=['POST'])
