@@ -285,6 +285,7 @@ class Chat(db.Model):
     task_id = db.Column(db.Integer, db.ForeignKey('task.id'))
     task = db.relationship('Task')
     room_name = db.Column(db.String, nullable=False)
+    archived = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
         return f'<Chat {self.requester_user.username} - {self.seeker_user.username} >'
