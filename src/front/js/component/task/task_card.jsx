@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Context } from "../../store/appContext.js";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Link, useLocation } from "react-router-dom";
@@ -9,14 +9,15 @@ const Task = ({ taskInfo }) => {
     const { store, actions } = useContext(Context);
     const path = useLocation().pathname;
     const [show, setShow] = useState(false);
+	const [showRatingForm, setShowRatingForm] = useState(false);
+    const [showRateBtn, setShowRateBtn] = useState(true);
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
-
-    
-	const [showRatingForm, setShowRatingForm] = useState(false);
-
-    const handleCloseRatingForm = () => setShowRatingForm(false);
+    const handleCloseRatingForm = () => {
+        setShowRatingForm(false);
+        showRateButton();
+    }
     const handleShowRatingForm = () => setShowRatingForm(true);
 
     const handleComplete = () => {
@@ -29,17 +30,26 @@ const Task = ({ taskInfo }) => {
         if(taskInfo.seeker) actions.sendNotification(`The task with id ${taskInfo.id}, has been cancelled.`, taskInfo.seeker.user.username);
     }
 
+    const showRateButton = () => {
+        const userHasRated = taskInfo.ratings.some(rating => (rating.seeker_id !== store.user.seeker?.id  && rating.seeker_id === taskInfo.seeker.id) || (rating.requester_id !== store.user.requester?.id && rating.requester_id === taskInfo.requester_user.id));
+        if (!userHasRated && taskInfo.ratings.length < 2) setShowRateBtn(true);
+        else setShowRateBtn(false);
+    }
+
+    useEffect(() => { showRateButton(); }, [])
+
     return (
         <div className="col-lg-4 col-md-8 col-sm-11 p-2 d-flex flex-column">
             <div className="card p-4 h-100 d-flex flex-column justify-content-between flex-grow-1">
                 <div>
                     <div className="w-100 d-flex justify-content-end gap-2">
                         { (taskInfo.status == "completed" && path == '/')
-                            ? <div className="rounded-circle overflow-hidden smooth" style={{ width: "auto", height: "auto" ,aspectRatio: "1/1" }}>
-                                <button className="btn btn-warning h-100" onClick={handleShowRatingForm}><Icon className="fs-5" icon="material-symbols:reviews-outline" /></button>
-                            </div>
-                            : ((store.user.id == taskInfo.requester_user?.id && taskInfo.status != "cancelled") && (
-                                    <>
+                            ? ( showRateBtn &&
+                                <div className="rounded-circle overflow-hidden smooth" style={{ width: "auto", height: "auto" ,aspectRatio: "1/1" }}>
+                                    <button className="btn btn-warning h-100" onClick={handleShowRatingForm}><Icon className="fs-5" icon="material-symbols:reviews-outline" /></button>
+                                </div>
+                            ) : ((store.user.id == taskInfo.requester_user?.id && taskInfo.status != "cancelled") && (
+                                <>
                                     { taskInfo.seeker_id && 
                                         <div className="rounded-circle overflow-hidden smooth" style={{ width: "auto", height: "auto" ,aspectRatio: "1/1" }}>
                                             <button className="btn btn-success h-100" onClick={handleComplete}><Icon  className="fs-5" icon="fluent-mdl2:accept-medium" /></button>
