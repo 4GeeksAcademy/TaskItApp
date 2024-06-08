@@ -20,7 +20,7 @@ export const Navbar = () => {
     const toggleNotificationsDropdown = () => { if(store.notifications.length > 0) setNotificationsVisible(!notificationsVisible); }
 
     return (
-        <nav className="navbar navbar-light bg-white py-5 px-3">
+        <nav className="navbar navbar-light bg-white py-5 px-3 sticky-top">
 			<div className="container-fluid">
 				<div className="d-flex align-items-center">
 					<Link to="/">
