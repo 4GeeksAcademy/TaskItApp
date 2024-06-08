@@ -20,8 +20,8 @@ const RatingForm = (props) => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        const seekerID = props.role == "seeker" ? props.id : null;
-        const requesterID = props.role == "requester" ? props.id : null;
+        const seekerID = props.role == "requester" ? props.id : null;
+        const requesterID = props.role == "seeker" ? props.id : null;
         actions.addRating(rating, seekerID, requesterID, props.taskID, review);
         props.handleClose();
     };
