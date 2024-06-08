@@ -143,6 +143,7 @@ class Task(db.Model):
 
     def serialize(self):
         applicants_data = [applicant.serialize() for applicant in self.applicants]
+        rating_data = [rating.serialize() for rating in self.ratings]
         return {
             "id": self.id,
             "title": self.title,
@@ -161,7 +162,8 @@ class Task(db.Model):
             "category_id": self.category_id,
             "category_name": self.category.name,
             "budget": self.budget,
-            "applicants": applicants_data
+            "applicants": applicants_data,
+            "ratings": rating_data
         }
 
     
@@ -213,7 +215,7 @@ class Rating(db.Model):
     # Relationships
     seeker = db.relationship('User', foreign_keys=[seeker_id], backref=db.backref('seeker_ratings', lazy=True))
     requester = db.relationship('User', foreign_keys=[requester_id], backref=db.backref('requester_ratings', lazy=True))
-    task = db.relationship('Task', foreign_keys=[task_id])
+    task = db.relationship('Task', foreign_keys=[task_id], backref=db.backref('ratings', lazy=True))
 
     def __repr__(self):
         return f'<Rating id={self.id}, stars={self.stars}>'
