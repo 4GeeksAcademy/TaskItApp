@@ -3,7 +3,7 @@ import "../../../styles/home.css"
 
 const HowItWorks = () => {
     return (
-        <div className="container-fluid mt-6">
+        <div className="container-fluid mt-6" id="how-it-works">
             <div className="row">
                 <div className="mx-auto col-10">
                     <h1>How it works</h1>

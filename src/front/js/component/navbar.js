@@ -19,6 +19,13 @@ export const Navbar = () => {
     const toggleDropdown = () => setDropdownVisible(!dropdownVisible); 
     const toggleNotificationsDropdown = () => { if(store.notifications.length > 0) setNotificationsVisible(!notificationsVisible); }
 
+	const scrollToSection = (id) => {
+		const element = document.getElementById(id);
+		if (element) {
+			element.scrollIntoView({ behavior: 'smooth' });
+		}
+	};
+
     return (
         <nav className="navbar navbar-light bg-white py-5 px-3 sticky-top">
 			<div className="container-fluid">
@@ -30,6 +37,16 @@ export const Navbar = () => {
 				{ !store.auth
 				? <div className="ml-auto d-flex me-2">
 					<ul className="nav">
+						<li className="nav-item">
+							<Link className="nav-link text-dark smooth" to="#features" onClick={() => scrollToSection('features')} >
+								Features
+							</Link>
+						</li>
+						<li className="nav-item">
+							<Link className="nav-link text-dark smooth" to="#how-it-works"  onClick={() => scrollToSection('how-it-works')} >
+								How it Works
+							</Link>
+						</li>
 						<li className="nav-item">
 							<Link className="nav-link text-dark smooth" to="/about">
 								About

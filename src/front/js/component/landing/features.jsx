@@ -10,7 +10,7 @@ import security from "../../../img/security.png"
 
 const Features = () => {
     return (
-        <div className="container-fluid mt-6">
+        <div className="container-fluid mt-6" id="features">
             <div className="row">
                 <div className="mx-auto col-10">
                     <h1>Features</h1>
