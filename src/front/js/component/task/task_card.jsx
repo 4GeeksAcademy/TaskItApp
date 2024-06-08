@@ -3,6 +3,7 @@ import { Context } from "../../store/appContext.js";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Link, useLocation } from "react-router-dom";
 import TaskForm from "./task_form.jsx";
+import RatingForm from "../rating/rating_form.jsx";
 
 const Task = ({ taskInfo }) => {
     const { store, actions } = useContext(Context);
@@ -11,6 +12,12 @@ const Task = ({ taskInfo }) => {
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+
+    
+	const [showRatingForm, setShowRatingForm] = useState(false);
+
+    const handleCloseRatingForm = () => setShowRatingForm(false);
+    const handleShowRatingForm = () => setShowRatingForm(true);
 
     const handleComplete = () => {
         actions.changeTaskStatus(taskInfo.id, "completed");
@@ -29,7 +36,7 @@ const Task = ({ taskInfo }) => {
                     <div className="w-100 d-flex justify-content-end gap-2">
                         { (taskInfo.status == "completed" && path == '/')
                             ? <div className="rounded-circle overflow-hidden smooth" style={{ width: "auto", height: "auto" ,aspectRatio: "1/1" }}>
-                                <button className="btn btn-warning h-100" onClick={handleComplete}><Icon className="fs-5" icon="material-symbols:reviews-outline" /></button>
+                                <button className="btn btn-warning h-100" onClick={handleShowRatingForm}><Icon className="fs-5" icon="material-symbols:reviews-outline" /></button>
                             </div>
                             : ((store.user.id == taskInfo.requester_user?.id && taskInfo.status != "cancelled") && (
                                     <>
@@ -98,6 +105,14 @@ const Task = ({ taskInfo }) => {
             </div>
 
             <TaskForm show={show} handleClose={handleClose} currentTask={taskInfo}></TaskForm>
+            <RatingForm 
+                show={showRatingForm} 
+                handleClose={handleCloseRatingForm} 
+                role={store.user.id == taskInfo.requester_user?.id ? "requester" : "seeker"} 
+                id={store.user.id != taskInfo.requester_user?.id ? store.user.id : taskInfo.seeker?.id} 
+                username={store.user.id != taskInfo.requester_user?.id ? store.user.username : taskInfo.seeker?.user.username} 
+                taskID={taskInfo.id}>
+            </RatingForm>
         </div>
     );
 }
