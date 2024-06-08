@@ -26,13 +26,13 @@ const Task = ({ taskInfo }) => {
         <div className="col-lg-4 col-md-8 col-sm-11 p-2 d-flex flex-column">
             <div className="card p-4 h-100 d-flex flex-column justify-content-between flex-grow-1">
                 <div>
-                    {(store.user.id == taskInfo.requester_user?.id && taskInfo.status != "cancelled" && path == '/') && (
-                        <div className="w-100 d-flex justify-content-end gap-2">
-                            { taskInfo.status == "completed" 
-                                ? <div className="rounded-circle overflow-hidden smooth" style={{ width: "auto", height: "auto" ,aspectRatio: "1/1" }}>
-                                    <button className="btn btn-warning h-100" onClick={handleComplete}><Icon className="fs-5" icon="material-symbols:reviews-outline" /></button>
-                                </div>
-                                : <>
+                    <div className="w-100 d-flex justify-content-end gap-2">
+                        { (taskInfo.status == "completed" && path == '/')
+                            ? <div className="rounded-circle overflow-hidden smooth" style={{ width: "auto", height: "auto" ,aspectRatio: "1/1" }}>
+                                <button className="btn btn-warning h-100" onClick={handleComplete}><Icon className="fs-5" icon="material-symbols:reviews-outline" /></button>
+                            </div>
+                            : ((store.user.id == taskInfo.requester_user?.id && taskInfo.status != "cancelled") && (
+                                    <>
                                     { taskInfo.seeker_id && 
                                         <div className="rounded-circle overflow-hidden smooth" style={{ width: "auto", height: "auto" ,aspectRatio: "1/1" }}>
                                             <button className="btn btn-success h-100" onClick={handleComplete}><Icon  className="fs-5" icon="fluent-mdl2:accept-medium" /></button>
@@ -47,9 +47,9 @@ const Task = ({ taskInfo }) => {
                                         </div>
                                     }
                                 </>
-                            }
-                        </div>
-                    )}
+                            ))
+                        }
+                    </div>
                     { path != "/" &&
                         <div className="d-flex align-items-center mb-2">
                             <div className="rounded-circle bg-dark me-2 overflow-hidden" style={{ height: "60px", width: "60px" }}>
