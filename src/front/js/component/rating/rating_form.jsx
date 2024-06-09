@@ -23,6 +23,7 @@ const RatingForm = (props) => {
         const seekerID = props.role == "requester" ? props.id : null;
         const requesterID = props.role == "seeker" ? props.id : null;
         actions.addRating(rating, seekerID, requesterID, props.taskID, review);
+        actions.sendNotification(`You have been rated for completing the task with id ${props.taskID}.`, props.username);
         props.handleClose();
     };
 
