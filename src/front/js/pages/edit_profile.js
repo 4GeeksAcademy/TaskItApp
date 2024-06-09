@@ -19,7 +19,6 @@ const EditProfile = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(role)
         await actions.editUser(store.user.id, username, email, password, fullName, description, role);
         if (file) {
             await actions.uploadProfilePicture(store.user.id, file);
