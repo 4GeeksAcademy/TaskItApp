@@ -71,6 +71,10 @@ def add_task():
     
     new_task = Task(title=title, description=description, delivery_address=delivery_address, pickup_address=pickup_address, due_date=due_date, requester=existing_requester, category=existing_category, budget=budget)    
     
+    existing_requester.total_requested_tasks += 1
+    existing_requester.total_open_tasks += 1
+    existing_requester.average_budget = (existing_requester.average_budget * (existing_requester.total_requested_tasks - 1) + float(budget)) / existing_requester.total_requested_tasks
+
     db.session.add(new_task)
     db.session.commit()
 
@@ -91,6 +95,9 @@ def delete_task(id):
     task = Task.query.get(id)
 
     if not task: return jsonify({'error': 'Task not found.'}), 404
+
+    task.requester.total_open_tasks -= 1
+    if task.seeker: task.seeker.total_ongoing_tasks -= 1
 
     db.session.delete(task)
     db.session.commit()
@@ -128,6 +135,10 @@ def edit_task(id):
             if task.status == StatusEnum.CANCELLED or task.status == StatusEnum.COMPLETED:
                 chat = Chat.query.filter_by(task_id=task.id).first()
                 chat.archived = True
+                if task.status == StatusEnum.COMPLETED and task.seeker:
+                    task.seeker.total_completed_tasks += 1
+                if task.seeker: task.seeker.total_ongoing_tasks -= 1
+                task.requester.total_open_tasks -= 1
         except ValueError:
             return jsonify({"error": "Invalid status value."}), 400
 
@@ -142,26 +153,37 @@ def edit_task(id):
         if not existing_seeker:
             return jsonify({'error': 'Task seeker not found.'}), 404
         task.seeker = existing_seeker
+        task.seeker.total_ongoing_tasks += 1
 
     if new_title: task.title = new_title
     if new_description: task.description = new_description
+
     if new_delivery_location:
-        existing_delivery = Address.query.filter_by(address=new_delivery_location)
+        existing_delivery = Address.query.filter_by(address=new_delivery_location).first()
         if existing_delivery: task.delivery_location = existing_delivery
         else: 
             delivery_address = Address(address=new_delivery_location, latitude=data.get('delivery_lat'), longitude=data.get('delivery_lgt'))
             db.session.add(delivery_address)
             db.session.commit()
             task.delivery_location_id = delivery_address.id
+
     if new_pickup_location:
-        existing_pickup = Address.query.filter_by(address=new_pickup_location)
+        existing_pickup = Address.query.filter_by(address=new_pickup_location).first()
         if existing_pickup: task.pickup_location = existing_pickup
         else:
             pickup_address = Address(address=new_pickup_location, latitude=data.get('pickup_lat'), longitude=data.get('pickup_lgt'))
             db.session.add(pickup_address)
             db.session.commit()
             task.pickup_location_id = pickup_address.id
-    if new_budget: task.budget = new_budget
+
+    if new_budget:
+        total_requested_tasks = task.requester.total_requested_tasks
+        current_avg_budget = task.requester.average_budget
+        current_budget = task.budget
+        
+        new_total_budget = (current_avg_budget * total_requested_tasks) - current_budget + new_budget
+        task.requester.average_budget = new_total_budget / total_requested_tasks
+        task.budget = new_budget
 
     db.session.commit()
 
@@ -583,6 +605,9 @@ def add_rating():
 
     if stars < 1 or stars > 5:
         return jsonify({'error': 'Stars must be between 1 and 5'}), 400
+    
+    seeker = None
+    requester = None
 
     if seeker_id:
         seeker = User.query.get(seeker_id)
@@ -599,8 +624,18 @@ def add_rating():
         return jsonify({'error': 'Task with given ID does not exist'}), 400
 
     new_rating = Rating(stars=stars, seeker_id=seeker_id, requester_id=requester_id, task_id=task_id, review=review)
+
+    if seeker:
+        seeker.task_seeker.total_reviews += 1
+        seeker.task_seeker.overall_rating = (seeker.task_seeker.overall_rating * (seeker.task_seeker.total_reviews - 1) + int(stars)) / seeker.task_seeker.total_reviews
+
+    if requester:
+        requester.requester.total_reviews += 1
+        requester.requester.overall_rating = (requester.requester.overall_rating * (requester.requester.total_reviews - 1) + int(stars)) / requester.requester.total_reviews
+
     db.session.add(new_rating)
     db.session.commit()
+
     return jsonify(new_rating.serialize()), 201
 
 @api.route('/ratings', methods=['GET'])
