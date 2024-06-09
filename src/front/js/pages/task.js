@@ -122,7 +122,7 @@ export const Task = () => {
 					</div>
 				</div>
 				<div className="row d-flex justify-content-center mt-4">
-					<div className="col-7 d-flex flex-column justify-content-between">
+					<div className="col-7 d-flex flex-column justify-content-between gap-4">
 						{ reviews.map((review) =>{
 							return <RatingCard key={review.id} rating={review} />
 						})}

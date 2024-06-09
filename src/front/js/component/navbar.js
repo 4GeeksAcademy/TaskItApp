@@ -38,12 +38,12 @@ export const Navbar = () => {
 				? <div className="ml-auto d-flex me-2">
 					<ul className="nav">
 						<li className="nav-item">
-							<Link className="nav-link text-dark smooth" to="#features" onClick={() => scrollToSection('features')} >
+							<Link className="nav-link text-dark smooth" to="/#features" onClick={() => scrollToSection('features')} >
 								Features
 							</Link>
 						</li>
 						<li className="nav-item">
-							<Link className="nav-link text-dark smooth" to="#how-it-works"  onClick={() => scrollToSection('how-it-works')} >
+							<Link className="nav-link text-dark smooth" to="/#how-it-works"  onClick={() => scrollToSection('how-it-works')} >
 								How it Works
 							</Link>
 						</li>

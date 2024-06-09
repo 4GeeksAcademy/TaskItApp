@@ -3,12 +3,14 @@ import PropTypes from "prop-types";
 import { useParams } from "react-router-dom";
 import { Context } from "../store/appContext";
 import StarRating from "../component/rating/StarRating.jsx";
+import RatingCard from "../component/rating/rating_card.jsx";
 
 export const User = () => {
 	const { actions } = useContext(Context);
 	const params = useParams();
 
 	const [user, setUser] = useState({});
+	const [reviews, setReviews] = useState([])
 	const [seekerInfo, setSeekerInfo] = useState({});
 	const [requesterInfo, setRequesterInfo] = useState({});
 
@@ -19,10 +21,23 @@ export const User = () => {
 			
 			if(currentUser.role == "both"|| currentUser.role == "task_seeker") setSeekerInfo(await actions.getSeeker(currentUser.id));
 			if(currentUser.role == "both"|| currentUser.role == "requester") setRequesterInfo(await actions.getRequester(currentUser.id));
+
+			fetchReviews(currentUser)
 		}
 
 		loadInfo();
 	}, [])
+
+	const fetchReviews = async (currentUser) => {
+        try {
+            const response = await fetch(process.env.BACKEND_URL + `/api/users/${currentUser.id}/reviews`); 
+            const data = await response.json();
+			console.log(data)
+            setReviews(data);
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
 	return (
 		<div className="container p-5 pt-0">
@@ -40,52 +55,62 @@ export const User = () => {
 				<div className="col-6 d-flex flex-column justify-content-between">
 					<div>
 						<h1><b>{user.full_name}</b> ({user.username})</h1>
-						{ seekerInfo && Object.keys(seekerInfo).length > 0 && 
-							(<div className="d-flex justify-content-between">
-								<p className="text-muted fs-2">Task Seeker</p>
-								<div className="d-flex align-items-center">
-									<StarRating value={seekerInfo.overall_rating}></StarRating>
-									<span className="text-muted ms-1">({seekerInfo.total_reviews})</span>
-								</div>
-							</div>)
-						}
 						{ requesterInfo && Object.keys(requesterInfo).length > 0 && 
 							(<div className="d-flex justify-content-between">
-								<p className="text-muted fs-2">Requester</p>
+								<span className="text-muted fs-2">Requester</span>
 								<div className="d-flex align-items-center">
 									<StarRating value={requesterInfo.overall_rating}></StarRating>
 									<span className="text-muted ms-1">({requesterInfo.total_reviews})</span>
 								</div>
 							</div>)
 						}
+						{ seekerInfo && Object.keys(seekerInfo).length > 0 && 
+							(<div className="d-flex justify-content-between">
+								<span className="text-muted fs-2">Task Seeker</span>
+								<div className="d-flex align-items-center">
+									<StarRating value={seekerInfo.overall_rating}></StarRating>
+									<span className="text-muted ms-1">({seekerInfo.total_reviews})</span>
+								</div>
+							</div>)
+						}
 						<p className="fs-3 text-muted">{user.description}</p>
 					</div>
-					<div className="d-flex justify-content-around">
+					<div className="d-flex flex-column justify-content-around gap-5">
 						{	seekerInfo && Object.keys(seekerInfo).length > 0 &&
-							<React.Fragment>
+							<div className="card d-flex justify-content-around flex-row">
 								<div className="text-center d-flex flex-column">
-									<span className="fs-2"><b>Total Completed</b></span>
-									<h2>{seekerInfo.total_completed_tasks}</h2>
+									<span className="fs-5"><b>Total Completed</b></span>
+									<span className="fs-2 text-muted">{seekerInfo.total_completed_tasks}</span>
 								</div>
 								<div className="text-center d-flex flex-column">
-									<span className="fs-2"><b>Ongoing</b></span>
-									<h2>{seekerInfo.total_ongoing_tasks}</h2>
+									<span className="fs-5"><b>Ongoing</b></span>
+									<span className="fs-2 text-muted">{seekerInfo.total_ongoing_tasks}</span>
 								</div>
-							</React.Fragment>
+							</div>
 						}
 						{	requesterInfo && Object.keys(requesterInfo).length > 0 &&
-							<React.Fragment>
+							<div className="card d-flex justify-content-around flex-row">
 								<div className="text-center d-flex flex-column">
-									<span className="fs-2"><b>Total Requested</b></span>
-									<h2>{requesterInfo.total_requested_tasks}</h2>
+									<span className="fs-5"><b>Average Budget</b></span>
+									<span className="fs-2 text-muted">{requesterInfo.average_budget}</span>
 								</div>
 								<div className="text-center d-flex flex-column">
-									<span className="fs-2"><b>Average Budget</b></span>
-									<h2>{requesterInfo.average_budget}</h2>
+									<span className="fs-5"><b>Total Requested</b></span>
+									<span className="fs-2 text-muted">{requesterInfo.total_requested_tasks}</span>
 								</div>
-							</React.Fragment>
+								<div className="text-center d-flex flex-column">
+									<span className="fs-5"><b>Open</b></span>
+									<span className="fs-2 text-muted">{requesterInfo.total_open_tasks}</span>
+								</div>
+							</div>
 						}
 					</div>
+				</div>
+				<hr className="my-5"></hr>
+				<div className="d-flex justify-content-between">
+					{ reviews.map((review) =>{
+						return <RatingCard key={review.id} rating={review} />
+					})}
 				</div>
 			</div>
 		</div>
