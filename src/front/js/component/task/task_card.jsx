@@ -48,7 +48,7 @@ const Task = ({ taskInfo }) => {
                                 <div className="rounded-circle overflow-hidden smooth" style={{ width: "auto", height: "auto" ,aspectRatio: "1/1" }}>
                                     <button className="btn btn-warning h-100" onClick={handleShowRatingForm}><Icon className="fs-5" icon="material-symbols:reviews-outline" /></button>
                                 </div>
-                            ) : ((store.user.id == taskInfo.requester_user?.id && taskInfo.status != "cancelled") && (
+                            ) : ((store.user.id == taskInfo.requester_user?.id && taskInfo.status != "cancelled" && path == '/') && (
                                 <>
                                     { taskInfo.seeker_id && 
                                         <div className="rounded-circle overflow-hidden smooth" style={{ width: "auto", height: "auto" ,aspectRatio: "1/1" }}>
