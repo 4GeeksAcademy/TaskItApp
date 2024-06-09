@@ -30,6 +30,7 @@ app.config['JWT_SECRET_KEY'] = 'your_jwt_secret_key'  # Cambia esto a tu propia 
 jwt = JWTManager(app)
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
+online_users = set()
 
 # database condiguration
 db_url = os.getenv("DATABASE_URL")
@@ -81,11 +82,13 @@ def serve_any_other_file(path):
 
 @socketio.on('connect')
 def handle_connect():
-    print('Client connected')
+    online_users.add(request.sid)
+    emit('online_users', {'users': list(online_users)}, broadcast=True)
 
 @socketio.on('disconnect')
 def handle_disconnect():
-    print('Client disconnected')
+    online_users.remove(request.sid)
+    emit('online_users', {'users': list(online_users)}, broadcast=True)
 
 @socketio.on('message')
 def handle_message(data):

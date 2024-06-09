@@ -15,7 +15,7 @@ const LoginAdmin = () => {
                 navigate("/categories"); // Redirigir a la página de categorías si está autenticado
             }
         }).catch(error => {
-            console.log("Login failed: ", error.message);
+            console.error("Login failed: ", error.message);
         });
     }
 
