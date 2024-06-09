@@ -13,6 +13,19 @@ const ChatList = () => {
     const [unseenMessages, setUnseenMessages] = useState({});
 
     useEffect(() => {
+        const fetchChatsAndUnseenMessages = async () => {
+            await actions.getChats();
+            const unseenMessagesStatus = {};
+            for (const chat of store.chats) {
+                const hasUnseenMessages = await checkUnseenMessages(store.user.id, chat.id);
+                unseenMessagesStatus[chat.room_name] = hasUnseenMessages;
+            }
+            setUnseenMessages(unseenMessagesStatus);
+        };
+        fetchChatsAndUnseenMessages();
+    }, []);
+
+    useEffect(() => {
         store.socket.on('new_chat', () => {
             actions.getChats();
         });
@@ -49,6 +62,17 @@ const ChatList = () => {
         setUnseenMessages(prev => ({ ...prev, [currentChat.room_name]: false }));
         setChat({});
         setChatOpen(false);
+    }
+
+    const checkUnseenMessages = async (userId, chatId) => {
+        try {
+            const res = await fetch(`${process.env.BACKEND_URL}/api/users/${userId}/chats/${chatId}`, {});
+            const data = await res.json();
+            return data.has_unseen_messages;
+        } catch (error) {
+            console.error("Error checking unseen messages:", error);
+            return false;
+        }
     }
 
     return(

@@ -896,6 +896,21 @@ def get_messages(id):
     if not existing_chat: return jsonify({'error': 'Chat does not exist.'}), 404
     return jsonify([message.serialize() for message in existing_chat.messages]), 200
 
+@api.route('/users/<int:user_id>/chats/<int:chat_id>', methods=['GET'])
+def has_unseen_messages(user_id, chat_id):
+    print("holi")
+    existing_chat = Chat.query.get(chat_id);
+    if not existing_chat: return jsonify({'error': 'Chat does not exist.'}), 404
+
+    existing_user = User.query.get(user_id)
+    if not existing_user: return jsonify({"error": "User does not exist."}), 404
+
+    try:
+        unseen_messages_count = ChatMessage.query.filter_by(chat_id=chat_id, seen=False).filter(ChatMessage.sender_user_id != user_id).count()
+        return jsonify({"has_unseen_messages": bool(unseen_messages_count > 0)})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 # AdminUser CRUD Routes
 @api.route('/admin-users', methods=['GET'])
 def get_admin_users():
