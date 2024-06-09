@@ -228,7 +228,11 @@ class Rating(db.Model):
             "requester_id": self.requester_id,
             "task_id": self.task_id,
             "seeker_username": self.seeker.username if self.seeker else None,  
+            "seeker_picture": self.seeker.profile_picture if self.seeker else None,  
+            "seeker_role": self.seeker.role.value if self.seeker else None,  
             "requester_username": self.requester.username if self.requester else None,
+            "requester_picture": self.requester.profile_picture if self.requester else None,  
+            "requester_role": self.requester.role.value if self.requester else None,  
             "task_title": self.task.title if self.task else None,
             "review": self.review,
         }
