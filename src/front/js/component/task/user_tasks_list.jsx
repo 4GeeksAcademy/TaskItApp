@@ -10,7 +10,8 @@ const UserTaskList = () => {
             actions.getUserTasks();
         }
     }, [])
-    
+
+    useEffect(() => { actions.getUserTasks(); }, [store.notifications])   
 
     return (
         <div className="container-fluid px-5">

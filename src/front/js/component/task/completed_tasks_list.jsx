@@ -7,13 +7,17 @@ const CompletedTasksList = ({ role }) => {
     const [tasks, setTasks] = useState([]);
 
     useEffect(() => {
-        if(store.user.role != "none"){
-            fetch(process.env.BACKEND_URL + `/api/users/${store.user.id}/${role}/completed-tasks`)
-            .then(response => response.json())
-            .then(data => setTasks(data))
-            .catch(error => console.error(error));
-        }
+        if(store.user.role != "none") loadInfo();
     }, [])
+
+    useEffect(() => { loadInfo(); }, [store.notifications])
+
+    const loadInfo = () => {
+        fetch(process.env.BACKEND_URL + `/api/users/${store.user.id}/${role}/completed-tasks`)
+        .then(response => response.json())
+        .then(data => setTasks(data))
+        .catch(error => console.error(error));
+    }
 
     return (
         <div className="container-fluid px-5">
