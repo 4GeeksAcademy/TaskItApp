@@ -39,6 +39,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 			socket: io(process.env.BACKEND_URL),
 			notifications: [],
 			chats: [],
+			seekerCompletedTasks: [],
+			requesterCompletedTasks: []
 		},
 		actions: {
 			resetMessages: () => { setStore({ message: "", error: "" }) },
@@ -981,12 +983,15 @@ const getState = ({ getStore, getActions, setStore }) => {
                 }
             },
 
-			getChats: () => {
-				if (getStore().user.id) { 
-					fetch(process.env.BACKEND_URL + `/api/users/${getStore().user.id}/chats`)
-					.then(response => response.json())
-					.then(data => setStore({ chats: data }))
-					.catch(error => console.error(error)) 
+			getChats: async () => {
+				if (getStore().user.id) {
+					try {
+						const response = await fetch(`${process.env.BACKEND_URL}/api/users/${getStore().user.id}/chats`);
+						const data = await response.json();
+						setStore({ chats: data });
+					} catch (error) {
+						console.error(error);
+					}
 				}
 			},
 
@@ -996,7 +1001,20 @@ const getState = ({ getStore, getActions, setStore }) => {
 				.then(data => setStore({ userTasks: data }))
 				.catch(error => console.error(error));
 			},
-		
+			
+			getSeekerCompletedTasks: () => {
+				fetch(process.env.BACKEND_URL + `/api/users/${getStore().user.id}/seeker/completed-tasks`)
+				.then(response => response.json())
+				.then(data => setStore({ seekerCompletedTasks: data }))
+				.catch(error => console.error(error));
+			},
+
+			getRequesterCompletedTasks: () => {
+				fetch(process.env.BACKEND_URL + `/api/users/${getStore().user.id}/requester/completed-tasks`)
+				.then(response => response.json())
+				.then(data => setStore({ requesterCompletedTasks: data }))
+				.catch(error => console.error(error));
+			},
 		}
 	};
 };
