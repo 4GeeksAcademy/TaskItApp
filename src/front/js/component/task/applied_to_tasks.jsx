@@ -7,13 +7,17 @@ const AppliedToTaskList = () => {
     const [tasks, setTasks] = useState([]);
 
     useEffect(() => {
-        if(store.user.role == "task_seeker" || store.user.role == "both"){
-            fetch(process.env.BACKEND_URL + `/api/users/${store.user.id}/applied-to-tasks`)
-            .then(response => response.json())
-            .then(data => setTasks(data))
-            .catch(error => console.error(error));
-        }
+        if(store.user.role == "task_seeker" || store.user.role == "both") loadInfo();
     }, [])
+
+    useEffect(() => { loadInfo(); }, [store.notifications])
+
+    const loadInfo = () => {
+        fetch(process.env.BACKEND_URL + `/api/users/${store.user.id}/applied-to-tasks`)
+        .then(response => response.json())
+        .then(data => setTasks(data))
+        .catch(error => console.error(error));
+    }
     
 
     return (

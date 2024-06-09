@@ -134,7 +134,7 @@ def edit_task(id):
             task.status = new_status_enum
             if task.status == StatusEnum.CANCELLED or task.status == StatusEnum.COMPLETED:
                 chat = Chat.query.filter_by(task_id=task.id).first()
-                chat.archived = True
+                if chat: chat.archived = True
                 if task.status == StatusEnum.COMPLETED and task.seeker:
                     task.seeker.total_completed_tasks += 1
                 if task.seeker: task.seeker.total_ongoing_tasks -= 1
@@ -179,9 +179,9 @@ def edit_task(id):
     if new_budget:
         total_requested_tasks = task.requester.total_requested_tasks
         current_avg_budget = task.requester.average_budget
-        current_budget = task.budget
+        current_budget = float(task.budget)
         
-        new_total_budget = (current_avg_budget * total_requested_tasks) - current_budget + new_budget
+        new_total_budget = (current_avg_budget * total_requested_tasks) - current_budget + float(new_budget)
         task.requester.average_budget = new_total_budget / total_requested_tasks
         task.budget = new_budget
 
@@ -609,19 +609,25 @@ def add_rating():
     seeker = None
     requester = None
 
+    task = Task.query.get(task_id)
+    if not task:
+        return jsonify({'error': 'Task with given ID does not exist'}), 400
+
     if seeker_id:
         seeker = User.query.get(seeker_id)
         if not seeker:
             return jsonify({'error': 'Seeker with given ID does not exist'}), 400
+        existing_rating = Rating.query.filter_by(seeker_id=seeker_id, task_id=task_id).first()
+        if existing_rating:
+            return jsonify({'error': 'You have already rated this user for this task.'}), 400
 
     if requester_id:
         requester = User.query.get(requester_id)
         if not requester:
             return jsonify({'error': 'Requester with given ID does not exist'}), 400
-
-    task = Task.query.get(task_id)
-    if not task:
-        return jsonify({'error': 'Task with given ID does not exist'}), 400
+        existing_rating = Rating.query.filter_by(requester_id=requester_id, task_id=task_id).first()
+        if existing_rating:
+            return jsonify({'error': 'You have already rated this user for this task.'}), 400
 
     new_rating = Rating(stars=stars, seeker_id=seeker_id, requester_id=requester_id, task_id=task_id, review=review)
 
@@ -636,7 +642,7 @@ def add_rating():
     db.session.add(new_rating)
     db.session.commit()
 
-    return jsonify(new_rating.serialize()), 201
+    return jsonify({"message": "User rated successfully."}), 201
 
 @api.route('/ratings', methods=['GET'])
 def get_ratings():
@@ -800,11 +806,18 @@ def get_applied_to_tasks(index):
     if not seeker:
         return jsonify({"error": "Task seeker not found."}), 404
     
-    postulants = Postulant.query.filter_by(seeker_id=seeker.id).all()
+    tasks = Task.query.filter(
+        Task.status.notin_([StatusEnum.CANCELLED, StatusEnum.COMPLETED])
+    ).all()
+
+    postulants = Postulant.query.filter(
+        Postulant.seeker_id == seeker.id,
+        Postulant.task_id.in_([task.id for task in tasks])
+    ).all()
 
     applied_tasks = [postulant.task.serialize() for postulant in postulants]
-
-    return jsonify(applied_tasks), 200
+    
+    return jsonify(applied_tasks)
 
 @api.route('/users/<int:index>/seeker/completed-tasks', methods=['GET'])
 def get_seeker_completed_tasks(index):
@@ -895,6 +908,21 @@ def get_messages(id):
     existing_chat = Chat.query.get(id);
     if not existing_chat: return jsonify({'error': 'Chat does not exist.'}), 404
     return jsonify([message.serialize() for message in existing_chat.messages]), 200
+
+@api.route('/users/<int:user_id>/chats/<int:chat_id>', methods=['GET'])
+def has_unseen_messages(user_id, chat_id):
+    print("holi")
+    existing_chat = Chat.query.get(chat_id);
+    if not existing_chat: return jsonify({'error': 'Chat does not exist.'}), 404
+
+    existing_user = User.query.get(user_id)
+    if not existing_user: return jsonify({"error": "User does not exist."}), 404
+
+    try:
+        unseen_messages_count = ChatMessage.query.filter_by(chat_id=chat_id, seen=False).filter(ChatMessage.sender_user_id != user_id).count()
+        return jsonify({"has_unseen_messages": bool(unseen_messages_count > 0)})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 # AdminUser CRUD Routes
 @api.route('/admin-users', methods=['GET'])
@@ -1009,3 +1037,28 @@ def admin_validate_token():
 def admin_logout():
     # El cierre de sesión en JWT es manejado en el cliente, por lo tanto, aquí simplemente retornamos un mensaje.
     return jsonify({'message': 'Admin logged out successfully.'}), 200
+
+@api.route('/users/<int:id>/reviews', methods=['GET'])
+def get_last_three_reviews(id):
+    user = User.query.get(id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    reviews = Rating.query.filter((Rating.seeker_id == user.task_seeker.id) | (Rating.requester_id == user.requester.id)).order_by(Rating.id.desc()).limit(3).all()
+
+    serialized_reviews = [review.serialize() for review in reviews]
+
+    return jsonify(serialized_reviews), 200
+
+@api.route('/users/<int:id>/requester-reviews', methods=['GET'])
+def get_last_three_requester_reviews(id):
+    user = User.query.get(id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    reviews = Rating.query.filter_by(requester_id=user.requester.id).order_by(Rating.id.desc()).limit(3).all()
+    print(reviews)
+
+    serialized_reviews = [review.serialize() for review in reviews]
+
+    return jsonify(serialized_reviews), 200
