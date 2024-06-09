@@ -39,9 +39,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 			socket: io(process.env.BACKEND_URL),
 			notifications: [],
 			chats: [],
-			seekerCompletedTasks: [],
-			requesterCompletedTasks: [],
 			access_token: localStorage.getItem('access_token') || "",
+			seekerCompletedTasks: [],
+			requesterCompletedTasks: []
 		},
 		actions: {
 			resetMessages: () => { setStore({ message: "", error: "" }) },
