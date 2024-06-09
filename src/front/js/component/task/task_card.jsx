@@ -119,8 +119,8 @@ const Task = ({ taskInfo }) => {
                 show={showRatingForm} 
                 handleClose={handleCloseRatingForm} 
                 role={store.user.id == taskInfo.requester_user?.id ? "requester" : "seeker"} 
-                id={store.user.id != taskInfo.requester_user?.id ? store.user.id : taskInfo.seeker?.id} 
-                username={store.user.id != taskInfo.requester_user?.id ? store.user.username : taskInfo.seeker?.user.username} 
+                id={store.user.id === taskInfo.requester_user?.id ? taskInfo.seeker?.id : taskInfo.requester_user?.id} 
+                username={store.user.id === taskInfo.requester_user?.id ? taskInfo.seeker?.user.username : taskInfo.requester_user?.username} 
                 taskID={taskInfo.id}>
             </RatingForm>
         </div>
