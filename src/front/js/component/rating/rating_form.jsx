@@ -11,6 +11,7 @@ const RatingForm = (props) => {
 
     useEffect(() => {
         resetStates();
+        if (store.message) store.message = "";
     }, [props.show])
 
     const resetStates = () => {
@@ -18,13 +19,21 @@ const RatingForm = (props) => {
         setReview('');
     }
 
+    useEffect(() => {
+        if(store.message == "User rated successfully.") {
+            if (props.role == "requester") actions.getRequesterCompletedTasks();
+            if (props.role == "seeker") actions.getSeekerCompletedTasks();
+            props.setShowRateBtn(false);
+            props.handleClose();
+        }
+    }, [store.message])
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         const seekerID = props.role == "requester" ? props.id : null;
         const requesterID = props.role == "seeker" ? props.id : null;
         actions.addRating(rating, seekerID, requesterID, props.taskID, review);
-        actions.sendNotification(`You have been rated for completing the task with id ${props.taskID}.`, props.username);
-        props.handleClose();
+        actions.sendNotification(`You have been rated for the task with id ${props.taskID}.`, props.username);
     };
 
     return (

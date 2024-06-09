@@ -20,10 +20,10 @@ const UserTaskList = () => {
                 {store.userTasks.length === 0 ? (
                     <div>No tasks available</div>
                 ) : (
-                    store.userTasks.slice().reverse().map((task) => {
+                    store.userTasks.slice().reverse().map((task, index) => {
                         return (
-                            <React.Fragment key={task.id}>
-                                <Task taskInfo={task}></Task>
+                            <React.Fragment key={task.id + "utl"}>
+                                <Task taskInfo={task} index={index} list={"userTasks"}></Task>
                             </React.Fragment>
                         );
                     }
