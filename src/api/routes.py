@@ -134,7 +134,7 @@ def edit_task(id):
             task.status = new_status_enum
             if task.status == StatusEnum.CANCELLED or task.status == StatusEnum.COMPLETED:
                 chat = Chat.query.filter_by(task_id=task.id).first()
-                chat.archived = True
+                if chat: chat.archived = True
                 if task.status == StatusEnum.COMPLETED and task.seeker:
                     task.seeker.total_completed_tasks += 1
                 if task.seeker: task.seeker.total_ongoing_tasks -= 1
@@ -179,9 +179,9 @@ def edit_task(id):
     if new_budget:
         total_requested_tasks = task.requester.total_requested_tasks
         current_avg_budget = task.requester.average_budget
-        current_budget = task.budget
+        current_budget = float(task.budget)
         
-        new_total_budget = (current_avg_budget * total_requested_tasks) - current_budget + new_budget
+        new_total_budget = (current_avg_budget * total_requested_tasks) - current_budget + float(new_budget)
         task.requester.average_budget = new_total_budget / total_requested_tasks
         task.budget = new_budget
 
