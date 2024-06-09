@@ -609,19 +609,25 @@ def add_rating():
     seeker = None
     requester = None
 
+    task = Task.query.get(task_id)
+    if not task:
+        return jsonify({'error': 'Task with given ID does not exist'}), 400
+
     if seeker_id:
         seeker = User.query.get(seeker_id)
         if not seeker:
             return jsonify({'error': 'Seeker with given ID does not exist'}), 400
+        existing_rating = Rating.query.filter_by(seeker_id=seeker_id, task_id=task_id).first()
+        if existing_rating:
+            return jsonify({'error': 'You have already rated this user for this task.'}), 400
 
     if requester_id:
         requester = User.query.get(requester_id)
         if not requester:
             return jsonify({'error': 'Requester with given ID does not exist'}), 400
-
-    task = Task.query.get(task_id)
-    if not task:
-        return jsonify({'error': 'Task with given ID does not exist'}), 400
+        existing_rating = Rating.query.filter_by(requester_id=requester_id, task_id=task_id).first()
+        if existing_rating:
+            return jsonify({'error': 'You have already rated this user for this task.'}), 400
 
     new_rating = Rating(stars=stars, seeker_id=seeker_id, requester_id=requester_id, task_id=task_id, review=review)
 
@@ -636,7 +642,7 @@ def add_rating():
     db.session.add(new_rating)
     db.session.commit()
 
-    return jsonify(new_rating.serialize()), 201
+    return jsonify({"message": "User rated successfully."}), 201
 
 @api.route('/ratings', methods=['GET'])
 def get_ratings():
@@ -800,11 +806,18 @@ def get_applied_to_tasks(index):
     if not seeker:
         return jsonify({"error": "Task seeker not found."}), 404
     
-    postulants = Postulant.query.filter_by(seeker_id=seeker.id).all()
+    tasks = Task.query.filter(
+        Task.status.notin_([StatusEnum.CANCELLED, StatusEnum.COMPLETED])
+    ).all()
+
+    postulants = Postulant.query.filter(
+        Postulant.seeker_id == seeker.id,
+        Postulant.task_id.in_([task.id for task in tasks])
+    ).all()
 
     applied_tasks = [postulant.task.serialize() for postulant in postulants]
-
-    return jsonify(applied_tasks), 200
+    
+    return jsonify(applied_tasks)
 
 @api.route('/users/<int:index>/seeker/completed-tasks', methods=['GET'])
 def get_seeker_completed_tasks(index):
