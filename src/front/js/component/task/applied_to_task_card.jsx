@@ -11,8 +11,8 @@ const AppliedToTask = ({ taskInfo }) => {
     }, [])
 
     return (
-        <div className="col-6 p-2">
-            <div className={`card p-4 ${applicantInfo?.status == "accepted" ? "border border-success" : applicantInfo?.status == "rejected" ? "border border-danger" : ""}`}>
+        <div className="col-lg-4 col-md-8 col-sm-11 p-2 d-flex flex-column">
+            <div className={`card p-4 ${applicantInfo?.status == "accepted" ? "border border-success" : applicantInfo?.status == "rejected" ? "border border-danger" : ""} h-100 flex-grow-1`}>
                 <div className="d-flex align-items-center mb-2">
                     <div className="rounded-circle bg-dark me-2" style={{ height: "60px", width: "60px" }}></div>
                     <div className="d-flex flex-column justify-content-around">
