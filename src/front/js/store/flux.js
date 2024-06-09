@@ -39,6 +39,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			socket: io(process.env.BACKEND_URL),
 			notifications: [],
 			chats: [],
+			access_token: localStorage.getItem('access_token') || "",
 			seekerCompletedTasks: [],
 			requesterCompletedTasks: []
 		},
@@ -808,75 +809,61 @@ const getState = ({ getStore, getActions, setStore }) => {
 				.catch(error => console.error(error));
 			},
 
-			login: (username, password) => {
-				const credentials = { username, password };
-				const config = { 
-					method: "POST",
-					body: JSON.stringify(credentials),
-					headers: { 'Content-Type': 'application/json' }
-				};
-			
-				return fetch(process.env.BACKEND_URL + "/api/login", config)
-					.then((response) => {
-						if (!response.ok) {
-							return response.json().then((error) => {
-								setStore({ login_error: error.error });
-								throw new Error(error.error);
-							});
-						} else {
-							return response.json();
-						}
-					})
-					.then((data) => {
-						// Almacenar el token en localStorage
-						localStorage.setItem('access_token', data.access_token);
-						setStore({ access_token: data.access_token, user: data.user, auth: true, login_error: "", signup_error: "" });
-						getActions().joinRoom(username, username);
-					})
-					.catch((error) => console.error(error));
-			},
-			
-			logout: () => {
-				getActions().leaveRoom(getStore().user.username, getStore().user.username);
-				localStorage.removeItem('access_token');
-				setStore({ access_token: "", user: null, auth: false });
-			},
-			
-			validateToken: () => {
-				const token = localStorage.getItem('access_token');
-				if (!token) {
-					setStore({ valid_token: false, auth: false });
-					return Promise.resolve(false);
-				}
-			
-				const config = {
-					method: 'GET',
-					headers: { 'Authorization': `Bearer ${token}` }
-				};
-			
-				return fetch(process.env.BACKEND_URL + "/api/validate-token", config)
-					.then((response) => {
-						if (!response.ok) {
-							setStore({ valid_token: false });
-							return false;
-						} else {
-							return response.json();
-						}
-					})
-					.then((data) => {
-						if (data.valid) {
-							setStore({ valid_token: true, user: data.user, auth: true });
-						} else {
-							setStore({ valid_token: false, auth: false });
-						}
-						return data.valid;
-					})
-					.catch((error) => {
-						console.error(error);
-						setStore({ valid_token: false, auth: false });
-						return false;
-					});
-			},
+			login: async (username, password) => {
+                const config = { 
+                    method: "POST",
+                    body: JSON.stringify({ username, password }),
+                    headers: { 'Content-Type': 'application/json' }
+                };
+
+                try {
+                    const response = await fetch(process.env.BACKEND_URL + "/api/login", config);
+                    if (!response.ok) {
+                        const error = await response.json();
+                        throw new Error(error.error);
+                    }
+                    const data = await response.json();
+                    localStorage.setItem('access_token', data.access_token);
+                    setStore({ access_token: data.access_token, user: data.user, auth: true });
+                    getActions().joinRoom(username, username);
+                } catch (error) {
+                    console.error(error);
+                }
+            },
+
+            logout: () => {
+                getActions().leaveRoom(getStore().user.username, getStore().user.username);
+                localStorage.removeItem('access_token');
+                setStore({ access_token: "", user: null, auth: false });
+            },
+
+            validateToken: async () => {
+                const token = localStorage.getItem('access_token');
+                if (!token) {
+                    setStore({ auth: false });
+                    return false;
+                }
+
+                const config = {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                };
+
+                try {
+                    const response = await fetch(process.env.BACKEND_URL + "/api/validate-token", config);
+                    if (!response.ok) {
+                        setStore({ auth: false });
+                        return false;
+                    }
+                    const data = await response.json();
+                    setStore({ user: data.user, auth: true });
+                    return true;
+                } catch (error) {
+                    console.error(error);
+                    setStore({ auth: false });
+                    return false;
+                }
+            },
 			signupAdmin: (email, password) => {
                 const newAdmin = { email, password };
                 const config = { 

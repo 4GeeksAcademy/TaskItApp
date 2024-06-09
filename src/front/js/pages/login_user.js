@@ -8,22 +8,19 @@ const LoginUser = () => {
     const { store, actions } = useContext(Context);
     const navigate = useNavigate();
 
-    function sendData(e) {
-        e.preventDefault();
-        actions.login(username, password).then(() => {
-            if (store.auth) {
-                navigate("/");
-            }
-        });
-    }
-
     useEffect(() => {
-        if(store.auth) navigate('/')
-    }, [store.auth])
+        if (store.auth) navigate('/');
+    }, [store.auth, navigate]);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        await actions.login(username, password);
+        if (store.auth) navigate('/');
+    };
 
     return (
-        <div>
-            <form className="w-50 mx-auto" onSubmit={sendData}>
+        <div className="d-flex flex-column align-items-center">
+            <form className="w-50 mx-auto" onSubmit={handleSubmit}>
                 <div className="mb-3">
                     <label htmlFor="exampleInputUsername" className="form-label">Username</label>
                     <input 
