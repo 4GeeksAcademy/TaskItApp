@@ -1009,3 +1009,28 @@ def admin_validate_token():
 def admin_logout():
     # El cierre de sesión en JWT es manejado en el cliente, por lo tanto, aquí simplemente retornamos un mensaje.
     return jsonify({'message': 'Admin logged out successfully.'}), 200
+
+@api.route('/users/<int:id>/reviews', methods=['GET'])
+def get_last_three_reviews(id):
+    user = User.query.get(id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    reviews = Rating.query.filter((Rating.seeker_id == user.task_seeker.id) | (Rating.requester_id == user.requester.id)).order_by(Rating.id.desc()).limit(3).all()
+
+    serialized_reviews = [review.serialize() for review in reviews]
+
+    return jsonify(serialized_reviews), 200
+
+@api.route('/users/<int:id>/requester-reviews', methods=['GET'])
+def get_last_three_requester_reviews(id):
+    user = User.query.get(id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    reviews = Rating.query.filter_by(requester_id=user.requester.id).order_by(Rating.id.desc()).limit(3).all()
+    print(reviews)
+
+    serialized_reviews = [review.serialize() for review in reviews]
+
+    return jsonify(serialized_reviews), 200
