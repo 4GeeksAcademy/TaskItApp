@@ -892,7 +892,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                             });
                         }
                     })
-                    .catch((error) => console.log(error));
+                    .catch((error) => console.error(error));
             },
 
             loginAdmin: (email, password) => {
@@ -918,9 +918,8 @@ const getState = ({ getStore, getActions, setStore }) => {
                         // Almacenar el token en localStorage
                         localStorage.setItem('access_token', data.access_token);
                         setStore({ access_token: data.access_token, admin: data.admin, auth: true, login_error: "", signup_error: "" });
-                        console.log("Token generado:", data.access_token);
                     })
-                    .catch((error) => console.log(error));
+                    .catch((error) => console.error(error));
             },
 
             validateAdminToken: () => {
@@ -950,7 +949,6 @@ const getState = ({ getStore, getActions, setStore }) => {
                         return true;
                     })
                     .catch((error) => {
-                        console.log(error);
                         setStore({ auth: false });
                         return false;
                     });
@@ -958,7 +956,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 			logoutAdmin: () => {
                 localStorage.removeItem('access_token');
                 setStore({ access_token: null, admin: null, auth: false });
-                console.log("Logged out successfully");
             },
 			uploadProfilePicture: async (userId, file) => {
                 const formData = new FormData();
