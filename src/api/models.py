@@ -43,10 +43,10 @@ class Requester(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user = db.relationship('User', back_populates='requester')
-    overall_rating = db.Column(db.Integer, unique=False, nullable=True, default=0)
+    overall_rating = db.Column(db.Float, unique=False, nullable=True, default=0)
     total_reviews = db.Column(db.Integer, unique=False, nullable=True, default=0)
     total_requested_tasks = db.Column(db.Integer, unique=False, nullable=True, default=0)
-    average_budget = db.Column(db.Integer, unique=False, nullable=True, default=0)
+    average_budget = db.Column(db.Float, unique=False, nullable=True, default=0)
     total_open_tasks = db.Column(db.Integer, unique=False, nullable=True, default=0)
     archived = db.Column(db.Boolean, default=False)
 
@@ -81,7 +81,7 @@ class TaskSeeker(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user = db.relationship('User', back_populates='task_seeker')
-    overall_rating = db.Column(db.Integer, unique=False, nullable=True, default=0)
+    overall_rating = db.Column(db.Float, unique=False, nullable=True, default=0)
     total_reviews = db.Column(db.Integer, unique=False, nullable=True, default=0)
     total_completed_tasks = db.Column(db.Integer, unique=False, nullable=True, default=0)
     total_ongoing_tasks = db.Column(db.Integer, unique=False, nullable=True, default=0)
@@ -143,6 +143,7 @@ class Task(db.Model):
 
     def serialize(self):
         applicants_data = [applicant.serialize() for applicant in self.applicants]
+        rating_data = [rating.serialize() for rating in self.ratings]
         return {
             "id": self.id,
             "title": self.title,
@@ -161,7 +162,8 @@ class Task(db.Model):
             "category_id": self.category_id,
             "category_name": self.category.name,
             "budget": self.budget,
-            "applicants": applicants_data
+            "applicants": applicants_data,
+            "ratings": rating_data
         }
 
     
@@ -213,7 +215,7 @@ class Rating(db.Model):
     # Relationships
     seeker = db.relationship('User', foreign_keys=[seeker_id], backref=db.backref('seeker_ratings', lazy=True))
     requester = db.relationship('User', foreign_keys=[requester_id], backref=db.backref('requester_ratings', lazy=True))
-    task = db.relationship('Task', foreign_keys=[task_id])
+    task = db.relationship('Task', foreign_keys=[task_id], backref=db.backref('ratings', lazy=True))
 
     def __repr__(self):
         return f'<Rating id={self.id}, stars={self.stars}>'
@@ -226,7 +228,11 @@ class Rating(db.Model):
             "requester_id": self.requester_id,
             "task_id": self.task_id,
             "seeker_username": self.seeker.username if self.seeker else None,  
+            "seeker_picture": self.seeker.profile_picture if self.seeker else None,  
+            "seeker_role": self.seeker.role.value if self.seeker else None,  
             "requester_username": self.requester.username if self.requester else None,
+            "requester_picture": self.requester.profile_picture if self.requester else None,  
+            "requester_role": self.requester.role.value if self.requester else None,  
             "task_title": self.task.title if self.task else None,
             "review": self.review,
         }
@@ -285,6 +291,7 @@ class Chat(db.Model):
     task_id = db.Column(db.Integer, db.ForeignKey('task.id'))
     task = db.relationship('Task')
     room_name = db.Column(db.String, nullable=False)
+    archived = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
         return f'<Chat {self.requester_user.username} - {self.seeker_user.username} >'

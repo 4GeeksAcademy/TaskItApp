@@ -13,7 +13,7 @@ export const SidebarComponent = () => {
     }, [])
 
     return (
-        <div style={{ display: 'flex', height: '100vh', minHeight: '100%'}}>
+        <div style={{ display: 'flex', height: '100vh', minHeight: '100%'}} className='sticky-top'>
             <Sidebar collapsed={collapsed} rootStyles={{
                 background: '#ffffff',
                 border: 'none'

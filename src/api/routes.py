@@ -71,6 +71,10 @@ def add_task():
     
     new_task = Task(title=title, description=description, delivery_address=delivery_address, pickup_address=pickup_address, due_date=due_date, requester=existing_requester, category=existing_category, budget=budget)    
     
+    existing_requester.total_requested_tasks += 1
+    existing_requester.total_open_tasks += 1
+    existing_requester.average_budget = (existing_requester.average_budget * (existing_requester.total_requested_tasks - 1) + float(budget)) / existing_requester.total_requested_tasks
+
     db.session.add(new_task)
     db.session.commit()
 
@@ -91,6 +95,9 @@ def delete_task(id):
     task = Task.query.get(id)
 
     if not task: return jsonify({'error': 'Task not found.'}), 404
+
+    task.requester.total_open_tasks -= 1
+    if task.seeker: task.seeker.total_ongoing_tasks -= 1
 
     db.session.delete(task)
     db.session.commit()
@@ -125,6 +132,13 @@ def edit_task(id):
         try:
             new_status_enum = StatusEnum(new_status)
             task.status = new_status_enum
+            if task.status == StatusEnum.CANCELLED or task.status == StatusEnum.COMPLETED:
+                chat = Chat.query.filter_by(task_id=task.id).first()
+                if chat: chat.archived = True
+                if task.status == StatusEnum.COMPLETED and task.seeker:
+                    task.seeker.total_completed_tasks += 1
+                if task.seeker: task.seeker.total_ongoing_tasks -= 1
+                task.requester.total_open_tasks -= 1
         except ValueError:
             return jsonify({"error": "Invalid status value."}), 400
 
@@ -139,26 +153,37 @@ def edit_task(id):
         if not existing_seeker:
             return jsonify({'error': 'Task seeker not found.'}), 404
         task.seeker = existing_seeker
+        task.seeker.total_ongoing_tasks += 1
 
     if new_title: task.title = new_title
     if new_description: task.description = new_description
+
     if new_delivery_location:
-        existing_delivery = Address.query.filter_by(address=new_delivery_location)
+        existing_delivery = Address.query.filter_by(address=new_delivery_location).first()
         if existing_delivery: task.delivery_location = existing_delivery
         else: 
             delivery_address = Address(address=new_delivery_location, latitude=data.get('delivery_lat'), longitude=data.get('delivery_lgt'))
             db.session.add(delivery_address)
             db.session.commit()
             task.delivery_location_id = delivery_address.id
+
     if new_pickup_location:
-        existing_pickup = Address.query.filter_by(address=new_pickup_location)
+        existing_pickup = Address.query.filter_by(address=new_pickup_location).first()
         if existing_pickup: task.pickup_location = existing_pickup
         else:
             pickup_address = Address(address=new_pickup_location, latitude=data.get('pickup_lat'), longitude=data.get('pickup_lgt'))
             db.session.add(pickup_address)
             db.session.commit()
             task.pickup_location_id = pickup_address.id
-    if new_budget: task.budget = new_budget
+
+    if new_budget:
+        total_requested_tasks = task.requester.total_requested_tasks
+        current_avg_budget = task.requester.average_budget
+        current_budget = float(task.budget)
+        
+        new_total_budget = (current_avg_budget * total_requested_tasks) - current_budget + float(new_budget)
+        task.requester.average_budget = new_total_budget / total_requested_tasks
+        task.budget = new_budget
 
     db.session.commit()
 
@@ -580,25 +605,44 @@ def add_rating():
 
     if stars < 1 or stars > 5:
         return jsonify({'error': 'Stars must be between 1 and 5'}), 400
-
-    if seeker_id:
-        seeker = User.query.get(seeker_id)
-        if not seeker:
-            return jsonify({'error': 'Seeker with given ID does not exist'}), 400
-
-    if requester_id:
-        requester = User.query.get(requester_id)
-        if not requester:
-            return jsonify({'error': 'Requester with given ID does not exist'}), 400
+    
+    seeker = None
+    requester = None
 
     task = Task.query.get(task_id)
     if not task:
         return jsonify({'error': 'Task with given ID does not exist'}), 400
 
+    if seeker_id:
+        seeker = User.query.get(seeker_id)
+        if not seeker:
+            return jsonify({'error': 'Seeker with given ID does not exist'}), 400
+        existing_rating = Rating.query.filter_by(seeker_id=seeker_id, task_id=task_id).first()
+        if existing_rating:
+            return jsonify({'error': 'You have already rated this user for this task.'}), 400
+
+    if requester_id:
+        requester = User.query.get(requester_id)
+        if not requester:
+            return jsonify({'error': 'Requester with given ID does not exist'}), 400
+        existing_rating = Rating.query.filter_by(requester_id=requester_id, task_id=task_id).first()
+        if existing_rating:
+            return jsonify({'error': 'You have already rated this user for this task.'}), 400
+
     new_rating = Rating(stars=stars, seeker_id=seeker_id, requester_id=requester_id, task_id=task_id, review=review)
+
+    if seeker:
+        seeker.task_seeker.total_reviews += 1
+        seeker.task_seeker.overall_rating = (seeker.task_seeker.overall_rating * (seeker.task_seeker.total_reviews - 1) + int(stars)) / seeker.task_seeker.total_reviews
+
+    if requester:
+        requester.requester.total_reviews += 1
+        requester.requester.overall_rating = (requester.requester.overall_rating * (requester.requester.total_reviews - 1) + int(stars)) / requester.requester.total_reviews
+
     db.session.add(new_rating)
     db.session.commit()
-    return jsonify(new_rating.serialize()), 201
+
+    return jsonify({"message": "User rated successfully."}), 201
 
 @api.route('/ratings', methods=['GET'])
 def get_ratings():
@@ -762,11 +806,44 @@ def get_applied_to_tasks(index):
     if not seeker:
         return jsonify({"error": "Task seeker not found."}), 404
     
-    postulants = Postulant.query.filter_by(seeker_id=seeker.id).all()
+    tasks = Task.query.filter(
+        Task.status.notin_([StatusEnum.CANCELLED, StatusEnum.COMPLETED])
+    ).all()
+
+    postulants = Postulant.query.filter(
+        Postulant.seeker_id == seeker.id,
+        Postulant.task_id.in_([task.id for task in tasks])
+    ).all()
 
     applied_tasks = [postulant.task.serialize() for postulant in postulants]
+    
+    return jsonify(applied_tasks)
 
-    return jsonify(applied_tasks), 200
+@api.route('/users/<int:index>/seeker/completed-tasks', methods=['GET'])
+def get_seeker_completed_tasks(index):
+    seeker = TaskSeeker.query.filter_by(user_id=index).first()
+    if not seeker:
+        return jsonify({"error": "Task seeker not found."}), 404
+    
+    completed_tasks = Task.query.filter(
+        Task.seeker_id == seeker.id,
+        Task.status.in_([StatusEnum.COMPLETED])
+    ).all()
+
+    return jsonify([task.serialize() for task in completed_tasks]), 200
+
+@api.route('/users/<int:index>/requester/completed-tasks', methods=['GET'])
+def get_requester_completed_tasks(index):
+    requester = Requester.query.filter_by(user_id=index).first()
+    if not requester:
+        return jsonify({"error": "Requester not found."}), 404
+    
+    completed_tasks = Task.query.filter(
+        Task.requester_id == requester.id,
+        Task.status.in_([StatusEnum.COMPLETED])
+    ).all()
+
+    return jsonify([task.serialize() for task in completed_tasks]), 200
 
 @api.route('/users/<int:index>/unseen-notifications', methods=['GET'])
 def get_unseen_notifications(index):
@@ -798,7 +875,10 @@ def upload_image():
 
 @api.route('users/<int:id>/chats', methods=['GET'])
 def get_user_chats(id):
-    chats = Chat.query.filter((Chat.requester_user_id == id) | (Chat.seeker_user_id == id)).all()
+    chats = Chat.query.filter(
+        ((Chat.requester_user_id == id) | (Chat.seeker_user_id == id)) &
+        (Chat.archived == False)
+    ).all()
     return jsonify([chat.serialize() for chat in chats]), 200
 
 @api.route('/chats/<int:id>/messages', methods=['POST'])
@@ -828,6 +908,21 @@ def get_messages(id):
     existing_chat = Chat.query.get(id);
     if not existing_chat: return jsonify({'error': 'Chat does not exist.'}), 404
     return jsonify([message.serialize() for message in existing_chat.messages]), 200
+
+@api.route('/users/<int:user_id>/chats/<int:chat_id>', methods=['GET'])
+def has_unseen_messages(user_id, chat_id):
+    print("holi")
+    existing_chat = Chat.query.get(chat_id);
+    if not existing_chat: return jsonify({'error': 'Chat does not exist.'}), 404
+
+    existing_user = User.query.get(user_id)
+    if not existing_user: return jsonify({"error": "User does not exist."}), 404
+
+    try:
+        unseen_messages_count = ChatMessage.query.filter_by(chat_id=chat_id, seen=False).filter(ChatMessage.sender_user_id != user_id).count()
+        return jsonify({"has_unseen_messages": bool(unseen_messages_count > 0)})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 # AdminUser CRUD Routes
 @api.route('/admin-users', methods=['GET'])
@@ -942,3 +1037,28 @@ def admin_validate_token():
 def admin_logout():
     # El cierre de sesión en JWT es manejado en el cliente, por lo tanto, aquí simplemente retornamos un mensaje.
     return jsonify({'message': 'Admin logged out successfully.'}), 200
+
+@api.route('/users/<int:id>/reviews', methods=['GET'])
+def get_last_three_reviews(id):
+    user = User.query.get(id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    reviews = Rating.query.filter((Rating.seeker_id == user.task_seeker.id) | (Rating.requester_id == user.requester.id)).order_by(Rating.id.desc()).limit(3).all()
+
+    serialized_reviews = [review.serialize() for review in reviews]
+
+    return jsonify(serialized_reviews), 200
+
+@api.route('/users/<int:id>/requester-reviews', methods=['GET'])
+def get_last_three_requester_reviews(id):
+    user = User.query.get(id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    reviews = Rating.query.filter_by(requester_id=user.requester.id).order_by(Rating.id.desc()).limit(3).all()
+    print(reviews)
+
+    serialized_reviews = [review.serialize() for review in reviews]
+
+    return jsonify(serialized_reviews), 200
