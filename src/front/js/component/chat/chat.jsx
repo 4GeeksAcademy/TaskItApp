@@ -52,7 +52,7 @@ const Chat = (props) => {
     };
 
     function markMessageAsSeen(message_id) {
-        store.socket.emit('mark_message_as_seen', { message_id: message_id });
+        if(message_id) store.socket.emit('mark_message_as_seen', { message_id: message_id, user_id: store.user.id });
     }
 
     return (

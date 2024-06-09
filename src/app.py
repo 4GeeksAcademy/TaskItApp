@@ -162,8 +162,9 @@ def handle_new_chat(data):
 @socketio.on('mark_message_as_seen')
 def handle_mark_message_as_seen(data):
     message_id = data['message_id']
+    user_id = data['user_id']
     chat_message = ChatMessage.query.get(message_id)
-    if chat_message:
+    if chat_message and chat_message.sender_user_id != user_id:
         chat_message.seen = True
         db.session.commit()
         emit('message_seen', {'message_id': message_id}, room=chat_message.chat.room_name)
