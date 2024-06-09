@@ -7,6 +7,7 @@ import Map from "../component/geocoding/map.jsx";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import TaskForm from "../component/task/task_form.jsx";
 import ApplicantForm from "../component/applicant/applicant_form.jsx"
+import RatingCard from "../component/rating/rating_card.jsx";
 
 export const Task = () => {
 	const { store, actions } = useContext(Context);
@@ -17,6 +18,7 @@ export const Task = () => {
 	const [showTaskForm, setShowTaskForm] = useState(false);
 	const [showApplicationForm, setShowApplicationForm] = useState(false);
 	const [applied, setApplied] = useState(false);
+	const [reviews, setReviews] = useState([])
 
     const handleCloseTaskForm = () => setShowTaskForm(false);
     const handleShowTaskForm = () => setShowTaskForm(true);
@@ -30,8 +32,20 @@ export const Task = () => {
 		const requesterData = await actions.getRequester(currentTask.requester_id);
 		setRequester(requesterData);
 		
+		fetchReviews(currentTask);
+
 		alreadyApplied(currentTask);	
 	}
+
+	const fetchReviews = async (currentTask) => {
+        try {
+            const response = await fetch(process.env.BACKEND_URL + `/api/users/${currentTask.requester_user.id}/requester-reviews`); 
+            const data = await response.json();
+            setReviews(data);
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
 	useEffect(() => {
 		loadInfo();	
@@ -109,9 +123,9 @@ export const Task = () => {
 				</div>
 				<div className="row d-flex justify-content-center mt-4">
 					<div className="col-6 me-3 d-flex flex-column justify-content-between">
-						<div className="w-100 card">review1</div>
-						<div className="w-100 card">review2</div>
-						<div className="w-100 card">review3</div>
+						{ reviews.map((review) =>{
+							return <RatingCard key={review.id} rating={review} />
+						})}
 						{store.user.id != task.requester_user?.id 
 							?<div className="w-100 d-flex justify-content-between">
 								{ ((store.user.role == "both" || store.user.role == "task_seeker") && !applied) && <button className="btn btn-dark px-4" onClick={handleShowApplicationForm}>Apply</button>}
