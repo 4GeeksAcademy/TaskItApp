@@ -41,6 +41,12 @@ const Layout = () => {
         }
     }, []);
 
+    useEffect(() => {
+        actions.validateToken();
+    }, []);
+
+
+
     if (!process.env.BACKEND_URL || process.env.BACKEND_URL === "") return <BackendURL />;
 
     return (
