@@ -31,7 +31,7 @@ const Message = ({ message, markMessageAsSeen }) => {
                 </div>
                 : <div className="rounded my-2 mx-1 p-2 px-4 bubble-yellow me-auto d-flex flex-column" style={{ maxWidth: '83%' }}>
                     <span>{message.message}</span>
-                    <small className="text-muted float-end">{formatISOTime(message.timestamp) || new Date()}</small>
+                    <small className="text-muted float-end">{formatISOTime(message.timestamp || new Date()) }</small>
                 </div>
             }
         </>

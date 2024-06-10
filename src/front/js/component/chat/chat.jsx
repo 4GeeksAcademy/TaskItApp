@@ -78,7 +78,7 @@ const Chat = (props) => {
                 {messages.map((msg, index) => (
                     msg.room_name === props.chat.room_name && (
                         <Message
-                            key={index}
+                            key={index + 'msg'}
                             message={msg}
                             markMessageAsSeen={markMessageAsSeen}
                         />
