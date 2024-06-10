@@ -14,6 +14,7 @@ const Chat = (props) => {
                 const response = await fetch(process.env.BACKEND_URL + `/api/chats/${props.chat.id}/messages`);
                 const data = await response.json();
                 setMessages(data);
+                scrollToBottom();
             } catch (error) {
                 console.error(error);
             }
@@ -23,12 +24,18 @@ const Chat = (props) => {
 
         store.socket.on('message', (message) => {
             setMessages((prevMessages) => [...prevMessages, message]);
+            scrollToBottom();
         });
 
         return () => {
             store.socket.off('message');
         };
     }, [props.chat]);
+
+    const scrollToBottom = () => {
+        const chatContainer = document.querySelector('.chat-content');
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    };
 
     const sendMessage = (e) => {
         e.preventDefault();
@@ -58,13 +65,16 @@ const Chat = (props) => {
     return (
         <Card className='position-absolute bottom-0 start-70 card-messaging chat'>
              <Card.Header className='d-flex justify-content-between align-items-center'>
-                <h5 className="mb-0">{props.chat.requester_user.id == store.user.id ? props.chat.seeker_user.username : props.chat.requester_user.username} for task {props.chat.task_id}</h5>
+                <div className='d-flex flex-row align-items-center'>
+                    <h5 className="mb-0">{props.chat.requester_user.id == store.user.id ? props.chat.seeker_user.username : props.chat.requester_user.username} for task {props.chat.task_id}</h5>
+                    { props.isUserOnline && <span className="badge bg-success ms-2">Online</span>}
+                </div>
                 <Button onClick={props.handleClose} variant="" className="close p-0" aria-label="Close">
                     <span className="fs-3" aria-hidden="true">&times;</span>
                 </Button>
             </Card.Header>
 
-            <Card.Body className="chat-content container-fluid">
+            <Card.Body className="chat-content container-fluid d-flex flex-column">
                 {messages.map((msg, index) => (
                     msg.room_name === props.chat.room_name && (
                         <Message
@@ -76,15 +86,13 @@ const Chat = (props) => {
                 ))}
             </Card.Body>
             <Card.Footer>
-                <Form className="d-flex p-3" onSubmit={sendMessage}>
+                <Form className="d-flex p-1" onSubmit={sendMessage}>
                     <Form.Control
-                        className="me-3"
                         type="text"
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                         placeholder="Enter message"
                     />
-                    <Button variant="primary" type="submit">Send</Button>
                 </Form>
             </Card.Footer>
         </Card>

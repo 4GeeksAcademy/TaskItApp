@@ -11,6 +11,7 @@ const ChatList = () => {
     const [chatOpen, setChatOpen] = useState(false);
     const [currentChat, setChat] =useState({});
     const [unseenMessages, setUnseenMessages] = useState({});
+    const [onlineUsers, setOnlineUsers] = useState([]);
 
     useEffect(() => {
         const fetchChatsAndUnseenMessages = async () => {
@@ -34,11 +35,17 @@ const ChatList = () => {
             setUnseenMessages(prev => ({ ...prev, [data.room]: true }));
         });
 
+        store.socket.on('online_users', (data) => {
+            setOnlineUsers(data.users);
+        });
+
+
         return () => {
             store.socket.off('new_chat');
             store.socket.off('unseen_message');
+            store.socket.off('online_users');
         };
-    }, []);
+    }, [store.socket]);
 
     useEffect(() => {
         if (Object.keys(store.user).length > 0) {
@@ -64,6 +71,11 @@ const ChatList = () => {
         setChatOpen(false);
     }
 
+    const isUserOnline = (chat) => {
+        const otherUser = chat.requester_user.id === store.user.id ? chat.seeker_user.username : chat.requester_user.username;
+        return onlineUsers.includes(otherUser);
+    };
+
     const checkUnseenMessages = async (userId, chatId) => {
         try {
             const res = await fetch(`${process.env.BACKEND_URL}/api/users/${userId}/chats/${chatId}`, {});
@@ -78,21 +90,24 @@ const ChatList = () => {
     return(
         <div className="fixed-bottom">
             <div className="d-flex position-relative">
-                { chatOpen && <Chat open={chatOpen} handleClose={handleCloseChat} chat={currentChat} ></Chat> }
+                { chatOpen && <Chat open={chatOpen} handleClose={handleCloseChat} chat={currentChat} isUserOnline={isUserOnline(currentChat)} ></Chat> }
                 <div className="card-messaging float-end position-absolute bottom-0 end-0 me-5"> 
-                    <div className="card-m-header px-5 py-2 bg-light" onClick={() => setListOpen(!listOpen)}>
+                    <div className="card-m-header px-5 py-2 bg-light" onClick={() => { setListOpen(!listOpen); handleCloseChat(); }}>
                         <span className="text-muted"><b>Messaging</b> <Icon className="ms-2 me-5 fs-4" icon={`iconamoon:arrow-${listOpen ? 'up' : 'down'}-2-bold`} /></span>
                         {(!listOpen && Object.values(unseenMessages).some((value) => value)) && <span className="badge bg-danger ms-2">New</span>}
                     </div>
                     { listOpen && (
-                        <div className="px-5 py-2">
+                        <div className="px-5 py-2 bg-white">
                             {store.chats.length === 0 ? (
                                 <div>No chats available</div>
                             ) : (
-                                store.chats.map(chat => (
+                                store.chats?.map((chat) => (
                                     <div key={chat.id} className="d-flex py-2 border-bottom chat-item rounded" onClick={() => handleOpenChat(chat)}>
                                         <div>{chat.requester_user.id == store.user.id ? chat.seeker_user.username : chat.requester_user.username} for task {chat.task_id}</div>
-                                        {(unseenMessages[chat.room_name] && chat != currentChat) && <span className="badge bg-danger ms-2">New</span>}
+                                        {isUserOnline(chat) && (
+                                            <span className="text-success ms-2">&#9679;</span>
+                                        )}
+                                        {(unseenMessages[chat.room_name] && chat != currentChat && !chatOpen) && <span className="badge bg-danger ms-2">New</span>}
                                     </div>
                                 ))
                             )}

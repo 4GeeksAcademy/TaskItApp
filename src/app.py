@@ -30,7 +30,8 @@ app.config['JWT_SECRET_KEY'] = 'your_jwt_secret_key'  # Cambia esto a tu propia 
 jwt = JWTManager(app)
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
-online_users = set()
+
+usernames = {}
 
 # database condiguration
 db_url = os.getenv("DATABASE_URL")
@@ -82,17 +83,22 @@ def serve_any_other_file(path):
 
 @socketio.on('connect')
 def handle_connect():
-    online_users.add(request.sid)
-    emit('online_users', {'users': list(online_users)}, broadcast=True)
+    print("holi")
+    username = request.args.get('username')
+    if username:
+        usernames[request.sid] = username
+        emit('online_users', {'users': list(usernames.values())}, broadcast=True)
+        print(f"User connected: {username}")
+        print(f"Current online users: {list(usernames.values())}")
 
 @socketio.on('disconnect')
 def handle_disconnect():
-    online_users.remove(request.sid)
-    emit('online_users', {'users': list(online_users)}, broadcast=True)
+    if request.sid in usernames:
+        del usernames[request.sid]
+        emit('online_users', {'users': list(usernames.values())}, broadcast=True)
 
 @socketio.on('message')
 def handle_message(data):
-    print('Message received:', data)
     msg = data.get('message', 'No message provided')
     user = data.get('username')
     room = data.get('room')
