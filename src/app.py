@@ -31,6 +31,8 @@ jwt = JWTManager(app)
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
+usernames = {}
+
 # database condiguration
 db_url = os.getenv("DATABASE_URL")
 if db_url is not None:
@@ -81,15 +83,22 @@ def serve_any_other_file(path):
 
 @socketio.on('connect')
 def handle_connect():
-    print('Client connected')
+    print("holi")
+    username = request.args.get('username')
+    if username:
+        usernames[request.sid] = username
+        emit('online_users', {'users': list(usernames.values())}, broadcast=True)
+        print(f"User connected: {username}")
+        print(f"Current online users: {list(usernames.values())}")
 
 @socketio.on('disconnect')
 def handle_disconnect():
-    print('Client disconnected')
+    if request.sid in usernames:
+        del usernames[request.sid]
+        emit('online_users', {'users': list(usernames.values())}, broadcast=True)
 
 @socketio.on('message')
 def handle_message(data):
-    print('Message received:', data)
     msg = data.get('message', 'No message provided')
     user = data.get('username')
     room = data.get('room')

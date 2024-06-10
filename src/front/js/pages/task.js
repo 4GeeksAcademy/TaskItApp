@@ -86,7 +86,7 @@ export const Task = () => {
 		<div className="container p-5 pt-0 mx-auto">
 			<div className="p-5 pt-0">
 				<div className="row d-flex justify-content-center">
-					<div className="col-2">
+					<div className="col-3">
 						<div className="rounded bg-dark overflow-hidden" style={{ width: "100%", aspectRatio: "1/1" }}>
 							{ task.requester_user?.profile_picture && <img
                                 className="img-fluid"
@@ -99,11 +99,11 @@ export const Task = () => {
 							<h5 className="mb-0 pt-2" >{task.requester_user?.username || "deleted"}</h5>
 						</Link>
 						<div className="d-flex align-items-center">
-							<StarRating value={requester.overall_rating}></StarRating>
+							{requester.overall_rating && <StarRating value={requester.overall_rating}></StarRating>}
 							<span className="text-muted ms-1">({requester.total_reviews})</span>
 						</div>
 					</div>
-					<div className="col-8 d-flex flex-column justify-content-between">
+					<div className="col-9 d-flex flex-column justify-content-between">
 						<div>
 							<h1>{task.title}</h1>
 							<p className="text-muted">{actions.timeAgo(task.creation_date)}</p>
@@ -122,22 +122,23 @@ export const Task = () => {
 					</div>
 				</div>
 				<div className="row d-flex justify-content-center mt-4">
-					<div className="col-6 me-3 d-flex flex-column justify-content-between">
+					<div className="col-7 d-flex flex-column justify-content-between gap-4">
 						{ reviews.map((review) =>{
 							return <RatingCard key={review.id} rating={review} />
 						})}
 						{store.user.id != task.requester_user?.id 
-							?<div className="w-100 d-flex justify-content-between">
-								{ ((store.user.role == "both" || store.user.role == "task_seeker") && !applied) && <button className="btn btn-dark px-4" onClick={handleShowApplicationForm}>Apply</button>}
-								<button className="btn btn-dark px-4">Contact Requester</button>
-							</div>
+							? (((store.user.role == "both" || store.user.role == "task_seeker") && !applied) &&
+								<div className="w-100 d-flex justify-content-between">
+									<button className="btn btn-dark px-4" onClick={handleShowApplicationForm}>Apply</button>
+								</div>
+							)
 							:<div className="w-100 d-flex justify-content-between">
 								<button className="btn btn-dark px-4" onClick={handleShowTaskForm}><Icon icon="mage:edit-fill" /> Edit</button>
 							</div>
 						}
 					</div>
-					<div className="col-4 rounded overflow-hidden card p-0" style={{ height: "300px"}}>
-						{ (task.delivery_address && task.pickup_address) && <Map markers={[[task.delivery_address?.latitude, task.delivery_address?.longitude], [task.pickup_address?.latitude, task.pickup_address?.longitude]]} height={300}></Map>}
+					<div className="col-5 rounded overflow-hidden card p-0" style={{ height: "450px"}}>
+						{ (task.delivery_address && task.pickup_address) && <Map markers={[[task.delivery_address?.latitude, task.delivery_address?.longitude], [task.pickup_address?.latitude, task.pickup_address?.longitude]]} height={450}></Map>}
 					</div>
 				</div>
 			</div>

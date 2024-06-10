@@ -1,3 +1,5 @@
+@import url(variables.css);
+
 .card-messaging {
     border: 0 !important;
     overflow: hidden;
@@ -15,8 +17,18 @@
     background-color: rgb(207, 207, 207);
 }
 
+.bubble-yellow {
+    background-color: var(--transparent-yellow);
+    border: none;
+}
+
+.bubble-green {
+    background-color: var(--transparent-green);
+    border: none;
+}
+
 .start-70 {
-    left: 60% !important;
+    right: 43% !important;
 }
 
 .chat {
@@ -28,14 +40,26 @@
     height: 30rem;
 }
 
-@media (max-width: 1919px) {
+@media (min-width: 870px) {
     .start-70 {
-        left: 40% !important;
+        right: 35% !important;
     }
 }
 
-@media (min-width: 1921px) {
+@media (min-width: 1350px) {
     .start-70 {
-        left: 70% !important;
+        right: 25% !important;
     }
 }
+
+@media (min-width: 1920px) {
+    .start-70 {
+        right: 20% !important;
+    }
+}
+
+@media (min-width: 2100px) {
+    .start-70 {
+        right: 15% !important;
+    }
+} 

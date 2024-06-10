@@ -23,7 +23,7 @@ const RatingForm = (props) => {
         if(store.message == "User rated successfully.") {
             if (props.role == "requester") actions.getRequesterCompletedTasks();
             if (props.role == "seeker") actions.getSeekerCompletedTasks();
-            props.setShowRateBtn(false);
+            props.setShowBtn(false);
             props.handleClose();
         }
     }, [store.message])
