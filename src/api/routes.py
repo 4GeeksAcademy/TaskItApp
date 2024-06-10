@@ -911,7 +911,6 @@ def get_messages(id):
 
 @api.route('/users/<int:user_id>/chats/<int:chat_id>', methods=['GET'])
 def has_unseen_messages(user_id, chat_id):
-    print("holi")
     existing_chat = Chat.query.get(chat_id);
     if not existing_chat: return jsonify({'error': 'Chat does not exist.'}), 404
 

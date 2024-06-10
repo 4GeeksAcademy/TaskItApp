@@ -32,7 +32,6 @@ export const User = () => {
         try {
             const response = await fetch(process.env.BACKEND_URL + `/api/users/${currentUser.id}/reviews`); 
             const data = await response.json();
-			console.log(data)
             setReviews(data);
         } catch (error) {
             console.error(error);
