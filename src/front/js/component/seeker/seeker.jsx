@@ -21,7 +21,6 @@ const Seeker = ({ seekerInfo, applicantInfo, applicants }) => {
         }
         actions.changeTaskStatus(applicantInfo.task_id, "in_progress");
         actions.changeTaskSeeker(applicantInfo.task_id, seekerInfo.id);
-        actions.sendNotification("Seeker successfully accepted.", store.user.username);
 
         createChat();    
         navigate('/');    
