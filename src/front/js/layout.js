@@ -19,7 +19,6 @@ import { SidebarComponent } from "./component/sidebar.js";
 import { Applicants } from "./pages/applicants.js";
 import EditProfile from "./pages/edit_profile";
 import ChatList from "./component/chat/chat_list.jsx";
-import SignupAdmin from "./pages/SignupAdmin";
 import LoginAdmin from "./pages/LoginAdmin";
 import useScreenWidth from './hooks/useScreenWidth.jsx';
 import { BottomNavbar } from "./component/bottombar.jsx";
@@ -73,7 +72,6 @@ const Layout = () => {
                                 <Route element={<User />} path="/users/:theusername" />
                                 <Route element={<LoginUser />} path="/login-user" />
                                 <Route element={<SignupUser />} path="/signup-user" />
-                                <Route element={<SignupAdmin />} path="/signup-admin" />
                                 <Route element={<LoginAdmin />} path="/login-admin" />
                                 <Route element={<EditProfile />} path="/edit-profile" />
                                 {(store.user?.role == "requester" || store.user?.role == "both") && 
