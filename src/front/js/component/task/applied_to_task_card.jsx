@@ -32,7 +32,10 @@ const AppliedToTask = ({ taskInfo }) => {
                         </div>
                     </div>
                 </div>
-                <h2>{taskInfo.title}</h2>
+                <div className="d-flex justify-content-between flex-row">
+                    <h2>{taskInfo.title}</h2>
+                    <small className="text-muted"><b>ID: </b>{taskInfo.id}</small>
+                </div>
                 <p className="text-muted">{taskInfo.description}</p>
                 <div className="d-flex align-items-end justify-content-between">
                     <span><b>Status: </b>{applicantInfo.status}</span>

@@ -105,7 +105,10 @@ export const Task = () => {
 					</div>
 					<div className="col-9 d-flex flex-column justify-content-between">
 						<div>
-							<h1>{task.title}</h1>
+							<div className="d-flex justify-content-between flex-row">
+								<h2>{task.title}</h2>
+								<small className="text-muted"><b>ID: </b>{task.id}</small>
+							</div>
 							<p className="text-muted">{actions.timeAgo(task.creation_date)}</p>
 							<p>{task.description}</p>
 						</div>
@@ -132,9 +135,11 @@ export const Task = () => {
 									<button className="btn btn-dark px-4" onClick={handleShowApplicationForm}>Apply</button>
 								</div>
 							)
-							:<div className="w-100 d-flex justify-content-between">
-								<button className="btn btn-dark px-4" onClick={handleShowTaskForm}><Icon icon="mage:edit-fill" /> Edit</button>
-							</div>
+							: ( task.status == "pending" &&
+								<div className="w-100 d-flex justify-content-between">
+									<button className="btn btn-dark px-4" onClick={handleShowTaskForm}><Icon icon="mage:edit-fill" /> Edit</button>
+								</div>
+							)
 						}
 					</div>
 					<div className="col-5 rounded overflow-hidden card p-0" style={{ height: "450px"}}>
