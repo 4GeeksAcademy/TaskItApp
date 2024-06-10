@@ -4,10 +4,12 @@ import { Link } from "react-router-dom";
 import { Context } from "../../store/appContext.js";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useNavigate } from "react-router-dom";
+import useScreenWidth from "../../hooks/useScreenWidth.jsx";
 
 const Seeker = ({ seekerInfo, applicantInfo, applicants }) => {
     const { store, actions } = useContext(Context);
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    const smallDevice = useScreenWidth();
 
     const acceptSeeker = () => {
         for(let applicant of applicants) {
@@ -19,6 +21,7 @@ const Seeker = ({ seekerInfo, applicantInfo, applicants }) => {
                 actions.sendNotification(`You have been rejected as the seeker of the task with ID: ${applicant.task_id}`, applicant.seeker.user.username);
             }
         }
+
         actions.changeTaskStatus(applicantInfo.task_id, "in_progress");
         actions.changeTaskSeeker(applicantInfo.task_id, seekerInfo.id);
 
@@ -60,7 +63,10 @@ const Seeker = ({ seekerInfo, applicantInfo, applicants }) => {
                         </div>
                         <div className="d-flex flex-column justify-content-around">
                             <Link to={`/users/${seekerInfo.user.username}`}>
-                                <span className="fs-5"><b>{seekerInfo.user.full_name}</b> <span className="text-muted"> ({seekerInfo.user.username})</span></span>
+                                { !smallDevice 
+                                    ? <span className="fs-5"><b>{seekerInfo.user.full_name}</b> <span className="text-muted"> ({seekerInfo.user.username})</span></span>
+                                    : <span className="fs-5"><b>{seekerInfo.user.username}</b></span>
+                                }
                             </Link>
                             <div className="d-flex align-items-center">
                                 <StarRating value={seekerInfo.overall_rating}></StarRating>
@@ -68,17 +74,9 @@ const Seeker = ({ seekerInfo, applicantInfo, applicants }) => {
                             </div>
                         </div>
                     </div>
-                    { applicantInfo &&
-                        <div>
-                            <button className="btn btn-dark smooth">Contact</button>
-                            <Link className="ms-2" to={`/users/${seekerInfo.user.username}`}>
-                                <button className="btn btn-dark smooth">See Details</button>
-                            </Link>
-                        </div>
-                    }
                 </div>
                 { applicantInfo && 
-                    <div className="d-flex justify-content-between mb-2">
+                    <div className={`d-flex justify-content-between mb-2 ${smallDevice ? "flex-column" : ""}`}>
                         <span><b>Applied</b> {actions.timeAgo(applicantInfo.application_date)}</span>
                         <span><Icon className="fs-4 me-2" icon="fa6-solid:money-bill-1-wave" /><b>Price: </b>{applicantInfo.price}€</span>
                     </div>
@@ -87,6 +85,9 @@ const Seeker = ({ seekerInfo, applicantInfo, applicants }) => {
                     <div className="d-flex justify-content-between">
                         <button className="btn btn-success smooth" onClick={acceptSeeker}>Accept</button>
                         <button className="btn btn-danger smooth" onClick={() => actions.changePostulantStatus(applicantInfo.id, "rejected")}>Reject</button>
+                        <Link to={`/users/${seekerInfo.user.username}`}>
+                            <button className="btn btn-dark smooth">View</button>
+                        </Link>
                     </div>
                     :
                     <div className="d-flex justify-content-between">

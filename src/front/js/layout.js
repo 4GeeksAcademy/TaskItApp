@@ -27,11 +27,18 @@ import EditProfile from "./pages/edit_profile";
 import ChatList from "./component/chat/chat_list.jsx";
 import SignupAdmin from "./pages/SignupAdmin";
 import LoginAdmin from "./pages/LoginAdmin";
+import useScreenWidth from './hooks/useScreenWidth.jsx';
+import { BottomNavbar } from "./component/bottombar.jsx";
+import UserTaskList from "./component/task/user_tasks_list.jsx";
+import AppliedToTaskList from "./component/task/applied_to_tasks.jsx";
+import CompletedTasksList from "./component/task/completed_tasks_list.jsx";
 
 
 const Layout = () => {
     const basename = process.env.BASENAME || "";
     const { store, actions } = useContext(Context);
+    const smallDevice = useScreenWidth();
+
 
     useEffect(() => {
         // Verifica el token almacenado cuando la aplicación se carga
@@ -54,7 +61,10 @@ const Layout = () => {
             <BrowserRouter basename={basename}>
                 <ScrollToTop>
                     <div className="d-flex container-fluid m-0 p-0">
-                        { store.auth && <SidebarComponent></SidebarComponent> }
+                        { store.auth &&  ( smallDevice 
+                            ? <BottomNavbar></BottomNavbar>
+                            :  <SidebarComponent></SidebarComponent>
+                        )}
                         <div className="w-100">
                             <Navbar />
                             <Routes>
@@ -79,10 +89,22 @@ const Layout = () => {
                                 <Route element={<LoginAdmin />} path="/login-admin" />
                                 <Route element={<UserPanel />} path="/user-panel" />
                                 <Route element={<EditProfile />} path="/edit-profile" />
+                                {(store.user?.role == "requester" || store.user?.role == "both") && 
+                                    <>
+                                        <Route element={<UserTaskList />} path="/users/:theusername/my-tasks" />
+                                        <Route element={<CompletedTasksList role={"requester"} />} path="/users/:theusername/requested-completed-tasks" />
+                                    </>
+                                }
+                                {(store.user?.role == "task_seeker" || store.user?.role == "both") && 
+                                    <>	
+                                        <Route element={<AppliedToTaskList />} path="/users/:theusername/applied-to-tasks" />
+                                        <Route element={<CompletedTasksList role={"seeker"} />} path="/users/:theusername/completed-tasks" />
+                                    </>
+                                }
                                 <Route element={<h1>Not found!</h1>} />
                             </Routes>
                             <Footer />
-                            { store.auth && <ChatList></ChatList> }
+                            { (store.auth && !smallDevice) && <ChatList></ChatList> }
                         </div>
                     </div>
                 </ScrollToTop>

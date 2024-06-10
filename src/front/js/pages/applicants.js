@@ -21,7 +21,7 @@ export const Applicants = () => {
 	}, [])
 
 	return (
-		<div className="row d-flex justify-content-center">
+		<div className="row d-flex justify-content-center px-5">
 			{ task.applicants?.length == 0 
 				? <div className="text-center"><h3>No applicants yet.</h3></div>
 				:  task.applicants?.map((applicant) => {

@@ -1,10 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Context } from "../../store/appContext.js";
 import { Link } from "react-router-dom";
+import useScreenWidth from "../../hooks/useScreenWidth.jsx";
 
 const AppliedToTask = ({ taskInfo }) => {
     const { store, actions } = useContext(Context);
     const [applicantInfo, setApplicantInfo] = useState({})
+    const smallDevice = useScreenWidth();
 
     useEffect(() => {
         for(let applicant of taskInfo.applicants) if(applicant.seeker_id == store.user.seeker?.id) setApplicantInfo(applicant);
@@ -26,7 +28,7 @@ const AppliedToTask = ({ taskInfo }) => {
                         <div className="d-flex flex-column justify-content-around">
                             <span className="fs-5">
                                 <Link to={`/users/${taskInfo.requester_user.username}`}><b>{taskInfo.requester_user.username} </b></Link> 
-                                <span className="text-muted">in {taskInfo.category_name}</span>
+                                { !smallDevice && <span className="text-muted">in {taskInfo.category_name}</span>}
                             </span>
                             <span>{actions.timeAgo(taskInfo.creation_date)}</span>
                         </div>

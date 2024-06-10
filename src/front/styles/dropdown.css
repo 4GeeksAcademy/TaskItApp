@@ -29,3 +29,19 @@
 .dropdown-item strong {
     margin-bottom: 0.5rem;
 }
+
+.nav-link-dropdown {
+    color: rgba(0, 0, 0, .55);
+    border: none;
+    padding: 0 !important;
+}
+
+.nav-link-dropdown .btn-primary {
+    background-color: transparent !important;
+    border: none;
+    padding: 0 !important;
+}
+
+.nav-link-dropdown .dropdown-toggle::after {
+    display: none; 
+}
