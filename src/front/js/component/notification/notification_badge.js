@@ -7,7 +7,7 @@ const Notification = () => {
     const { store, actions } = useContext(Context);
 
     useEffect(() => {
-        const newSocket = io(process.env.BACKEND_URL);
+        const newSocket = io(process.env.BACKEND_URL, { query: { username: store.user.username } });
         setSocket(newSocket);
 
         return () => {

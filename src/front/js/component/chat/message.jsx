@@ -11,10 +11,30 @@ const Message = ({ message, markMessageAsSeen }) => {
         markMessageAsSeen(message.id)
     }, []);
 
+
+    function formatISOTime(isoString) {
+        if (!isoString) return;
+    
+        const date = new Date(isoString);
+        const time = date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false });
+    
+        return `${time}`;
+    }
+    
+
     return (
-        <div className={`row border rounded col-11 my-2 mx-1 p-1 text-white ${(isCurrentUserMessage || isUserMessage) ? "float-end bg-primary" : "bg-secondary"}`}>
-            <span>{message.message}</span>
-        </div>
+        <>
+            { (isCurrentUserMessage || isUserMessage) 
+                ? <div className="rounded my-2 mx-1 p-2 px-4 text-end bubble-green ms-auto d-flex flex-column" style={{ maxWidth: '83%' }}>
+                    <span>{message.message}</span>
+                    <small className="text-muted float-end">{formatISOTime(message.timestamp || new Date()) }</small>
+                </div>
+                : <div className="rounded my-2 mx-1 p-2 px-4 bubble-yellow me-auto d-flex flex-column" style={{ maxWidth: '83%' }}>
+                    <span>{message.message}</span>
+                    <small className="text-muted float-end">{formatISOTime(message.timestamp) || new Date()}</small>
+                </div>
+            }
+        </>
     );
 };
 
