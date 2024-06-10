@@ -11,11 +11,12 @@
 }
 
 .dropdown-item {
-    display: flex;
-    flex-direction: column;
     align-items: center;
     padding: 1rem;
     font-size: 0.9rem; /* Ajusta el tamaño del texto según sea necesario */
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    white-space: normal;
 }
 
 .dropdown-item img {
@@ -27,14 +28,4 @@
 
 .dropdown-item strong {
     margin-bottom: 0.5rem;
-}
-
-
-.img-circle {
-    width: 100px; /* Ajusta el tamaño según sea necesario */
-    height: 100px; /* Ajusta el tamaño según sea necesario */
-    border-radius: 50%;
-    overflow: hidden;
-    margin-bottom: 1rem;
-    object-fit: cover;
 }
