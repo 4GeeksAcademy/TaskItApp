@@ -91,7 +91,7 @@ export const User = () => {
 							<div className="card d-flex justify-content-around flex-row">
 								<div className="text-center d-flex flex-column">
 									<span className="fs-5"><b>Average Budget</b></span>
-									<span className="fs-2 text-muted">{requesterInfo.average_budget}</span>
+									<span className="fs-2 text-muted">{requesterInfo.average_budget.toFixed(2)}</span>
 								</div>
 								<div className="text-center d-flex flex-column">
 									<span className="fs-5"><b>Total Requested</b></span>

@@ -11,6 +11,7 @@ const Task = ({ taskInfo, index, list }) => {
     const [show, setShow] = useState(false);
 	const [showRatingForm, setShowRatingForm] = useState(false);
     const [showRateBtn, setShowRateBtn] = useState(true);
+    const [status, setStatus] = useState('');
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
@@ -23,12 +24,14 @@ const Task = ({ taskInfo, index, list }) => {
 
     const handleComplete = () => {
         actions.changeTaskStatus(taskInfo.id, "completed");
+        setStatus("completed");
         if(list == "userTasks") store.userTasks[index].status = "completed";
         actions.sendNotification(`The task with id ${taskInfo.id}, has been marked as completed.`, taskInfo.seeker.user.username);
     }
     
     const handleCancel = () => {
         actions.changeTaskStatus(taskInfo.id, "cancelled");
+        setStatus("cancelled");
         if(list == "userTasks") store.userTasks[index].status = "cancelled";
         if(taskInfo.seeker) actions.sendNotification(`The task with id ${taskInfo.id}, has been cancelled.`, taskInfo.seeker.user.username);
     }
@@ -46,12 +49,12 @@ const Task = ({ taskInfo, index, list }) => {
             <div className="card p-4 h-100 d-flex flex-column justify-content-between flex-grow-1">
                 <div>
                     <div className="w-100 d-flex justify-content-end gap-2">
-                        { (taskInfo.status == "completed" && path == '/')
+                        { ((taskInfo.status == "completed" || status == "completed") && path == '/')
                             ? ( showRateBtn &&
                                 <div className="rounded-circle overflow-hidden smooth" style={{ width: "auto", height: "auto" ,aspectRatio: "1/1" }}>
                                     <button className="btn btn-warning h-100" onClick={handleShowRatingForm}><Icon className="fs-5" icon="material-symbols:reviews-outline" /></button>
                                 </div>
-                            ) : ((store.user.id == taskInfo.requester_user?.id && taskInfo.status != "cancelled" && path == '/') && (
+                            ) : ((store.user.id == taskInfo.requester_user?.id && (taskInfo.status != "cancelled" || status != "cancelled") && path == '/') && (
                                 <>
                                     { taskInfo.seeker_id && 
                                         <div className="rounded-circle overflow-hidden smooth" style={{ width: "auto", height: "auto" ,aspectRatio: "1/1" }}>
