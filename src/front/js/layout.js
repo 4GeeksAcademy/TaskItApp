@@ -27,6 +27,7 @@ import EditProfile from "./pages/edit_profile";
 import ChatList from "./component/chat/chat_list.jsx";
 import SignupAdmin from "./pages/SignupAdmin";
 import LoginAdmin from "./pages/LoginAdmin";
+import About from "./pages/about"
 
 
 const Layout = () => {
@@ -79,6 +80,7 @@ const Layout = () => {
                                 <Route element={<LoginAdmin />} path="/login-admin" />
                                 <Route element={<UserPanel />} path="/user-panel" />
                                 <Route element={<EditProfile />} path="/edit-profile" />
+                                <Route element={<About />} path="/about" />
                                 <Route element={<h1>Not found!</h1>} />
                             </Routes>
                             <Footer />
