@@ -26,7 +26,7 @@ import { BottomNavbar } from "./component/bottombar.jsx";
 import UserTaskList from "./component/task/user_tasks_list.jsx";
 import AppliedToTaskList from "./component/task/applied_to_tasks.jsx";
 import CompletedTasksList from "./component/task/completed_tasks_list.jsx";
-
+import About from "./pages/about"
 
 const Layout = () => {
     const basename = process.env.BASENAME || "";
@@ -75,6 +75,7 @@ const Layout = () => {
                                 <Route element={<SignupUser />} path="/signup-user" />
                                 <Route element={<SignupAdmin />} path="/signup-admin" />
                                 <Route element={<LoginAdmin />} path="/login-admin" />
+                                <Route element={<About />} path="/about" />
                                 <Route element={<EditProfile />} path="/edit-profile" />
                                 {(store.user?.role == "requester" || store.user?.role == "both") && 
                                     <>
