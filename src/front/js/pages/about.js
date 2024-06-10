@@ -4,7 +4,7 @@ const About = () => {
     return (
         <div className="container mt-6 mb-5">
             <div className="row">
-                <div className="col-7">
+                <div className="col-12 col-md-7 order-1">
                     <h1 className="display-1 fw-bold">About</h1>
                     
                     <p className="fs-4 text-muted">
@@ -33,7 +33,7 @@ const About = () => {
                     </p>
                 </div>
                 
-                <div className="col-5">
+                <div className="col-12 col-md-5 order-2">
                     <div className="card h-100">
                         <img src="https://res-console.cloudinary.com/doojwu2m7/media_explorer_thumbnails/b79ce5079aaec66e7597064f9eba91fd/detailed" className="card-img-top" alt="Team" />
                     </div>
