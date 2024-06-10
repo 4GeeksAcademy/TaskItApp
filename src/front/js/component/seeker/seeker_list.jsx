@@ -12,7 +12,7 @@ const SeekerList = () => {
             <div className="row">
                 {store.seekers.map((user) => {
                     return (
-                        <React.Fragment key={user.id}>
+                        <React.Fragment key={user.id + "seeker"}>
                             <Seeker seekerInfo={user}></Seeker>
                         </React.Fragment>
                     );

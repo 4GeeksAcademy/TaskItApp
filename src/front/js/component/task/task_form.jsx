@@ -142,7 +142,7 @@ const TaskForm = (props) => {
                     >
                         <option value="" disabled>Choose category</option>
                         {store.categories.map((category) => (
-                            <option key={category.id} value={category.id}>{category.name}</option>
+                            <option key={category.id + "cattf"} value={category.id}>{category.name}</option>
                         ))}
                     </select>
 

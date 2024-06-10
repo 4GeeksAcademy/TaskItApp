@@ -60,7 +60,7 @@ const AddressInput = (props) => {
                     >
                         <option value="" disabled>Choose address</option>
                             {store.addresses.map((address) => (
-                                <option key={address.id} value={address.address}>{address.address}</option>
+                                <option key={address.id +"ad"} value={address.address}>{address.address}</option>
                             ))}
                     </select>
                 }

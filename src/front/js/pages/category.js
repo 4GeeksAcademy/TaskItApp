@@ -24,7 +24,7 @@ export const Category = () => {
             <div className="row">
                 {category?.tasks?.map((task) => {
                     return (
-                        <React.Fragment key={task.id}>
+                        <React.Fragment key={task.id + 'tcat'}>
                             <Task taskInfo={task}></Task>
                         </React.Fragment>
                     );

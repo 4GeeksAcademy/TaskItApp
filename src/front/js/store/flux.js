@@ -182,7 +182,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					config,
 					() => {
 						getActions().getTasks();
-						getActions().sendNotification(`Task status successfully set to'${status}'.`, getStore().user.username);
+						getActions().sendNotification(`Task status successfully set to'${status == "in_progress" ? "in progress" : status}'.`, getStore().user.username);
 					}
 				);
 			},

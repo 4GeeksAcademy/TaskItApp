@@ -91,7 +91,7 @@ export const User = () => {
 							<div className="card d-flex justify-content-around flex-row">
 								<div className="text-center d-flex flex-column">
 									<span className="fs-5"><b>Average Budget</b></span>
-									<span className="fs-2 text-muted">{requesterInfo.average_budget}</span>
+									<span className="fs-2 text-muted">{requesterInfo.average_budget.toFixed(2)}</span>
 								</div>
 								<div className="text-center d-flex flex-column">
 									<span className="fs-5"><b>Total Requested</b></span>
@@ -108,7 +108,7 @@ export const User = () => {
 				<hr className="my-5"></hr>
 				<div className="d-flex justify-content-between">
 					{ reviews.map((review) =>{
-						return <RatingCard key={review.id} rating={review} />
+						return <RatingCard key={review.id + 'urev'} rating={review} />
 					})}
 				</div>
 			</div>

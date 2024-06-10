@@ -62,7 +62,7 @@ const MapComponent = (props) => {
                 
                 />
                 {props.markers.map((marker, index) => { 
-                    return <Marker key={index} position={{lat: marker[0], lng: marker[1]}} />
+                    return <Marker key={index + "map"} position={{lat: marker[0], lng: marker[1]}} />
                 })}
             </APIProvider>
         </div>

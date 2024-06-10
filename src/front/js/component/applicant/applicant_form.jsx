@@ -16,7 +16,7 @@ const ApplicantForm = (props) => {
             actions.resetMessages();
             props.setApplied(true);            
             props.handleClose();
-            actions.sendNotification("You have successfuly applied.", store.user.username);
+            actions.sendNotification(`You have successfuly applied to the task with ID: ${props.taskID}.`, store.user.username);
             actions.sendNotification(`${store.user.username} applied to your task with ID: ${props.taskID}`, props.taskRequester);
         }
     }, [store.message])

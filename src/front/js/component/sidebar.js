@@ -35,7 +35,7 @@ export const SidebarComponent = () => {
                     { (store.user.role == "both" || store.user.role == "task_seeker") && 
                         <SubMenu defaultOpen label="Categories" icon={<Icon className='fs-2' icon="bxs:category" />}>
                             { store.categories.map((category) => {
-                                return <MenuItem key={category.id} component={<Link to={`/categories/${category.name.replace(/\s+/g,"-")}`}></Link>}> {category.name}</MenuItem>
+                                return <MenuItem key={category.id + "catside"} component={<Link to={`/categories/${category.name.replace(/\s+/g,"-")}`}></Link>}> {category.name}</MenuItem>
                             })}
                         </SubMenu>
                     }
