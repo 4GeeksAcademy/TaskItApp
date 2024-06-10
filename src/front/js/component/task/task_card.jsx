@@ -16,7 +16,7 @@ const Task = ({ taskInfo, index, list }) => {
     const handleShow = () => setShow(true);
     const handleCloseRatingForm = () => {
         setShowRatingForm(false);
-        showRateButton();
+        setShowRateBtn(false);
     }
 
     const handleShowRatingForm = () => setShowRatingForm(true);
