@@ -4,31 +4,38 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Link, useLocation } from "react-router-dom";
 import TaskForm from "./task_form.jsx";
 import RatingForm from "../rating/rating_form.jsx";
+import useScreenWidth from "../../hooks/useScreenWidth.jsx";
 
 const Task = ({ taskInfo, index, list }) => {
     const { store, actions } = useContext(Context);
     const path = useLocation().pathname;
+    const isUserTasksPage = /^\/users\/[^/]+\/my-tasks$/.test(path);
+    const isUserCompletedTasksPage = /^\/users\/[^/]+\/completed-tasks$/.test(path);
+    const smallDevice = useScreenWidth();
     const [show, setShow] = useState(false);
 	const [showRatingForm, setShowRatingForm] = useState(false);
     const [showRateBtn, setShowRateBtn] = useState(true);
+    const [status, setStatus] = useState('');
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
     const handleCloseRatingForm = () => {
         setShowRatingForm(false);
-        showRateButton();
+        setShowRateBtn(false);
     }
 
     const handleShowRatingForm = () => setShowRatingForm(true);
 
     const handleComplete = () => {
         actions.changeTaskStatus(taskInfo.id, "completed");
+        setStatus("completed");
         if(list == "userTasks") store.userTasks[index].status = "completed";
         actions.sendNotification(`The task with id ${taskInfo.id}, has been marked as completed.`, taskInfo.seeker.user.username);
     }
     
     const handleCancel = () => {
         actions.changeTaskStatus(taskInfo.id, "cancelled");
+        setStatus("cancelled");
         if(list == "userTasks") store.userTasks[index].status = "cancelled";
         if(taskInfo.seeker) actions.sendNotification(`The task with id ${taskInfo.id}, has been cancelled.`, taskInfo.seeker.user.username);
     }
@@ -42,16 +49,16 @@ const Task = ({ taskInfo, index, list }) => {
     useEffect(() => { showRateButton(); }, [])
 
     return (
-        <div className="col-lg-4 col-md-11 col-sm-11 p-2 d-flex flex-column">
+        <div className="col-lg-4 col-12 p-2 d-flex flex-column">
             <div className="card p-4 h-100 d-flex flex-column justify-content-between flex-grow-1">
                 <div>
                     <div className="w-100 d-flex justify-content-end gap-2">
-                        { (taskInfo.status == "completed" && path == '/')
+                        { ((taskInfo.status == "completed" || status == "completed") && (path == '/' || isUserTasksPage))
                             ? ( showRateBtn &&
                                 <div className="rounded-circle overflow-hidden smooth" style={{ width: "auto", height: "auto" ,aspectRatio: "1/1" }}>
                                     <button className="btn btn-warning h-100" onClick={handleShowRatingForm}><Icon className="fs-5" icon="material-symbols:reviews-outline" /></button>
                                 </div>
-                            ) : ((store.user.id == taskInfo.requester_user?.id && taskInfo.status != "cancelled" && path == '/') && (
+                            ) : ((store.user.id == taskInfo.requester_user?.id && (taskInfo.status != "cancelled" || status != "cancelled") && (path == '/' || isUserTasksPage)) && (
                                 <>
                                     { taskInfo.seeker_id && 
                                         <div className="rounded-circle overflow-hidden smooth" style={{ width: "auto", height: "auto" ,aspectRatio: "1/1" }}>
@@ -70,9 +77,9 @@ const Task = ({ taskInfo, index, list }) => {
                             ))
                         }
                     </div>
-                    { (path != "/" || store.user.id != taskInfo.requester_user?.id) &&
+                    { ((path != '/' && !isUserTasksPage && !isUserCompletedTasksPage) || store.user.id != taskInfo.requester_user?.id) &&
                         <div className="d-flex align-items-center mb-2">
-                            <div className="rounded-circle bg-dark me-2 overflow-hidden" style={{ height: "60px", width: "60px" }}>
+                            <div className="rounded-circle bg-dark me-2 overflow-hidden" style={{ height: "60px", width: "60px", aspectRatio: "1/1" }}>
                                 { taskInfo.requester_user?.profile_picture && <img
                                     className="img-fluid"
                                     src={taskInfo.requester_user?.profile_picture}
@@ -83,19 +90,22 @@ const Task = ({ taskInfo, index, list }) => {
                             <div className="d-flex flex-column justify-content-around">
                                 <span className="fs-5">
                                     { taskInfo.requester_user ? <Link to={`/users/${taskInfo.requester_user.username}`}><b>{taskInfo.requester_user.username} </b></Link> : <span>deleted </span> }
-                                    <span className="text-muted">in {taskInfo.category_name}</span>
+                                    { !smallDevice && <span className="text-muted">in {taskInfo.category_name}</span>}
                                 </span>
                                 <span>{actions.timeAgo(taskInfo.creation_date)}</span>
                             </div>
                         </div>
                     }
-                    <h2>{taskInfo.title}</h2>
+                    <div className="d-flex justify-content-between flex-row">
+                        <h2>{taskInfo.title}</h2>
+                        <small className="text-muted"><b>ID: </b>{taskInfo.id}</small>
+                    </div>
                     <p className="text-muted">{taskInfo.description}</p>
                 </div>
                 <div>
-                    <div className="d-flex align-items-end justify-content-between">
-                        { path != "/"
-                        ? <span className="fs-3 d-flex align-items-center"><Icon className="me-2" icon="ph:user-bold" /> <span>{taskInfo.applicants.length} {taskInfo.applicants.length == 1 ? "applicant" : "applicants"}</span></span>
+                    <div className={`d-flex justify-content-between ${smallDevice ? "flex-column gap-3" : ""}`}>
+                        { (path != '/' && !isUserTasksPage && !isUserCompletedTasksPage)
+                        ? <div><span className="fs-3 d-flex align-items-center"><Icon className="me-2" icon="ph:user-bold" /> <span>{taskInfo.applicants.length} {taskInfo.applicants.length == 1 ? "applicant" : "applicants"}</span></span></div>
                         : taskInfo.seeker_id 
                         ? <div className="d-flex flex-column">
                             <span><b>Status:</b> {taskInfo.status == "in_progress" ? "in progress" : taskInfo.status}</span>

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useContext } from "react";
-import "../../../styles/accordion.css"; 
+import "../../../styles/dropdown.css"; 
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Context } from "../../store/appContext";
 import { useNavigate } from "react-router-dom";
@@ -34,7 +34,7 @@ const SettingsUser = ({ dropdownVisible, setDropdownVisible }) => {
 
     return (
         <div ref={ref} className={`dropdown-menu ${dropdownVisible ? 'show' : ''}`} aria-labelledby="dropdownMenuButton">
-            <div className="dropdown-item" onClick={() => navigate(`/users/${store.user.username}`)}>
+            <div className="dropdown-item d-flex" onClick={() => navigate(`/users/${store.user.username}`)}>
                 <div className="d-flex align-items-center mb-2">
                     <div className="rounded-circle bg-dark me-2 overflow-hidden" style={{ height: "60px", width: "60px" }}>
                         { store.user.profile_picture && <img
@@ -50,11 +50,11 @@ const SettingsUser = ({ dropdownVisible, setDropdownVisible }) => {
                     </div>
                 </div>
             </div>
-            <div className="dropdown-item" type="button" onClick={handleEditProfileClick}>
-                <strong>Edit profile <Icon icon="mage:edit-fill" /></strong>
+            <div className="dropdown-item fs-5" type="button" onClick={handleEditProfileClick}>
+                <span><Icon icon="mage:edit-fill" /> Edit profile</span>
             </div>
-            <div className="dropdown-item" type="button" onClick={handleLogout}>
-                <strong>Sign out <Icon icon="icon-park:logout" /></strong>
+            <div className="dropdown-item fs-5" type="button" onClick={handleLogout}>
+                <span><Icon icon="icon-park:logout" /> Sign out </span>
             </div>
         </div>
     );

@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useRef } from "react";
+import "../../../styles/dropdown.css"; 
 import { Context } from "../../store/appContext";
 
 const NotificationDropdown = ({ dropdownVisible, setDropdownVisible }) => {
@@ -38,7 +39,7 @@ const NotificationDropdown = ({ dropdownVisible, setDropdownVisible }) => {
             { store.notifications.map((notification, index) => {
                 return (
                     <div key={index + notification.message[0]}>
-                        <div className="dropdown-header"><p>{notification.message}</p></div>
+                        <div className="dropdown-item disabled"><span>{notification.message}</span></div>
                         { (index + 1) < store.notifications.length && <div className="dropdown-divider"></div> }
                     </div>
                 )
