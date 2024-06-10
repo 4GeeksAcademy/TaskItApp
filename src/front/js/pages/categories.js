@@ -65,7 +65,7 @@ const CategoryList = () => {
             </form>
             <ul className="list-group">
                 {store.categories.map(category => (
-                    <li key={category.id} className="list-group-item d-flex justify-content-between align-items-center">
+                    <li key={category.id + "cats"} className="list-group-item d-flex justify-content-between align-items-center">
                         <span>{category.name}</span>
                         <div>
                             <button className="btn btn-warning me-2" onClick={() => actions.editCategory(category.id, prompt("New name:", category.name))}>Edit</button>

@@ -108,7 +108,7 @@ export const User = () => {
 				<hr className="my-5"></hr>
 				<div className="d-flex justify-content-between">
 					{ reviews.map((review) =>{
-						return <RatingCard key={review.id} rating={review} />
+						return <RatingCard key={review.id + 'urev'} rating={review} />
 					})}
 				</div>
 			</div>

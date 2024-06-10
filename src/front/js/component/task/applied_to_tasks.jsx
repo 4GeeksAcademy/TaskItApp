@@ -28,7 +28,7 @@ const AppliedToTaskList = () => {
                     ? <div>You haven't applied to tasks yet.</div>
                     : tasks.slice().reverse().map((task) => {
                         return (
-                            <React.Fragment key={task.id}>
+                            <React.Fragment key={task.id + "att"}>
                                 <AppliedToTask taskInfo={task}></AppliedToTask>
                             </React.Fragment>
                         );

@@ -127,7 +127,7 @@ export const Task = () => {
 				<div className="row d-flex justify-content-center mt-4">
 					<div className="col-7 d-flex flex-column justify-content-between gap-4">
 						{ reviews.map((review) =>{
-							return <RatingCard key={review.id} rating={review} />
+							return <RatingCard key={review.id + "trev"} rating={review} />
 						})}
 						{store.user.id != task.requester_user?.id 
 							? (((store.user.role == "both" || store.user.role == "task_seeker") && !applied) &&
