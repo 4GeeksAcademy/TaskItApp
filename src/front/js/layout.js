@@ -5,20 +5,14 @@ import { BackendURL } from "./component/backendURL";
 import { Home } from "./pages/home";
 import { User } from "./pages/user";
 import { TaskFeed } from "./pages/tasks";
-import { Users } from "./pages/users";
-import { Requesters } from "./pages/requesters";
 import { Seekers } from "./pages/seekers";
 import { Task } from "./pages/task.js";
-import Addresses from "./pages/addresses";
 import injectContext from "./store/appContext";
 import CategoryList from "./pages/categories";
-import RatingPage from "./component/rating/rating.jsx"; 
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
-import Postulants from "./pages/postulants";
 import LoginUser from "./pages/login_user";
 import SignupUser from "./pages/signup_user";
-import UserPanel from "./pages/user_panel";
 import { Context } from "./store/appContext"; 
 import { Category } from "./pages/category.js";
 import { SidebarComponent } from "./component/sidebar.js";
@@ -71,23 +65,16 @@ const Layout = () => {
                                 <Route element={<Home />} path="/" />
                                 <Route element={<CategoryList />} path="/categories" />
                                 <Route element={<Category />} path="/categories/:thecategory" />
-                                <Route element={<Home />} path="/" />
                                 <Route element={<TaskFeed />} path="/tasks" />
                                 <Route element={<Category />} path="/categories/:thecategory" />
                                 <Route element={<Task />} path="/tasks/:theid" />
                                 <Route element={<Applicants />} path="/tasks/:theid/applicants" />
-                                <Route element={<Users />} path="/users" />
-                                <Route element={<Requesters />} path="/requesters" />
                                 <Route element={<Seekers />} path="/seekers" />
                                 <Route element={<User />} path="/users/:theusername" />
-                                <Route element={<Addresses />} path="/addresses" />
-                                <Route element={<RatingPage />} path="/ratings" />
-                                <Route element={<Postulants />} path="/postulants" />
                                 <Route element={<LoginUser />} path="/login-user" />
                                 <Route element={<SignupUser />} path="/signup-user" />
                                 <Route element={<SignupAdmin />} path="/signup-admin" />
                                 <Route element={<LoginAdmin />} path="/login-admin" />
-                                <Route element={<UserPanel />} path="/user-panel" />
                                 <Route element={<EditProfile />} path="/edit-profile" />
                                 {(store.user?.role == "requester" || store.user?.role == "both") && 
                                     <>
