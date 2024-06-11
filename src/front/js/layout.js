@@ -26,6 +26,7 @@ import { BottomNavbar } from "./component/bottombar.jsx";
 import UserTaskList from "./component/task/user_tasks_list.jsx";
 import AppliedToTaskList from "./component/task/applied_to_tasks.jsx";
 import CompletedTasksList from "./component/task/completed_tasks_list.jsx";
+import PhoneChatList from "./pages/phone_chat_list.js";
 
 
 const Layout = () => {
@@ -76,6 +77,7 @@ const Layout = () => {
                                 <Route element={<SignupAdmin />} path="/signup-admin" />
                                 <Route element={<LoginAdmin />} path="/login-admin" />
                                 <Route element={<EditProfile />} path="/edit-profile" />
+                                { smallDevice  && <Route element={<PhoneChatList />} path="/chats" />}
                                 {(store.user?.role == "requester" || store.user?.role == "both") && 
                                     <>
                                         <Route element={<UserTaskList />} path="/users/:theusername/my-tasks" />
