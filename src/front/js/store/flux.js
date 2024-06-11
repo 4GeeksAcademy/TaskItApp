@@ -822,7 +822,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 						localStorage.setItem('access_token', data.access_token);
 						setStore({ access_token: data.access_token, user: data.user, auth: true });
 						getActions().joinRoom(username, username);
-						setStore({ message: data.message || prevMessage, error: "" });
+						setStore({ message: data.message, error: "" });
 					} else setStore({ message: "", error: data.error || "An error occurred" });
                 } catch (error) {
                     console.error(error);
