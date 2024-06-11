@@ -4,6 +4,7 @@ import { Navbar, Nav, Dropdown, DropdownButton } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { Icon } from '@iconify/react';
 import "../../styles/dropdown.css"
+import ChatNotification from './notification/phone_chat_notification_badge.js';
 
 export const BottomNavbar = () => {
     const { store, actions } = useContext(Context);
@@ -55,13 +56,14 @@ export const BottomNavbar = () => {
                             className="nav-link-dropdown"
                         >
                             { store.categories.map((category) => {
-                                return <Dropdown.Item as={Link} to={`/categories/${category.name.replace(/\s+/g,"-")}`} key={category.id}> {category.name}</Dropdown.Item>
+                                return <Dropdown.Item as={Link} to={`/categories/${category.name.replace(/\s+/g,"-")}`} key={category.id + "cat"} > {category.name}</Dropdown.Item>
                             })}
                         </DropdownButton>
                     </Nav.Item>
                 }
                 <Nav.Item>
-                    <Nav.Link as={Link} to="/messages" className="nav-link d-flex flex-column align-items-center">
+                    <Nav.Link as={Link} to="/chats" className="nav-link d-flex flex-column align-items-center position-relative">
+                        <ChatNotification></ChatNotification>
                         <Icon className="fs-2" icon="mdi:message" />
                         <span className="small">Messages</span>
                     </Nav.Link>
