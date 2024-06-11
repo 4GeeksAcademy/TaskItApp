@@ -27,6 +27,7 @@ import AppliedToTaskList from "./component/task/applied_to_tasks.jsx";
 import CompletedTasksList from "./component/task/completed_tasks_list.jsx";
 import About from "./pages/about";
 import PhoneChatList from "./pages/phone_chat_list.js";
+import ProtectedRoute from "./component/protected_route.js";
 
 
 const Layout = () => {
@@ -65,9 +66,8 @@ const Layout = () => {
                                 <Route element={<Home />} path="/" />
                                 <Route element={<CategoryList />} path="/categories" />
                                 <Route element={<Category />} path="/categories/:thecategory" />
-                                <Route element={<TaskFeed />} path="/tasks" />
-                                <Route element={<Category />} path="/categories/:thecategory" />
-                                <Route element={<Task />} path="/tasks/:theid" />
+                                <Route element={<ProtectedRoute element={<TaskFeed />} />} path="/tasks" />
+                                <Route element={<ProtectedRoute element={<Task />} />} path="/tasks/:theid" />
                                 <Route element={<Applicants />} path="/tasks/:theid/applicants" />
                                 <Route element={<Seekers />} path="/seekers" />
                                 <Route element={<User />} path="/users/:theusername" />
@@ -76,17 +76,17 @@ const Layout = () => {
                                 <Route element={<LoginAdmin />} path="/login-admin" />
                                 <Route element={<About />} path="/about" />
                                 <Route element={<EditProfile />} path="/edit-profile" />
-                                { smallDevice  && <Route element={<PhoneChatList />} path="/chats" />}
-                                {(store.user?.role == "requester" || store.user?.role == "both") && 
+                                { smallDevice  && <Route element={<ProtectedRoute element={<PhoneChatList />} />} path="/chats" />}
+                                {(store.user?.role === "requester" || store.user?.role === "both") && 
                                     <>
-                                        <Route element={<UserTaskList />} path="/users/:theusername/my-tasks" />
-                                        <Route element={<CompletedTasksList role={"requester"} />} path="/users/:theusername/requested-completed-tasks" />
+                                        <Route element={<ProtectedRoute element={<UserTaskList />} roles={["requester", "both"]} />} path="/users/:theusername/my-tasks" />
+                                        <Route element={<ProtectedRoute element={<CompletedTasksList role={"requester"} />} roles={["requester", "both"]} />} path="/users/:theusername/requested-completed-tasks" />
                                     </>
                                 }
-                                {(store.user?.role == "task_seeker" || store.user?.role == "both") && 
-                                    <>	
-                                        <Route element={<AppliedToTaskList />} path="/users/:theusername/applied-to-tasks" />
-                                        <Route element={<CompletedTasksList role={"seeker"} />} path="/users/:theusername/completed-tasks" />
+                                {(store.user?.role === "task_seeker" || store.user?.role === "both") && 
+                                    <>    
+                                        <Route element={<ProtectedRoute element={<AppliedToTaskList />} roles={["task_seeker", "both"]} />} path="/users/:theusername/applied-to-tasks" />
+                                        <Route element={<ProtectedRoute element={<CompletedTasksList role={"seeker"} />} roles={["task_seeker", "both"]} />} path="/users/:theusername/completed-tasks" />
                                     </>
                                 }
                                 <Route element={<h1>Not found!</h1>} />
