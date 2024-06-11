@@ -9,25 +9,28 @@ export const WebSocketProvider = ({ children }) => {
     const { store } = useContext(Context);
 
     useEffect(() => {
-        const newSocket = io(process.env.BACKEND_URL, {
-            query: { username: store.user?.username }
-        });
-        setSocket(newSocket);
+        let newSocket = null;
+        if (store.user?.username) {
+            newSocket = io(process.env.BACKEND_URL, {
+                query: { username: store.user?.username }
+            });
+            setSocket(newSocket);
 
-        newSocket.on('connect', () => {
-            console.log('Connected to server');
-        });
+            newSocket.on('connect', () => {
+                console.log('Connected to server');
+            });
 
-        newSocket.on('disconnect', () => {
-            console.log('Disconnected from server');
-        });
+            newSocket.on('disconnect', () => {
+                console.log('Disconnected from server');
+            });
 
-        newSocket.on('error', (error) => {
-            console.error('Socket error:', error);
-        });
+            newSocket.on('error', (error) => {
+                console.error('Socket error:', error);
+            });
+        }
 
         return () => {
-            newSocket.disconnect();
+            if(newSocket) newSocket.disconnect();
         };
     }, [store.user?.username]);
 
