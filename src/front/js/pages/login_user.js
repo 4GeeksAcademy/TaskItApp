@@ -63,6 +63,11 @@ const LoginUser = () => {
                     <div className="text-center">
                         <span>Need an account? <Link to="/signup"><b>Sing Up</b></Link></span>
                     </div>
+                    <div className="text-center mt-3">
+                        <Link to="/">
+                            <span className="btn btn-clear-green fw-normal">Back to Home</span>
+                        </Link>
+                    </div>
                 </form>
             </div>
         </div>

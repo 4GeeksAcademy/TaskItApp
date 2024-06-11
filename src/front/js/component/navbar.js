@@ -34,7 +34,7 @@ export const Navbar = () => {
 
     return (
         <>
-            { (path != "/signup" && path != "/login") &&
+            { (path != "/signup" && path != "/login" && path != "/login-admin") &&
                 <nav className="navbar navbar-expand-lg navbar-light bg-light py-5 px-3 sticky-top">
                     <div className="container-fluid">
                         <Link to="/" className="navbar-brand">
