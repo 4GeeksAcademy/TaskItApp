@@ -3,6 +3,10 @@ a {
     text-decoration: none;
 }
 
+.nav-link {
+    transition: all 0.3s ease;
+}
+
 .nav-link:hover{
     font-weight: bold;
     color:var(--green) !important;

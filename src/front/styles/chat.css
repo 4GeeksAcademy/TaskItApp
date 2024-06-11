@@ -3,7 +3,7 @@
 .card-messaging {
     border: 0 !important;
     overflow: hidden;
-    box-shadow: -3px 3px 15px rgb(170, 170, 170);
+    box-shadow: -3px 3px 15px rgba(0, 0, 0, 0.3);
     border-radius: 0.5rem;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
