@@ -690,9 +690,7 @@ def delete_rating(rating_id):
 @api.route('/postulants', methods=['GET'])
 def get_postulants():
     all_postulants = Postulant.query.all()
-    print(all_postulants)
     results = list(map(lambda postulant: postulant.serialize(), all_postulants))
-    print(results)
 
 
     return jsonify(results), 200
