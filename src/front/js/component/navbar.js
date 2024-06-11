@@ -11,70 +11,76 @@ import SettingsUser from './user/user_settings.js';
 export const Navbar = () => {
     const { store } = useContext(Context);
     const [show, setShow] = useState(false);
-    const [dropdownVisible, setDropdownVisible] = useState(false); 
-    const [notificationsVisible, setNotificationsVisible] = useState(false); 
+    const [dropdownVisible, setDropdownVisible] = useState(false);
+    const [notificationsVisible, setNotificationsVisible] = useState(false);
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
-    const toggleDropdown = () => setDropdownVisible(!dropdownVisible); 
-    const toggleNotificationsDropdown = () => { if(store.notifications.length > 0) setNotificationsVisible(!notificationsVisible); }
+    const toggleDropdown = () => setDropdownVisible(!dropdownVisible);
+    const toggleNotificationsDropdown = () => {
+        if (store.notifications.length > 0) setNotificationsVisible(!notificationsVisible);
+    };
 
-	const scrollToSection = (id) => {
-		const element = document.getElementById(id);
-		if (element) {
-			element.scrollIntoView({ behavior: 'smooth' });
-		}
-	};
+    const scrollToSection = (id) => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
 
     return (
-        <nav className="navbar navbar-light bg-white py-5 px-3 sticky-top">
-			<div className="container-fluid">
-				<div className="d-flex align-items-center">
-					<Link to="/">
-						<span className="navbar-brand mb-0 h1">Task It App</span>
-					</Link>
-				</div>
-				{ !store.auth
-				? <div className="ml-auto d-flex me-2">
-					<ul className="nav">
-						<li className="nav-item">
-							<Link className="nav-link text-dark smooth" to="/#features" onClick={() => scrollToSection('features')} >
-								Features
-							</Link>
-						</li>
-						<li className="nav-item">
-							<Link className="nav-link text-dark smooth" to="/#how-it-works"  onClick={() => scrollToSection('how-it-works')} >
-								How it Works
-							</Link>
-						</li>
-						<li className="nav-item">
-							<Link className="nav-link text-dark smooth" to="/about">
-								About
-							</Link>
-						</li>
-						<li className="nav-item">
-							<Link className="nav-link text-dark smooth" to="/login-user">
-								Sign In
-							</Link>
-						</li>
-						<li className="nav-item">
-							<Link to="/signup-user">
-								<button className="btn btn-dark smooth">Get Started</button>
-							</Link>
-						</li>
-					</ul>
-				</div>
-				: <div className="ml-auto">
-					<ul className="nav d-flex align-items-center">
-						{ (store.user.role == "both" || store.user.role == "requester") &&
-							<li className="nav-item">
-								<button className="btn btn-dark smooth" onClick={handleShow}>Post Task</button>	
-							</li>
-						}
-						    <li className="nav-item d-flex align-items-center fs-2 mx-2 position-relative">
-                                <Icon className="smooth" icon="mdi:bell-outline"  onClick={toggleNotificationsDropdown} />
-								<Notification className="smooth"></Notification>
-								<NotificationDropdown  dropdownVisible={notificationsVisible} setDropdownVisible={setNotificationsVisible} ></NotificationDropdown>
+        <nav className="navbar navbar-expand-lg navbar-light bg-white py-5 px-3 sticky-top">
+            <div className="container-fluid">
+                <Link to="/" className="navbar-brand">
+                    <span className="navbar-brand mb-0 h1">Task It App</span>
+                </Link>
+                {!store.auth ? (
+                    <>
+                        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                            <span className="navbar-toggler-icon"></span>
+                        </button>
+                        <div className="collapse navbar-collapse" id="navbarNav">
+                            <ul className="navbar-nav ms-auto">
+                                <li className="nav-item">
+                                    <Link className="nav-link text-dark smooth" to="/#features" onClick={() => scrollToSection('features')}>
+                                        Features
+                                    </Link>
+                                </li>
+                                <li className="nav-item">
+                                    <Link className="nav-link text-dark smooth" to="/#how-it-works" onClick={() => scrollToSection('how-it-works')}>
+                                        How it Works
+                                    </Link>
+                                </li>
+                                <li className="nav-item">
+                                    <Link className="nav-link text-dark smooth" to="/about">
+                                        About
+                                    </Link>
+                                </li>
+                                <li className="nav-item">
+                                    <Link className="nav-link text-dark smooth" to="/login-user">
+                                        Sign In
+                                    </Link>
+                                </li>
+                                <li className="nav-item">
+                                    <Link to="/signup-user">
+                                        <button className="btn btn-dark smooth">Get Started</button>
+                                    </Link>
+                                </li>
+                            </ul>
+                        </div>
+                    </>
+                ) : (
+                    <div className="ml-auto d-flex align-items-center">
+                        <ul className="nav">
+                            {(store.user.role === "both" || store.user.role === "requester") && (
+                                <li className="nav-item">
+                                    <button className="btn btn-dark smooth" onClick={handleShow}>Post Task</button>
+                                </li>
+                            )}
+                            <li className="nav-item d-flex align-items-center fs-2 mx-2 position-relative">
+                                <Icon className="smooth" icon="mdi:bell-outline" onClick={toggleNotificationsDropdown} />
+                                <Notification className="smooth" />
+                                <NotificationDropdown dropdownVisible={notificationsVisible} setDropdownVisible={setNotificationsVisible} />
                             </li>
                             <li className="position-relative">
                                 <div
@@ -82,22 +88,23 @@ export const Navbar = () => {
                                     style={{ width: "3rem", height: "3rem" }}
                                     onClick={toggleDropdown}
                                 >
-                                    { store.user.profile_picture && <img
-                                        className="img-fluid"
-                                        src={store.user.profile_picture}
-                                        alt="User Profile"
-                                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                                    />}
+                                    {store.user.profile_picture && (
+                                        <img
+                                            className="img-fluid"
+                                            src={store.user.profile_picture}
+                                            alt="User Profile"
+                                            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                        />
+                                    )}
                                 </div>
                                 <SettingsUser dropdownVisible={dropdownVisible} setDropdownVisible={setDropdownVisible} />
                             </li>
-					</ul>
-				</div>
-				}
-			</div>
+                        </ul>
+                    </div>
+                )}
+            </div>
 
-			<TaskForm show={show} handleClose={handleClose}></TaskForm>
-		</nav>
+            <TaskForm show={show} handleClose={handleClose} />
+        </nav>
     );
 };
-

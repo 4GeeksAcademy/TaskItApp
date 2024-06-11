@@ -11,48 +11,46 @@ const LoginAdmin = () => {
     function handleLogin(e) {
         e.preventDefault();
         actions.loginAdmin(email, password).then(() => {
-            if (store.auth) {
-                navigate("/categories"); // Redirigir a la página de categorías si está autenticado
-            }
-        }).catch(error => {
-            console.error("Login failed: ", error.message);
+            navigate("/categories"); // Redirigir a un dashboard de administrador, por ejemplo
         });
     }
 
     return (
-        <div className="d-flex flex-column align-items-center justify-content-center vh-100">
-            <form className="w-50 mx-auto" onSubmit={handleLogin} style={{ maxWidth: '400px' }}>
-                <div className="mb-3">
-                    <label htmlFor="exampleInputEmail" className="form-label">Email address</label>
-                    <input 
-                        value={email} 
-                        onChange={(e) => setEmail(e.target.value)} 
-                        type="email" 
-                        className="form-control" 
-                        id="exampleInputEmail" 
-                        placeholder="Enter email"
-                        required
-                    />
+        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "50vh" }}>
+            <div className="card p-4" style={{ maxWidth: "400px", width: "100%" }}>
+                <form onSubmit={handleLogin}>
+                    <div className="mb-3">
+                        <label htmlFor="exampleInputEmail" className="form-label">Email address</label>
+                        <input 
+                            value={email} 
+                            onChange={(e) => setEmail(e.target.value)} 
+                            type="email" 
+                            className="form-control" 
+                            id="exampleInputEmail" 
+                            placeholder="Enter email"
+                            required
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="exampleInputPassword" className="form-label">Password</label>
+                        <input 
+                            value={password} 
+                            onChange={(e) => setPassword(e.target.value)} 
+                            type="password" 
+                            className="form-control mb-3" 
+                            id="exampleInputPassword" 
+                            placeholder="Enter password"
+                            required
+                        />
+                    </div>
+                    <button type="submit" className="btn btn-dark w-100 mb-3">Login</button>
+                </form>
+                <div className="text-center mt-3">
+                    <Link to="/">
+                        <span className="btn btn-link">Back to Home</span>
+                    </Link>
                 </div>
-                <div className="mb-3">
-                    <label htmlFor="exampleInputPassword" className="form-label">Password</label>
-                    <input 
-                        value={password} 
-                        onChange={(e) => setPassword(e.target.value)} 
-                        type="password" 
-                        className="form-control mb-3" 
-                        id="exampleInputPassword" 
-                        placeholder="Enter password"
-                        required
-                    />
-                </div>
-                {store.login_error && <div className="alert alert-danger">{store.login_error}</div>}
-                <button type="submit" className="btn btn-success w-100">Login</button>
-            </form>
-            <br />
-            <Link to="/">
-                <button className="btn btn-primary mt-3">Back to Home</button>
-            </Link>
+            </div>
         </div>
     );
 }

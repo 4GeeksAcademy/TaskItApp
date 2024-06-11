@@ -19,13 +19,13 @@ import { SidebarComponent } from "./component/sidebar.js";
 import { Applicants } from "./pages/applicants.js";
 import EditProfile from "./pages/edit_profile";
 import ChatList from "./component/chat/chat_list.jsx";
-import SignupAdmin from "./pages/SignupAdmin";
 import LoginAdmin from "./pages/LoginAdmin";
 import useScreenWidth from './hooks/useScreenWidth.jsx';
 import { BottomNavbar } from "./component/bottombar.jsx";
 import UserTaskList from "./component/task/user_tasks_list.jsx";
 import AppliedToTaskList from "./component/task/applied_to_tasks.jsx";
 import CompletedTasksList from "./component/task/completed_tasks_list.jsx";
+import About from "./pages/about";
 import PhoneChatList from "./pages/phone_chat_list.js";
 
 
@@ -74,8 +74,8 @@ const Layout = () => {
                                 <Route element={<User />} path="/users/:theusername" />
                                 <Route element={<LoginUser />} path="/login-user" />
                                 <Route element={<SignupUser />} path="/signup-user" />
-                                <Route element={<SignupAdmin />} path="/signup-admin" />
                                 <Route element={<LoginAdmin />} path="/login-admin" />
+                                <Route element={<About />} path="/about" />
                                 <Route element={<EditProfile />} path="/edit-profile" />
                                 { smallDevice  && <Route element={<PhoneChatList />} path="/chats" />}
                                 {(store.user?.role == "requester" || store.user?.role == "both") && 
