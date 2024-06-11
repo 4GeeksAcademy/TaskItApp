@@ -18,7 +18,7 @@ const SettingsUser = ({ dropdownVisible, setDropdownVisible }) => {
 
     const handleLogout = () => {
         actions.logout();
-        navigate("/login-user");
+        navigate("/");
     };
 
     useEffect(() => {

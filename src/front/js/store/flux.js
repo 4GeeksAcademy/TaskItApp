@@ -33,12 +33,11 @@ const getState = ({ getStore, getActions, setStore }) => {
 			ratings: [],
 			auth: false,
 			access_token: "",
-			login_error: "",
-			signup_error: "",
 			valid_token: false,
 			socket: io(process.env.BACKEND_URL),
 			notifications: [],
 			chats: [],
+			login_error: '',
 			access_token: localStorage.getItem('access_token') || "",
 			seekerCompletedTasks: [],
 			requesterCompletedTasks: []
@@ -818,14 +817,13 @@ const getState = ({ getStore, getActions, setStore }) => {
 
                 try {
                     const response = await fetch(process.env.BACKEND_URL + "/api/login", config);
-                    if (!response.ok) {
-                        const error = await response.json();
-                        throw new Error(error.error);
-                    }
-                    const data = await response.json();
-                    localStorage.setItem('access_token', data.access_token);
-                    setStore({ access_token: data.access_token, user: data.user, auth: true });
-                    getActions().joinRoom(username, username);
+					const data = await response.json();
+					if (response.ok) {
+						localStorage.setItem('access_token', data.access_token);
+						setStore({ access_token: data.access_token, user: data.user, auth: true });
+						getActions().joinRoom(username, username);
+						setStore({ message: data.message || prevMessage, error: "" });
+					} else setStore({ message: "", error: data.error || "An error occurred" });
                 } catch (error) {
                     console.error(error);
                 }

@@ -1,17 +1,87 @@
-/* 
-    General Styles used on every website (Don't Repeat Yourself)
-*/
+@import url(variables.css);
+
+a {
+    color: var(--orange);
+}
+
+a:hover {
+    color: var(--orange);
+}
 
 .card {
     border: 0 !important;
     overflow: hidden;
-    box-shadow: -3px 3px 15px rgb(230, 230, 230);
-}
-
-.mt-6 {
-    margin-top: 10rem;
+    box-shadow: -3px 3px 15px rgb(216, 216, 216);
 }
 
 .css-dip3t8 {
     background-color: white !important;
+}
+
+.btn-clear-green {
+    border: 2px solid var(--green);
+    font-weight: 900;
+    color: var(--green);
+    transition: all 0.2s ease;
+    background-color: transparent;
+}
+
+.btn-clear-green:hover {
+    border: 2px solid var(--green);
+    background-color: var(--green);
+    font-weight: 900;
+    color: var(--dark);
+}
+
+.btn-green {
+    color: white;
+    transition: all 0.2s ease;
+    background-color: var(--green);
+}
+
+.btn-green:hover {
+    background-color: rgb(139, 160, 128);
+    color: white;
+}
+
+.btn-clear-orange {
+    border: 2px solid var(--orange);
+    font-weight: 900;
+    color: var(--orange);
+    transition: all 0.2s ease;
+    background-color: transparent;
+}
+
+.btn-clear-orange:hover {
+    border: 2px solid var(--orange);
+    background-color: var(--orange);
+    font-weight: 900;
+    color: var(--dark);
+}
+
+.btn-clear-yellow {
+    border: 2px solid var(--yellow);
+    font-weight: 900;
+    color: var(--yellow);
+    transition: all 0.2s ease;
+    background-color: transparent;
+}
+
+.btn-clear-yellow:hover {
+    border: 2px solid var(--yellow);
+    background-color: var(--yellow);
+    font-weight: 900;
+    color: var(--dark);
+}
+
+.text-orange {
+    color: var(--orange);
+}
+
+.text-yellow {
+    color: var(--yellow);
+}
+
+.text-green {
+    color: var(--green);
 }
