@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import "../../styles/chat.css";
 import { useWebSocket } from '../store/webSocketContext';
 import { useNavigate } from "react-router-dom";
+import { Context } from "../store/appContext";
 
 const PhoneChatList = () => {
     const socket = useWebSocket();
