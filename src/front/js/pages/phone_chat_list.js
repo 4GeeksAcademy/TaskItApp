@@ -1,15 +1,14 @@
 import React, { useContext, useEffect, useState } from "react";
-import "../../styles/chat.css"
-import { Context } from "../store/appContext";
+import "../../styles/chat.css";
+import { useWebSocket } from '../store/webSocketContext';
 import { useNavigate } from "react-router-dom";
 
 const PhoneChatList = () => {
+    const socket = useWebSocket();
     const { store, actions } = useContext(Context);
-
     const [unseenMessages, setUnseenMessages] = useState({});
     const [onlineUsers, setOnlineUsers] = useState([]);
-
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchChatsAndUnseenMessages = async () => {
@@ -18,7 +17,7 @@ const PhoneChatList = () => {
             for (const chat of store.chats) {
                 const hasUnseenMessages = await checkUnseenMessages(store.user.id, chat.id);
                 unseenMessagesStatus[chat.room_name] = hasUnseenMessages;
-                console.log(hasUnseenMessages)
+                console.log(hasUnseenMessages);
             }
             setUnseenMessages(unseenMessagesStatus);
         };
@@ -26,25 +25,27 @@ const PhoneChatList = () => {
     }, [store.user]);
 
     useEffect(() => {
-        store.socket.on('new_chat', () => {
+        if (!socket) return;
+
+        socket.on('new_chat', () => {
             actions.getChats();
         });
 
-        store.socket.on('unseen_message', (data) => {
+        socket.on('unseen_message', (data) => {
             setUnseenMessages(prev => ({ ...prev, [data.room]: true }));
-            console.log(data)
+            console.log(data);
         });
 
-        store.socket.on('online_users', (data) => {
+        socket.on('online_users', (data) => {
             setOnlineUsers(data.users);
         });
 
         return () => {
-            store.socket.off('new_chat');
-            store.socket.off('unseen_message');
-            store.socket.off('online_users');
+            socket.off('new_chat');
+            socket.off('unseen_message');
+            socket.off('online_users');
         };
-    }, [store.socket]);
+    }, [socket]);
 
     const isUserOnline = (chat) => {
         const otherUser = chat.requester_user.id === store.user.id ? chat.seeker_user.username : chat.requester_user.username;

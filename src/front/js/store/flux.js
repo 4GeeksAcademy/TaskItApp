@@ -1,5 +1,3 @@
-import { io } from "socket.io-client";
-
 const getState = ({ getStore, getActions, setStore }) => {	
     const fetchHelper = async (url, config = {}, successCallback) => {
 		try {
@@ -34,7 +32,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 			auth: false,
 			access_token: "",
 			valid_token: false,
-			socket: io(process.env.BACKEND_URL),
 			notifications: [],
 			chats: [],
 			login_error: '',
@@ -45,8 +42,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 		actions: {
 			resetMessages: () => { setStore({ message: "", error: "" }) },
 			setError: (error) => { setStore({ message: "", error: error }) },
-			joinRoom: (room, username) => { getStore().socket.emit('join', { room: room, username: username }) },
-			leaveRoom: (room, username) => { getStore().socket.emit('leave', { room: room, username: username }) },
 			timeAgo: (isoTime) => {
 				const now = new Date();
 				const time = new Date(isoTime);
@@ -821,7 +816,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 					if (response.ok) {
 						localStorage.setItem('access_token', data.access_token);
 						setStore({ access_token: data.access_token, user: data.user, auth: true });
-						getActions().joinRoom(username, username);
 						setStore({ message: data.message, error: "" });
 					} else setStore({ message: "", error: data.error || "An error occurred" });
                 } catch (error) {
@@ -830,7 +824,6 @@ const getState = ({ getStore, getActions, setStore }) => {
             },
 
             logout: () => {
-                getActions().leaveRoom(getStore().user.username, getStore().user.username);
                 localStorage.removeItem('access_token');
                 setStore({ access_token: "", user: null, auth: false });
             },

@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react';
 import Message from './message.jsx';
 import { Context } from "../../store/appContext.js"
-import { Card, Form, Button } from 'react-bootstrap';
+import { Card, Form, Button, Spinner } from 'react-bootstrap';
+import { useWebSocket } from '../../store/webSocketContext.js';
 
 const Chat = (props) => {
     const { store } = useContext(Context);
+    const socket = useWebSocket();
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState('');
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchMessages = async () => {
@@ -14,23 +17,28 @@ const Chat = (props) => {
                 const response = await fetch(process.env.BACKEND_URL + `/api/chats/${props.chat.id}/messages`);
                 const data = await response.json();
                 setMessages(data);
+                setLoading(false);
                 scrollToBottom();
             } catch (error) {
                 console.error(error);
             }
         };
 
+        setLoading(true);
         fetchMessages();
 
-        store.socket.on('message', (message) => {
+        if (!socket) return;
+
+        socket.on('message', (message) => {
             setMessages((prevMessages) => [...prevMessages, message]);
             scrollToBottom();
         });
 
         return () => {
-            store.socket.off('message');
+            socket.off('message');
         };
-    }, [props.chat]);
+    }, [props.chat, socket]);
+
 
     const scrollToBottom = () => {
         const chatContainer = document.querySelector('.chat-content');
@@ -40,7 +48,7 @@ const Chat = (props) => {
     const sendMessage = (e) => {
         e.preventDefault();
         if (message) {
-            store.socket.emit('message', { username: store.user.username, message, room: props.chat.room_name });
+            socket.emit('message', { username: store.user.username, message, room: props.chat.room_name });
 
             const config = {
                 method: "POST",
@@ -59,7 +67,7 @@ const Chat = (props) => {
     };
 
     function markMessageAsSeen(message_id) {
-        if(message_id) store.socket.emit('mark_message_as_seen', { message_id: message_id, user_id: store.user.id });
+        if(message_id) socket.emit('mark_message_as_seen', { message_id: message_id, user_id: store.user.id });
     }
 
     return (
@@ -75,7 +83,9 @@ const Chat = (props) => {
             </Card.Header>
 
             <Card.Body className="chat-content container-fluid d-flex flex-column">
-                {messages.map((msg, index) => (
+                { loading 
+                    ? <Spinner animation="border" variant="dark" />
+                    : (messages.map((msg, index) => (
                     msg.room_name === props.chat.room_name && (
                         <Message
                             key={index + 'msg'}
@@ -83,7 +93,7 @@ const Chat = (props) => {
                             markMessageAsSeen={markMessageAsSeen}
                         />
                     )
-                ))}
+                )))}
             </Card.Body>
             <Card.Footer>
                 <Form className="d-flex p-1" onSubmit={sendMessage}>

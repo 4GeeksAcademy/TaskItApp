@@ -1,15 +1,16 @@
 import React, { useContext, useEffect, useState } from "react";
-import "../../../styles/chat.css"
+import "../../../styles/chat.css";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Context } from "../../store/appContext";
 import Chat from "./chat.jsx";
+import { useWebSocket } from "../../store/webSocketContext";
 
 const ChatList = () => {
     const { store, actions } = useContext(Context);
-
+    const socket = useWebSocket();
     const [listOpen, setListOpen] = useState(false);
     const [chatOpen, setChatOpen] = useState(false);
-    const [currentChat, setChat] =useState({});
+    const [currentChat, setChat] = useState({});
     const [unseenMessages, setUnseenMessages] = useState({});
     const [onlineUsers, setOnlineUsers] = useState([]);
 
@@ -24,38 +25,33 @@ const ChatList = () => {
             setUnseenMessages(unseenMessagesStatus);
         };
         fetchChatsAndUnseenMessages();
-    }, []);
-
-    useEffect(() => {
-        store.socket.on('new_chat', () => {
-            actions.getChats();
-        });
-
-        store.socket.on('unseen_message', (data) => {
-            setUnseenMessages(prev => ({ ...prev, [data.room]: true }));
-        });
-
-        store.socket.on('online_users', (data) => {
-            setOnlineUsers(data.users);
-        });
-
-
-        return () => {
-            store.socket.off('new_chat');
-            store.socket.off('unseen_message');
-            store.socket.off('online_users');
-        };
-    }, [store.socket]);
-
-    useEffect(() => {
-        if (Object.keys(store.user).length > 0) {
-            actions.getChats();
-        }
     }, [store.user]);
 
     useEffect(() => {
+        if (!socket) return;
+
+        socket.on('new_chat', () => {
+            actions.getChats();
+        });
+
+        socket.on('unseen_message', (data) => {
+            setUnseenMessages(prev => ({ ...prev, [data.room]: true }));
+        });
+
+        socket.on('online_users', (data) => {
+            setOnlineUsers(data.users);
+        });
+
+        return () => {
+            socket.off('new_chat');
+            socket.off('unseen_message');
+            socket.off('online_users');
+        };
+    }, [socket, actions]);
+
+    useEffect(() => {
         for(let chat of store.chats) {
-            store.socket.emit('join', { username: store.user.username, room: chat.room_name })
+           socket.emit('join', { username: store.user.username, room: chat.room_name })
         }
     }, [store.chats]);
 

@@ -1,50 +1,25 @@
-import React, { useContext, useEffect, useState } from 'react';
-import io from 'socket.io-client';
+import React, { useContext, useEffect } from 'react';
+import { useWebSocket } from '../../store/webSocketContext';
 import { Context } from '../../store/appContext';
 
 const Notification = () => {
-    const [socket, setSocket] = useState(null);
+    const socket = useWebSocket();
     const { store, actions } = useContext(Context);
 
     useEffect(() => {
-        const newSocket = io(process.env.BACKEND_URL, { query: { username: store.user.username } });
-        setSocket(newSocket);
+        if (!socket || !store.user.username) return;
 
-        return () => {
-            if (newSocket) {
-                newSocket.disconnect();
-            }
-        };
-    }, []);
-
-    useEffect(() => {
-        if (!socket || Object.keys(store.user).length <= 0) return;
-
-        socket.on('connect', () => {
-            console.log('Connected to server'); 
-            socket.emit('join', { room: store.user.username, username: store.user.username });
-        });
+        socket.emit('join', { room: store.user.username, username: store.user.username });
 
         socket.on('notification', () => {
             actions.getNotifications();
             actions.getChats();
         });
 
-        socket.on('disconnect', () => {
-            console.log('Disconnected from server');
-        });
-
-        socket.on('error', (error) => {
-            console.error('Socket error:', error);
-        });
-
         return () => {
-            socket.off('connect');
             socket.off('notification');
-            socket.off('disconnect');
-            socket.off('error');
         };
-    }, [socket, store.user]);
+    }, [socket, store.user, actions]);
 
     return (
         <div>
@@ -55,6 +30,6 @@ const Notification = () => {
             )}
         </div>
     );
-}
+};
 
 export default Notification;

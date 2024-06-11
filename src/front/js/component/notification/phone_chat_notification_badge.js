@@ -1,9 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { useWebSocket } from '../../store/webSocketContext';
 import { Context } from '../../store/appContext';
 
 const ChatNotification = () => {
+    const socket = useWebSocket();
     const { store, actions } = useContext(Context);
-
     const [unseenMessages, setUnseenMessages] = useState({});
 
     useEffect(() => {
@@ -17,39 +18,43 @@ const ChatNotification = () => {
             setUnseenMessages(unseenMessagesStatus);
         };
         fetchChatsAndUnseenMessages();
-    }, []);
+    }, [actions, store.user]);
 
     useEffect(() => {
-        store.socket.on('unseen_message', (data) => {
+        if (!socket) return;
+
+        socket.on('unseen_message', (data) => {
             setUnseenMessages(prev => ({ ...prev, [data.room]: true }));
         });
-        
-        store.socket.on('new_chat', () => {
+
+        socket.on('new_chat', () => {
             actions.getChats();
         });
 
         return () => {
-            store.socket.off('unseen_message');
-            store.socket.off('new_chat');
+            socket.off('unseen_message');
+            socket.off('new_chat');
         };
-    }, [store.socket]);
+    }, [socket, actions]);
 
     useEffect(() => {
-        for(let chat of store.chats) {
-            store.socket.emit('join', { username: store.user.username, room: chat.room_name })
+        if (!socket || !store.chats.length) return;
+
+        for (let chat of store.chats) {
+            socket.emit('join', { username: store.user.username, room: chat.room_name });
         }
-    }, [store.chats]);
+    }, [socket, store.chats, store.user.username]);
 
     const checkUnseenMessages = async (userId, chatId) => {
         try {
-            const res = await fetch(`${process.env.BACKEND_URL}/api/users/${userId}/chats/${chatId}`, {});
+            const res = await fetch(`${process.env.BACKEND_URL}/api/users/${userId}/chats/${chatId}`);
             const data = await res.json();
             return data.has_unseen_messages;
         } catch (error) {
             console.error("Error checking unseen messages:", error);
             return false;
         }
-    }
+    };
 
     return (
         <div>
@@ -60,6 +65,6 @@ const ChatNotification = () => {
             }
         </div>
     );
-}
+};
 
 export default ChatNotification;
