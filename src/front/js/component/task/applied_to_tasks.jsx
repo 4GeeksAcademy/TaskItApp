@@ -21,7 +21,7 @@ const AppliedToTaskList = () => {
     
 
     return (
-        <div className="container-fluid px-5">
+        <div className="container-fluid px-5 bg-light">
             <h3>Applied to tasks</h3>
             <div className="row">
                 { tasks.length == 0 

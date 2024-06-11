@@ -54,7 +54,7 @@ const Layout = () => {
         <div>
             <BrowserRouter basename={basename}>
                 <ScrollToTop>
-                    <div className="d-flex container-fluid m-0 p-0">
+                    <div className="d-flex container-fluid m-0 p-0 bg-light">
                         { store.auth &&  ( smallDevice 
                             ? <BottomNavbar></BottomNavbar>
                             :  <SidebarComponent></SidebarComponent>

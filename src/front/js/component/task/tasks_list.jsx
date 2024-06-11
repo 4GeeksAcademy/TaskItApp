@@ -8,7 +8,7 @@ const TaskList = () => {
     useEffect(() => actions.getTasks(), []);
 
     return (
-        <div className="container-fluid px-5">
+        <div className="container-fluid px-5 bg-light">
             <div className="row">
                 {store.tasks.slice().reverse().map((task) => {
                     return (
