@@ -1,15 +1,18 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import "../../styles/custom-footer.css";
 import { useLocation } from "react-router-dom";
+import { Context } from "../store/appContext";
+import { Link } from "react-router-dom";
 
 export const Footer = () => {
     const path = useLocation().pathname;
+	const { store } = useContext(Context);
 
 	return ( 
 		<>
 			{ (path != "/signup" && path != "/login") &&
-				<div className="mt-5">
+				<div className={ store.auth ? "pt-5 bg-light" : "mt-5"}>
 					<footer className="footer footer-bg mt-auto py-3 text-center custom-footer text-white py-5">
 						
 						<div className="container py-5">
@@ -47,11 +50,15 @@ export const Footer = () => {
 									</ul>
 								</div>
 							</div>
-						<hr></hr>
-						<div className="d-flex">
-							<h3 className="text-yellow me-4">Are you an admin?</h3>
-							<button className="btn btn-clear-yellow px-3">Log In</button>
-						</div>
+						{ !store.auth &&
+							<>
+								<hr></hr>
+								<div className="d-flex">
+									<h3 className="text-yellow me-4">Are you an admin?</h3>
+									<Link className="btn btn-clear-yellow px-3" to="/login-admin"><b>Log In</b></Link>
+								</div>
+							</>
+						}
 					</div>
 				</footer>
 			</div>}
