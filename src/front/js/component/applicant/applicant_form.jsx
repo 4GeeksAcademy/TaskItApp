@@ -47,8 +47,8 @@ const ApplicantForm = (props) => {
                 </form>
             </Modal.Body>
             <Modal.Footer>
-                <button type="button" className="btn btn-secondary" onClick={props.handleClose}>Close</button>
-                <button type="submit" form="applicant-form" className="btn btn-primary" onClick={(event) => handleSubmit(event)}>Apply</button>
+                <button type="button" className="btn btn-orange" onClick={props.handleClose}>Close</button>
+                <button type="submit" form="applicant-form" className="btn btn-clear-green" onClick={(event) => handleSubmit(event)}>Apply</button>
             </Modal.Footer>
         </Modal>
     );

@@ -42,7 +42,7 @@ const AppliedToTask = ({ taskInfo }) => {
                 <div className="d-flex align-items-end justify-content-between">
                     <span><b>Status: </b>{applicantInfo.status}</span>
                     <Link to={`/tasks/${taskInfo.id}`}>
-                        <button className="btn btn-dark smooth">See Details</button>
+                        <button className="btn btn-green smooth">See Details</button>
                     </Link>
                 </div>
             </div>

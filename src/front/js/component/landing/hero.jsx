@@ -11,7 +11,7 @@ const Hero = () => {
                         <h1 className="fs-0 text-white">Task It App</h1>
                         <p className="fs-text text-white">Your All-in-One Errand Solution. Connect with ease: Whether you're seeking help or offering services, our platform streamlines the process. Choose from 10 categories, set rates, and find tasks or helpers effortlessly. Simplify your life today with Task It App.</p>
                         <Link to="/signup">
-							<button className="rounded btn-clear-yellow fs-5 px-5 py-1">Sign Up</button>
+							<button className="btn-clear-yellow fs-5 px-5 py-1">Sign Up</button>
 						</Link>
                     </div>
                 </div>

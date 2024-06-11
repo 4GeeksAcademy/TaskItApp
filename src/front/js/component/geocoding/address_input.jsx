@@ -67,7 +67,7 @@ const AddressInput = (props) => {
                 
                 <div className="input-group">
                     <input type="text" className="form-control" placeholder="Enter your address" aria-label="address" id='address' aria-describedby="basic-addon1" value={props.value} onChange={handleChange} />
-                    <button className="btn btn-secondary" onClick={saveAddress}>Save</button>
+                    <button className="btn btn-clear-green rounded" onClick={saveAddress}>Save</button>
                 </div>
             </div>
 

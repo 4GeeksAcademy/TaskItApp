@@ -83,16 +83,16 @@ const Seeker = ({ seekerInfo, applicantInfo, applicants }) => {
                 }
                 { applicantInfo ?  
                     <div className="d-flex justify-content-between">
-                        <button className="btn btn-success smooth" onClick={acceptSeeker}>Accept</button>
-                        <button className="btn btn-danger smooth" onClick={() => actions.changePostulantStatus(applicantInfo.id, "rejected")}>Reject</button>
+                        <button className="btn btn-green smooth" onClick={acceptSeeker}>Accept</button>
+                        <button className="btn btn-orange smooth" onClick={() => actions.changePostulantStatus(applicantInfo.id, "rejected")}>Reject</button>
                         <Link to={`/users/${seekerInfo.user.username}`}>
-                            <button className="btn btn-dark smooth">View</button>
+                            <button className="btn btn-green smooth">View</button>
                         </Link>
                     </div>
                     :
                     <div className="d-flex justify-content-between">
                         <Link to={`/users/${seekerInfo.user.username}`}>
-                            <button className="btn btn-dark smooth">See Details</button>
+                            <button className="btn btn-clear-green smooth">See Details</button>
                         </Link>
                     </div>
                 }

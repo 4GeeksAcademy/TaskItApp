@@ -120,7 +120,7 @@ const ProfileSetup = () => {
                                 </div>
 
                                 <div className="form-group text-center">
-                                    <button type="submit" className="btn btn-dark smooth">Save Profile</button>
+                                    <button type="submit" className="btn btn-green smooth">Save Profile</button>
                                 </div>
                             </form>
                         </div>

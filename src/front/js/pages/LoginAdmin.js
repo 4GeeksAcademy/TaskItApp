@@ -43,7 +43,7 @@ const LoginAdmin = () => {
                             required
                         />
                     </div>
-                    <button type="submit" className="btn btn-dark w-100 mb-3">Login</button>
+                    <button type="submit" className="btn btn-green w-100 mb-3">Log In</button>
                 </form>
                 <div className="text-center mt-3">
                     <Link to="/">
