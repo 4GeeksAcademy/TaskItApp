@@ -33,7 +33,7 @@ const Features = () => {
                         <Feature 
                             src={review}
                             feature={"Build Trust with Ratings and Reviews"}
-                            description={"Trust is essential in our community. Both Solicitors and task seekers can rate and review each other after task completion, ensuring transparency and accountability every step of the way."}
+                            description={"Trust is essential in our community. Both requesters and task seekers can rate and review each other after task completion, ensuring transparency and accountability every step of the way."}
                         />
                         <Feature 
                             src={diverse}

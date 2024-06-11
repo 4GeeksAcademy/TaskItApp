@@ -1,5 +1,5 @@
 import React, { useEffect, useContext } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import ScrollToTop from "./component/scrollToTop";
 import { BackendURL } from "./component/backendURL";
 import { Home } from "./pages/home";
@@ -25,13 +25,14 @@ import { BottomNavbar } from "./component/bottombar.jsx";
 import UserTaskList from "./component/task/user_tasks_list.jsx";
 import AppliedToTaskList from "./component/task/applied_to_tasks.jsx";
 import CompletedTasksList from "./component/task/completed_tasks_list.jsx";
-import About from "./pages/about"
+import About from "./pages/about";
+import PhoneChatList from "./pages/phone_chat_list.js";
+
 
 const Layout = () => {
     const basename = process.env.BASENAME || "";
     const { store, actions } = useContext(Context);
     const smallDevice = useScreenWidth();
-
 
     useEffect(() => {
         // Verifica el token almacenado cuando la aplicación se carga
@@ -70,11 +71,12 @@ const Layout = () => {
                                 <Route element={<Applicants />} path="/tasks/:theid/applicants" />
                                 <Route element={<Seekers />} path="/seekers" />
                                 <Route element={<User />} path="/users/:theusername" />
-                                <Route element={<LoginUser />} path="/login-user" />
-                                <Route element={<SignupUser />} path="/signup-user" />
+                                <Route element={<LoginUser />} path="/login" />
+                                <Route element={<SignupUser />} path="/signup" />
                                 <Route element={<LoginAdmin />} path="/login-admin" />
                                 <Route element={<About />} path="/about" />
                                 <Route element={<EditProfile />} path="/edit-profile" />
+                                { smallDevice  && <Route element={<PhoneChatList />} path="/chats" />}
                                 {(store.user?.role == "requester" || store.user?.role == "both") && 
                                     <>
                                         <Route element={<UserTaskList />} path="/users/:theusername/my-tasks" />

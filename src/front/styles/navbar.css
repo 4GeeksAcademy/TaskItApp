@@ -1,10 +1,11 @@
+@import url(variables.css);
 a {
     text-decoration: none;
-    font-weight: bold;
 }
 
-a:hover{
-    color:black;
+.nav-link:hover{
+    font-weight: bold;
+    color:var(--green) !important;
 }
 
 .smooth {
