@@ -5,13 +5,46 @@ import { Link } from 'react-router-dom';
 import { Icon } from '@iconify/react';
 import "../../styles/dropdown.css"
 import ChatNotification from './notification/phone_chat_notification_badge.js';
+import useScreenWidth from '../hooks/useScreenWidth.jsx';
+import { useWebSocket } from '../store/webSocketContext.js';
 
 export const BottomNavbar = () => {
     const { store, actions } = useContext(Context);
+    const socket = useWebSocket();
+    const smallDevice = useScreenWidth();
 
     useEffect(() => {
         actions.getCategories();
     }, [])
+
+    useEffect(() => {
+        if (smallDevice) actions.fetchChatsAndUnseenMessages();
+    }, [smallDevice, store.user]);
+
+    useEffect(() => {
+        if (!socket || !smallDevice) return;
+
+        socket.on('unseen_message', (data) => {
+            actions.setUnseenMessages({ room: data.room, hasUnseenMessages: true }, true);
+        });
+
+        socket.on('new_chat', () => {
+            actions.getChats();
+        });
+
+        return () => {
+            socket.off('unseen_message');
+            socket.off('new_chat');
+        };
+    }, [socket, smallDevice]);
+
+    useEffect(() => {
+        if (!socket || !store.chats.length) return;
+
+        for (let chat of store.chats) {
+            socket.emit('join', { username: store.user.username, room: chat.room_name });
+        }
+    }, [store.chats]);
 
     return (
         <Navbar bg="light" variant="light" fixed="bottom" className="fixed-bottom d-flex justify-content-around">
