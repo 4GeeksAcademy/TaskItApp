@@ -29,14 +29,12 @@ const Task = ({ taskInfo, index, list }) => {
     const handleComplete = () => {
         actions.changeTaskStatus(taskInfo.id, "completed");
         setStatus("completed");
-        if(list == "userTasks") store.userTasks[index].status = "completed";
         actions.sendNotification(`The task with id ${taskInfo.id}, has been marked as completed.`, taskInfo.seeker.user.username);
     }
     
     const handleCancel = () => {
         actions.changeTaskStatus(taskInfo.id, "cancelled");
         setStatus("cancelled");
-        if(list == "userTasks") store.userTasks[index].status = "cancelled";
         if(taskInfo.seeker) actions.sendNotification(`The task with id ${taskInfo.id}, has been cancelled.`, taskInfo.seeker.user.username);
     }
 
