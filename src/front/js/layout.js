@@ -29,6 +29,7 @@ import About from "./pages/about";
 import PhoneChatList from "./pages/phone_chat_list.js";
 import ProtectedRoute from "./component/protected_route.js";
 import { WebSocketProvider } from "./store/webSocketContext";
+import PhoneChat from "./component/chat/phone_chat.jsx";
 
 const Layout = () => {
     const basename = process.env.BASENAME || "";
@@ -78,6 +79,7 @@ const Layout = () => {
                                     <Route element={<About />} path="/about" />
                                     <Route element={<EditProfile />} path="/edit-profile" />
                                     { smallDevice  && <Route element={<ProtectedRoute element={<PhoneChatList />} />} path="/chats" />}
+                                    { smallDevice  && <Route element={<ProtectedRoute element={<PhoneChat />} />} path="/chats/:chatid" />}
                                     {(store.user?.role === "requester" || store.user?.role === "both") && 
                                         <>
                                             <Route element={<ProtectedRoute element={<UserTaskList />} roles={["requester", "both"]} />} path="/users/:theusername/my-tasks" />

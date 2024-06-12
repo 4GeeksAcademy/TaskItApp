@@ -40,6 +40,23 @@
     height: 30rem;
 }
 
+.spinner-container {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@media (max-width: 761px) {        
+    .phone-chat-container {
+        position: fixed;
+        top: 80px;
+        bottom: 77px; 
+        left: 0;
+        right: 0;
+    }
+}
+
 @media (min-width: 870px) {
     .start-70 {
         right: 35% !important;
