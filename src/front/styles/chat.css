@@ -3,7 +3,7 @@
 .card-messaging {
     border: 0 !important;
     overflow: hidden;
-    box-shadow: -3px 3px 15px rgb(170, 170, 170);
+    box-shadow: -3px 3px 15px rgba(0, 0, 0, 0.3);
     border-radius: 0.5rem;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
@@ -38,6 +38,23 @@
 .chat-content {
     overflow: auto;
     height: 30rem;
+}
+
+.spinner-container {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@media (max-width: 761px) {        
+    .phone-chat-container {
+        position: fixed;
+        top: 80px;
+        bottom: 77px; 
+        left: 0;
+        right: 0;
+    }
 }
 
 @media (min-width: 870px) {

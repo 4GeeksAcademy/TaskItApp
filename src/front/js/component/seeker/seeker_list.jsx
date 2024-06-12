@@ -8,7 +8,7 @@ const SeekerList = () => {
     useEffect(() => actions.getSeekers(), []);
 
     return (
-        <div className="container-fluid px-5">
+        <div className="container-fluid px-5 bg-light">
             <div className="row">
                 {store.seekers.map((user) => {
                     return (

@@ -7,12 +7,14 @@ import TaskForm from './task/task_form.jsx';
 import Notification from "./notification/notification_badge.js";
 import NotificationDropdown from "./notification/notification_dropdown.jsx";
 import SettingsUser from './user/user_settings.js';
+import useScreenWidth from "../hooks/useScreenWidth.jsx";
 
 export const Navbar = () => {
     const { store } = useContext(Context);
     const [show, setShow] = useState(false);
     const [dropdownVisible, setDropdownVisible] = useState(false);
     const [notificationsVisible, setNotificationsVisible] = useState(false);
+    const smallDevice = useScreenWidth();
 
     const path = useLocation().pathname;
 
@@ -32,8 +34,8 @@ export const Navbar = () => {
 
     return (
         <>
-            { (path != "/signup" && path != "/login") &&
-                <nav className="navbar navbar-expand-lg navbar-light bg-white py-5 px-3 sticky-top">
+            { (path != "/signup" && path != "/login" && path != "/login-admin") &&
+                <nav className={`navbar navbar-expand-lg navbar-light bg-light  px-3 sticky-top ${smallDevice ? "py-3" : "py-5"}`}>
                     <div className="container-fluid">
                         <Link to="/" className="navbar-brand">
                             <span className="navbar-brand mb-0 h1">Task It App</span>
@@ -77,12 +79,12 @@ export const Navbar = () => {
                             <div className="ml-auto d-flex align-items-center">
                                 <ul className="nav">
                                     {(store.user.role === "both" || store.user.role === "requester") && (
-                                        <li className="nav-item">
-                                            <button className="btn btn-dark smooth" onClick={handleShow}>Post Task</button>
+                                        <li className="nav-item d-flex align-items-center">
+                                            <button className="btn btn-green smooth" onClick={handleShow}>{ smallDevice ? "Post" : "Post Task" }</button>
                                         </li>
                                     )}
-                                    <li className="nav-item d-flex align-items-center fs-2 mx-2 position-relative">
-                                        <Icon className="smooth" icon="mdi:bell-outline" onClick={toggleNotificationsDropdown} />
+                                    <li className="nav-item d-flex align-items-center fs-1 mx-2 position-relative">
+                                        <Icon className="smooth" icon="mdi:bell-outline" onClick={toggleNotificationsDropdown} style={{ fontSize: smallDevice ? "2.7rem" : "2.5rem" }} />
                                         <Notification className="smooth" />
                                         <NotificationDropdown dropdownVisible={notificationsVisible} setDropdownVisible={setNotificationsVisible} />
                                     </li>

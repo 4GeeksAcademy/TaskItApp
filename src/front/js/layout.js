@@ -28,7 +28,8 @@ import CompletedTasksList from "./component/task/completed_tasks_list.jsx";
 import About from "./pages/about";
 import PhoneChatList from "./pages/phone_chat_list.js";
 import ProtectedRoute from "./component/protected_route.js";
-
+import { WebSocketProvider } from "./store/webSocketContext";
+import PhoneChat from "./component/chat/phone_chat.jsx";
 
 const Layout = () => {
     const basename = process.env.BASENAME || "";
@@ -55,46 +56,49 @@ const Layout = () => {
         <div>
             <BrowserRouter basename={basename}>
                 <ScrollToTop>
-                    <div className="d-flex container-fluid m-0 p-0">
-                        { store.auth &&  ( smallDevice 
-                            ? <BottomNavbar></BottomNavbar>
-                            :  <SidebarComponent></SidebarComponent>
-                        )}
-                        <div className="w-100">
-                            <Navbar />
-                            <Routes>
-                                <Route element={<Home />} path="/" />
-                                <Route element={<CategoryList />} path="/categories" />
-                                <Route element={<Category />} path="/categories/:thecategory" />
-                                <Route element={<ProtectedRoute element={<TaskFeed />} />} path="/tasks" />
-                                <Route element={<ProtectedRoute element={<Task />} />} path="/tasks/:theid" />
-                                <Route element={<Applicants />} path="/tasks/:theid/applicants" />
-                                <Route element={<Seekers />} path="/seekers" />
-                                <Route element={<User />} path="/users/:theusername" />
-                                <Route element={<LoginUser />} path="/login" />
-                                <Route element={<SignupUser />} path="/signup" />
-                                <Route element={<LoginAdmin />} path="/login-admin" />
-                                <Route element={<About />} path="/about" />
-                                <Route element={<EditProfile />} path="/edit-profile" />
-                                { smallDevice  && <Route element={<ProtectedRoute element={<PhoneChatList />} />} path="/chats" />}
-                                {(store.user?.role === "requester" || store.user?.role === "both") && 
-                                    <>
-                                        <Route element={<ProtectedRoute element={<UserTaskList />} roles={["requester", "both"]} />} path="/users/:theusername/my-tasks" />
-                                        <Route element={<ProtectedRoute element={<CompletedTasksList role={"requester"} />} roles={["requester", "both"]} />} path="/users/:theusername/requested-completed-tasks" />
-                                    </>
-                                }
-                                {(store.user?.role === "task_seeker" || store.user?.role === "both") && 
-                                    <>    
-                                        <Route element={<ProtectedRoute element={<AppliedToTaskList />} roles={["task_seeker", "both"]} />} path="/users/:theusername/applied-to-tasks" />
-                                        <Route element={<ProtectedRoute element={<CompletedTasksList role={"seeker"} />} roles={["task_seeker", "both"]} />} path="/users/:theusername/completed-tasks" />
-                                    </>
-                                }
-                                <Route element={<h1>Not found!</h1>} />
-                            </Routes>
-                            <Footer />
-                            { (store.auth && !smallDevice) && <ChatList></ChatList> }
+                    <WebSocketProvider>
+                        <div className="d-flex container-fluid m-0 p-0 bg-light">
+                            { store.auth &&  ( smallDevice 
+                                ? <BottomNavbar></BottomNavbar>
+                                :  <SidebarComponent></SidebarComponent>
+                            )}
+                            <div className="w-100">
+                                <Navbar />
+                                <Routes>
+                                    <Route element={<Home />} path="/" />
+                                    <Route element={<CategoryList />} path="/categories" />
+                                    <Route element={<Category />} path="/categories/:thecategory" />
+                                    <Route element={<ProtectedRoute element={<TaskFeed />} />} path="/tasks" />
+                                    <Route element={<ProtectedRoute element={<Task />} />} path="/tasks/:theid" />
+                                    <Route element={<Applicants />} path="/tasks/:theid/applicants" />
+                                    <Route element={<Seekers />} path="/seekers" />
+                                    <Route element={<User />} path="/users/:theusername" />
+                                    <Route element={<LoginUser />} path="/login" />
+                                    <Route element={<SignupUser />} path="/signup" />
+                                    <Route element={<LoginAdmin />} path="/login-admin" />
+                                    <Route element={<About />} path="/about" />
+                                    <Route element={<EditProfile />} path="/edit-profile" />
+                                    { smallDevice  && <Route element={<ProtectedRoute element={<PhoneChatList />} />} path="/chats" />}
+                                    { smallDevice  && <Route element={<ProtectedRoute element={<PhoneChat />} />} path="/chats/:chatid" />}
+                                    {(store.user?.role === "requester" || store.user?.role === "both") && 
+                                        <>
+                                            <Route element={<ProtectedRoute element={<UserTaskList />} roles={["requester", "both"]} />} path="/users/:theusername/my-tasks" />
+                                            <Route element={<ProtectedRoute element={<CompletedTasksList role={"requester"} />} roles={["requester", "both"]} />} path="/users/:theusername/requested-completed-tasks" />
+                                        </>
+                                    }
+                                    {(store.user?.role === "task_seeker" || store.user?.role === "both") && 
+                                        <>    
+                                            <Route element={<ProtectedRoute element={<AppliedToTaskList />} roles={["task_seeker", "both"]} />} path="/users/:theusername/applied-to-tasks" />
+                                            <Route element={<ProtectedRoute element={<CompletedTasksList role={"seeker"} />} roles={["task_seeker", "both"]} />} path="/users/:theusername/completed-tasks" />
+                                        </>
+                                    }
+                                    <Route element={<h1>Not found!</h1>} />
+                                </Routes>
+                                <Footer />
+                                { (store.auth && !smallDevice) && <ChatList></ChatList> }
+                            </div>
                         </div>
-                    </div>
+                    </WebSocketProvider>
                 </ScrollToTop>
             </BrowserRouter>
         </div>

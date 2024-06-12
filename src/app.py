@@ -83,13 +83,10 @@ def serve_any_other_file(path):
 
 @socketio.on('connect')
 def handle_connect():
-    print("holi")
     username = request.args.get('username')
     if username:
         usernames[request.sid] = username
         emit('online_users', {'users': list(usernames.values())}, broadcast=True)
-        print(f"User connected: {username}")
-        print(f"Current online users: {list(usernames.values())}")
 
 @socketio.on('disconnect')
 def handle_disconnect():
@@ -173,12 +170,10 @@ def handle_mark_message_as_seen(data):
     message_id = data['message_id']
     user_id = data['user_id']
     chat_message = ChatMessage.query.get(message_id)
-    if chat_message and chat_message.sender_user_id != user_id:
+    if chat_message and chat_message.sender_user_id != user_id and not chat_message.seen:
         chat_message.seen = True
         db.session.commit()
         emit('message_seen', {'message_id': message_id}, room=chat_message.chat.room_name)
-    else:
-        emit('error', {'message': 'Message not found'})
 
 cloudinary.config(
     cloud_name = 'doojwu2m7',

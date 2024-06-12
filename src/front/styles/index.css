@@ -15,25 +15,37 @@ a:hover {
 }
 
 .css-dip3t8 {
-    background-color: white !important;
+    background-color: rgb(248 249 250) !important;
+}
+
+.btn-clear-dark {
+    border-radius: 3rem;
+    border: 2px solid var(--dark);
+    color: var(--dark);
+    transition: all 0.2s ease;
+    background-color: transparent;
+}
+
+.btn-clear-dark:hover {
+    background-color: var(--dark);
+    color: white;
 }
 
 .btn-clear-green {
+    border-radius: 3rem;
     border: 2px solid var(--green);
-    font-weight: 900;
     color: var(--green);
     transition: all 0.2s ease;
     background-color: transparent;
 }
 
 .btn-clear-green:hover {
-    border: 2px solid var(--green);
     background-color: var(--green);
-    font-weight: 900;
-    color: var(--dark);
+    color: white;
 }
 
 .btn-green {
+    border-radius: 3rem;
     color: white;
     transition: all 0.2s ease;
     background-color: var(--green);
@@ -45,6 +57,7 @@ a:hover {
 }
 
 .btn-clear-orange {
+    border-radius: 3rem;
     border: 2px solid var(--orange);
     font-weight: 900;
     color: var(--orange);
@@ -59,7 +72,20 @@ a:hover {
     color: var(--dark);
 }
 
+.btn-orange {
+    border-radius: 3rem;
+    color: white;
+    transition: all 0.2s ease;
+    background-color: var(--orange);
+}
+
+.btn-orange:hover {
+    background-color: rgb(240, 138, 109);
+    color: white;
+}
+
 .btn-clear-yellow {
+    border-radius: 3rem;
     border: 2px solid var(--yellow);
     font-weight: 900;
     color: var(--yellow);
