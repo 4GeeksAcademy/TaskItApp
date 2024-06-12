@@ -28,7 +28,7 @@ const ApplicantForm = (props) => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        actions.addPostulant(props.taskID, store.user.seeker.id, price);
+        actions.addPostulant(props.taskID, store.user.seeker.id, parseInt(price, 10));
     };
 
     return (
@@ -36,7 +36,7 @@ const ApplicantForm = (props) => {
             <Modal.Header>
                 <ModalTitle>Application Information</ModalTitle>
                 <button className="btn close" data-dismiss="modal" aria-label="Close" onClick={props.handleClose}>
-                    <span aria-hidden="true">&times;</span>
+                    <span className='fs-3' aria-hidden="true">&times;</span>
                 </button>
             </Modal.Header>
             <Modal.Body>
@@ -44,7 +44,7 @@ const ApplicantForm = (props) => {
 
                 <form id="applicant-form">
                     <label htmlFor='price'>Price</label>
-                    <input type="text" className="form-control" placeholder="price" aria-label="price" id='price' aria-describedby="basic-addon1" value={price} onChange={(e) => setPrice(e.target.value)} />
+                    <input type="text" className="form-control" placeholder="price" aria-label="price" id='price' aria-describedby="basic-addon1" value={price} onChange={(e) => setPrice(e.target.value.replace(/\D/g, ''))} />
                 </form>
             </Modal.Body>
             <Modal.Footer>

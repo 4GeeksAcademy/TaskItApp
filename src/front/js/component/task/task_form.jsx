@@ -75,7 +75,7 @@ const TaskForm = (props) => {
                 dueDate, 
                 category, 
                 null, 
-                budget, 
+                parseInt(budget, 10), 
                 deliveryLat, 
                 deliveryLgt, 
                 pickupLat, 
@@ -99,7 +99,7 @@ const TaskForm = (props) => {
                     deliveryAddress, 
                     dueDate, 
                     category, 
-                    budget, 
+                    parseInt(budget, 10), 
                     deliveryLat, 
                     deliveryLgt, 
                     pickupLat, 
@@ -122,7 +122,7 @@ const TaskForm = (props) => {
             <Modal.Header>
                 <ModalTitle>Task Information</ModalTitle>
                 <button className="btn close" data-dismiss="modal" aria-label="Close" onClick={props.handleClose}>
-                    <span aria-hidden="true">&times;</span>
+                    <span className="fs-3" aria-hidden="true">&times;</span>
                 </button>
             </Modal.Header>
             <Modal.Body>
@@ -160,7 +160,7 @@ const TaskForm = (props) => {
                         <div>
                             <label htmlFor='budget'>Budget</label>
                             <div className='input-group'>
-                                <input type="text" className="form-control" id='budget' aria-label="budget" aria-describedby="basic-addon1" value={budget} onChange={(e) => setBudget(e.target.value)} />
+                                <input type="text" className="form-control" id='budget' aria-label="budget" aria-describedby="basic-addon1" value={budget} onChange={(e) => setBudget(e.target.value.replace(/\D/g, ''))} />
                                 <div className="input-group-append">
                                     <span className="input-group-text" id="basic-addon2">€</span>
                                 </div>

@@ -65,14 +65,14 @@ export const BottomNavbar = () => {
                     >
                         { (store.user?.role === "both" || store.user?.role === "requester") &&
                             <>
-                                <Dropdown.Item as={Link} to={`/users/${store.user.username}/my-tasks`}>My posted tasks</Dropdown.Item>
-                                <Dropdown.Item as={Link} to={`/users/${store.user.username}/requested-completed-tasks`}>Requested tasks completed</Dropdown.Item>
+                                <Dropdown.Item as={Link} to={`/users/${store.user.username}/active-requests`}>Active Requests</Dropdown.Item>
+                                <Dropdown.Item as={Link} to={`/users/${store.user.username}/completed-requests`}>My Completed Requests</Dropdown.Item>
                             </>
                         }
                         { (store.user?.role === "both" || store.user?.role === "task_seeker") &&
                             <>
-                                <Dropdown.Item as={Link} to={`/users/${store.user.username}/applied-to-tasks`}>Applied to tasks</Dropdown.Item>
-                                <Dropdown.Item as={Link} to={`/users/${store.user.username}/completed-tasks`}>Completed Tasks</Dropdown.Item>
+                                <Dropdown.Item as={Link} to={`/users/${store.user.username}/applications`}>Applications</Dropdown.Item>
+                                <Dropdown.Item as={Link} to={`/users/${store.user.username}/completed-tasks`}>My Completed Tasks</Dropdown.Item>
                             </>
                         }
                     </DropdownButton>

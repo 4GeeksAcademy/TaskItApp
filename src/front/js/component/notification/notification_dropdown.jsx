@@ -35,7 +35,7 @@ const NotificationDropdown = ({ dropdownVisible, setDropdownVisible }) => {
     }
 
     return (
-        <div ref={ref} className={`dropdown-menu ${dropdownVisible ? 'show' : ''}`} style={{ zIndex: 1 }}>
+        <div ref={ref} className={`dropdown-menu ${dropdownVisible ? 'show' : ''}`} style={{ zIndex: 1, maxHeight: '60vh' }}>
             { store.notifications.map((notification, index) => {
                 return (
                     <div key={index + notification.message[0]}>

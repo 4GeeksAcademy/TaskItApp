@@ -9,6 +9,7 @@ from api.models import db, User, Task, StatusEnum, Address, Category, RoleEnum, 
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from datetime import datetime
+from sqlalchemy import desc
 
 from flask_jwt_extended import create_access_token, JWTManager, jwt_required, get_jwt_identity
 
@@ -788,22 +789,31 @@ def logout():
 
 @api.route('/users/<int:index>/tasks', methods=['GET'])
 def get_user_tasks(index):
+    last = request.args.get('last', 'false').lower() == 'true'
     requester = Requester.query.filter_by(user_id=index).first()
     if not requester:
         return jsonify({"error": "Requester not found"}), 404
 
-    tasks = Task.query.filter(
-        Task.requester_id == requester.id,
-        Task.status.notin_([StatusEnum.CANCELLED, StatusEnum.COMPLETED])
-    ).all()
+    if last:
+        tasks = Task.query.filter(
+            Task.status.notin_([StatusEnum.CANCELLED, StatusEnum.COMPLETED])
+        ).all()
+        tasks = tasks[::-1][:3]
+    else:
+        tasks = Task.query.filter(
+            Task.status.notin_([StatusEnum.CANCELLED, StatusEnum.COMPLETED])
+        ).all()
+        tasks = tasks[::-1]
+
     return jsonify([task.serialize() for task in tasks]), 200
 
-@api.route('/users/<int:index>/applied-to-tasks', methods=['GET'])
+@api.route('/users/<int:index>/applications', methods=['GET'])
 def get_applied_to_tasks(index):
+    last = request.args.get('last', 'false').lower() == 'true'
     seeker = TaskSeeker.query.filter_by(user_id=index).first()
     if not seeker:
         return jsonify({"error": "Task seeker not found."}), 404
-    
+
     tasks = Task.query.filter(
         Task.status.notin_([StatusEnum.CANCELLED, StatusEnum.COMPLETED])
     ).all()
@@ -811,36 +821,58 @@ def get_applied_to_tasks(index):
     postulants = Postulant.query.filter(
         Postulant.seeker_id == seeker.id,
         Postulant.task_id.in_([task.id for task in tasks])
-    ).all()
+    )
 
+    if last:
+        postulants = postulants.order_by(Postulant.id.desc()).limit(3).all()
+    else:
+        postulants = postulants.order_by(Postulant.id.desc()).all()
+
+
+    postulants = postulants[::-1]
     applied_tasks = [postulant.task.serialize() for postulant in postulants]
-    
-    return jsonify(applied_tasks)
+
+    return jsonify(applied_tasks), 200
 
 @api.route('/users/<int:index>/seeker/completed-tasks', methods=['GET'])
 def get_seeker_completed_tasks(index):
+    last = request.args.get('last', 'false').lower() == 'true'
     seeker = TaskSeeker.query.filter_by(user_id=index).first()
     if not seeker:
         return jsonify({"error": "Task seeker not found."}), 404
     
-    completed_tasks = Task.query.filter(
+    query = Task.query.filter(
         Task.seeker_id == seeker.id,
         Task.status.in_([StatusEnum.COMPLETED])
-    ).all()
+    )
+
+    if last:
+        completed_tasks = query.order_by(Task.id.desc()).limit(3).all()
+    else:
+        completed_tasks = query.all()
+
+    completed_tasks = completed_tasks[::-1]
 
     return jsonify([task.serialize() for task in completed_tasks]), 200
 
 @api.route('/users/<int:index>/requester/completed-tasks', methods=['GET'])
 def get_requester_completed_tasks(index):
+    last = request.args.get('last', 'false').lower() == 'true'
     requester = Requester.query.filter_by(user_id=index).first()
     if not requester:
         return jsonify({"error": "Requester not found."}), 404
     
-    completed_tasks = Task.query.filter(
+    query = Task.query.filter(
         Task.requester_id == requester.id,
         Task.status.in_([StatusEnum.COMPLETED])
-    ).all()
+    )
 
+    if last:
+        completed_tasks = query.order_by(Task.id.desc()).limit(3).all()
+    else:
+        completed_tasks = query.all()
+
+    completed_tasks = completed_tasks[::-1]
     return jsonify([task.serialize() for task in completed_tasks]), 200
 
 @api.route('/users/<int:index>/unseen-notifications', methods=['GET'])

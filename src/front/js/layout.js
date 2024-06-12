@@ -84,13 +84,13 @@ const Layout = () => {
                                     { smallDevice  && <Route element={<ProtectedRoute element={<PhoneChat />} />} path="/chats/:chatid" />}
                                     {(store.user?.role === "requester" || store.user?.role === "both") && 
                                         <>
-                                            <Route element={<ProtectedRoute element={<UserTaskList />} roles={["requester", "both"]} />} path="/users/:theusername/my-tasks" />
-                                            <Route element={<ProtectedRoute element={<CompletedTasksList role={"requester"} />} roles={["requester", "both"]} />} path="/users/:theusername/requested-completed-tasks" />
+                                            <Route element={<ProtectedRoute element={<UserTaskList />} roles={["requester", "both"]} />} path="/users/:theusername/active-requests" />
+                                            <Route element={<ProtectedRoute element={<CompletedTasksList role={"requester"} />} roles={["requester", "both"]} />} path="/users/:theusername/completed-requests" />
                                         </>
                                     }
                                     {(store.user?.role === "task_seeker" || store.user?.role === "both") && 
                                         <>    
-                                            <Route element={<ProtectedRoute element={<AppliedToTaskList />} roles={["task_seeker", "both"]} />} path="/users/:theusername/applied-to-tasks" />
+                                            <Route element={<ProtectedRoute element={<AppliedToTaskList />} roles={["task_seeker", "both"]} />} path="/users/:theusername/applications" />
                                             <Route element={<ProtectedRoute element={<CompletedTasksList role={"seeker"} />} roles={["task_seeker", "both"]} />} path="/users/:theusername/completed-tasks" />
                                         </>
                                     }
