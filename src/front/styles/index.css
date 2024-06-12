@@ -100,6 +100,17 @@ a:hover {
     color: var(--dark);
 }
 
+.btn-yellow {
+    border-radius: 3rem;
+    color: var(--dark);
+    transition: all 0.2s ease;
+    background-color: var(--yellow);
+}
+
+.btn-yellow:hover {
+    background-color: rgb(255, 216, 148);
+    color: white;
+}
 .text-orange {
     color: var(--orange);
 }

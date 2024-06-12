@@ -1021,22 +1021,22 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 
-			getUserTasks: () => {
-				fetch(process.env.BACKEND_URL + `/api/users/${getStore().user.id}/tasks`)
+			getUserTasks: (last) => {
+				fetch(process.env.BACKEND_URL + `/api/users/${getStore().user.id}/tasks/${last ? "?last=true" : ""}`)
 				.then(response => response.json())
 				.then(data => setStore({ userTasks: data }))
 				.catch(error => console.error(error));
 			},
 			
-			getSeekerCompletedTasks: () => {
-				fetch(process.env.BACKEND_URL + `/api/users/${getStore().user.id}/seeker/completed-tasks`)
+			getSeekerCompletedTasks: (last) => {
+				fetch(process.env.BACKEND_URL + `/api/users/${getStore().user.id}/seeker/completed-tasks/${last ? "?last=true" : ""}`)
 				.then(response => response.json())
 				.then(data => setStore({ seekerCompletedTasks: data }))
 				.catch(error => console.error(error));
 			},
 
-			getRequesterCompletedTasks: () => {
-				fetch(process.env.BACKEND_URL + `/api/users/${getStore().user.id}/requester/completed-tasks`)
+			getRequesterCompletedTasks: (last) => {
+				fetch(process.env.BACKEND_URL + `/api/users/${getStore().user.id}/requester/completed-tasks/${last ? "?last=true" : ""}`)
 				.then(response => response.json())
 				.then(data => setStore({ requesterCompletedTasks: data }))
 				.catch(error => console.error(error));

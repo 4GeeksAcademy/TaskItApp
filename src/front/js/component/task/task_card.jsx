@@ -11,6 +11,7 @@ const Task = ({ taskInfo, index, list }) => {
     const path = useLocation().pathname;
     const isUserTasksPage = /^\/users\/[^/]+\/active-requests$/.test(path);
     const isUserCompletedTasksPage = /^\/users\/[^/]+\/completed-tasks$/.test(path);
+    const isUserCompletedRequestsPage = /^\/users\/[^/]+\/completed-requests$/.test(path);
     const smallDevice = useScreenWidth();
     const [show, setShow] = useState(false);
 	const [showRatingForm, setShowRatingForm] = useState(false);
@@ -51,12 +52,12 @@ const Task = ({ taskInfo, index, list }) => {
             <div className="card p-4 h-100 d-flex flex-column justify-content-between flex-grow-1">
                 <div>
                     <div className="w-100 d-flex justify-content-end gap-2">
-                        { ((taskInfo.status == "completed" || status == "completed") && (path == '/' || isUserTasksPage))
+                        { ((taskInfo.status == "completed" || status == "completed") && (path == '/' || isUserTasksPage || isUserCompletedRequestsPage))
                             ? ( showRateBtn &&
                                 <div className="rounded-circle overflow-hidden smooth" style={{ width: "auto", height: "auto" ,aspectRatio: "1/1" }}>
                                     <button className="btn btn-clear-yellow h-100" onClick={handleShowRatingForm}><Icon className="fs-5" icon="material-symbols:reviews-outline" /></button>
                                 </div>
-                            ) : ((store.user.id == taskInfo.requester_user?.id && (taskInfo.status != "cancelled" || status != "cancelled") && (path == '/' || isUserTasksPage)) && (
+                            ) : ((store.user.id == taskInfo.requester_user?.id && (taskInfo.status != "cancelled" || status != "cancelled") && (path == '/' || isUserTasksPage || isUserCompletedRequestsPage)) && (
                                 <>
                                     { taskInfo.seeker_id && 
                                         <div className="rounded-circle overflow-hidden smooth" style={{ width: "auto", height: "auto" ,aspectRatio: "1/1" }}>
@@ -75,7 +76,7 @@ const Task = ({ taskInfo, index, list }) => {
                             ))
                         }
                     </div>
-                    { ((path != '/' && !isUserTasksPage && !isUserCompletedTasksPage) || store.user.id != taskInfo.requester_user?.id) &&
+                    { ((path != '/' && !isUserTasksPage && !isUserCompletedTasksPage && !isUserCompletedRequestsPage) || store.user.id != taskInfo.requester_user?.id) &&
                         <div className="d-flex align-items-center mb-2">
                             <div className="rounded-circle bg-dark me-2 overflow-hidden" style={{ height: "60px", width: "60px", aspectRatio: "1/1" }}>
                                 { taskInfo.requester_user?.profile_picture && <img

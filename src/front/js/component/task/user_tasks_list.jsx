@@ -1,21 +1,25 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import { Context } from "../../store/appContext";
 import Task from "./task_card.jsx";
+import { Link, useLocation } from "react-router-dom";
 
 const UserTaskList = () => {
     const { store, actions } = useContext(Context);
+    const path = useLocation().pathname;
 
     useEffect(() => {
         if(store.user.role == "requester" || store.user.role == "both"){
-            actions.getUserTasks();
+            actions.getUserTasks(path == "/" ? true : false);
         }
     }, [])
 
-    useEffect(() => { actions.getUserTasks(); }, [store.notifications])   
+    useEffect(() => { 
+        actions.getUserTasks((path == "/" ? true : false)); 
+    }, [store.notifications, path])   
 
     return (
-        <div className="container-fluid px-5 bg-light">
-            <h3>Active Requests</h3>
+        <div className="container-fluid mt-2 px-5 bg-light">
+            <h4>Active Requests { path == '/' && <Link className="btn btn-clear-green" to={`/users/${store.user.username}/active-requests`}>More</Link>}</h4>
             <div className="row">
                 {store.userTasks.length === 0 ? (
                     <div>No tasks available</div>
