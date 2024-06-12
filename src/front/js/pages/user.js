@@ -75,18 +75,6 @@ export const User = () => {
 						<p className="fs-3 text-muted">{user.description}</p>
 					</div>
 					<div className="d-flex flex-column justify-content-around gap-5">
-						{	seekerInfo && Object.keys(seekerInfo).length > 0 &&
-							<div className="card d-flex justify-content-around flex-row">
-								<div className="text-center d-flex flex-column">
-									<span className="fs-5"><b>Total Completed</b></span>
-									<span className="fs-2 text-muted">{seekerInfo.total_completed_tasks}</span>
-								</div>
-								<div className="text-center d-flex flex-column">
-									<span className="fs-5"><b>Ongoing</b></span>
-									<span className="fs-2 text-muted">{seekerInfo.total_ongoing_tasks}</span>
-								</div>
-							</div>
-						}
 						{	requesterInfo && Object.keys(requesterInfo).length > 0 &&
 							<div className="card d-flex justify-content-around flex-row">
 								<div className="text-center d-flex flex-column">
@@ -103,9 +91,21 @@ export const User = () => {
 								</div>
 							</div>
 						}
+						{	seekerInfo && Object.keys(seekerInfo).length > 0 &&
+							<div className="card d-flex justify-content-around flex-row">
+								<div className="text-center d-flex flex-column">
+									<span className="fs-5"><b>Total Completed</b></span>
+									<span className="fs-2 text-muted">{seekerInfo.total_completed_tasks}</span>
+								</div>
+								<div className="text-center d-flex flex-column">
+									<span className="fs-5"><b>Ongoing</b></span>
+									<span className="fs-2 text-muted">{seekerInfo.total_ongoing_tasks}</span>
+								</div>
+							</div>
+						}
 					</div>
 				</div>
-				<hr className="my-5"></hr>
+				{ reviews.length > 0 && <hr className="my-5"></hr>}
 				<div className="d-flex justify-content-between">
 					{ reviews.map((review) =>{
 						return <RatingCard key={review.id + 'urev'} rating={review} />
