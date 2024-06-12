@@ -16,7 +16,7 @@ const CompletedTasksList = ({ role }) => {
     }, [store.notifications])
 
     return (
-        <div className="container-fluid px-5">
+        <div className="container-fluid px-5 bg-light">
             <h3>Completed tasks as {role}</h3>
             <div className="row">
                 {role === "seeker" ? (

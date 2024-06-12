@@ -65,8 +65,8 @@ const RatingForm = (props) => {
                 </form>
             </Modal.Body>
             <Modal.Footer>
-                <button type="button" className="btn btn-secondary" onClick={props.handleClose}>Close</button>
-                <button type="submit" form="review-form" className="btn btn-warning" onClick={(event) => handleSubmit(event)}>Review</button>
+                <button type="button" className="btn btn-orange" onClick={props.handleClose}>Close</button>
+                <button type="submit" form="review-form" className="btn btn-clear-yellow" onClick={(event) => handleSubmit(event)}>Review</button>
             </Modal.Footer>
         </Modal>
     );

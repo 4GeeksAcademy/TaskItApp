@@ -15,10 +15,10 @@ export const SidebarComponent = () => {
     return (
         <div style={{ display: 'flex', height: '100vh', minHeight: '100%'}} className='sticky-top'>
             <Sidebar collapsed={collapsed} rootStyles={{
-                background: '#ffffff',
+                background: '#212529',
                 border: 'none'
             }}>
-                <Menu rootStyles={{ background: '#ffffff' }}>
+                <Menu>
                     <div className='py-5 d-flex justify-content-center'>
                         <button className="btn fs-2 d-flex align-items-center" onClick={() => setCollapsed(!collapsed)}>
                             <Icon icon="charm:menu-hamburger" />

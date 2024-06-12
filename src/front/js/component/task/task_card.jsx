@@ -62,15 +62,15 @@ const Task = ({ taskInfo, index, list }) => {
                                 <>
                                     { taskInfo.seeker_id && 
                                         <div className="rounded-circle overflow-hidden smooth" style={{ width: "auto", height: "auto" ,aspectRatio: "1/1" }}>
-                                            <button className="btn btn-success h-100" onClick={handleComplete}><Icon  className="fs-5" icon="fluent-mdl2:accept-medium" /></button>
+                                            <button className="btn btn-clear-green h-100" onClick={handleComplete}><Icon  className="fs-5" icon="fluent-mdl2:accept-medium" /></button>
                                         </div> 
                                     }
                                     <div className="rounded-circle overflow-hidden smooth" style={{ aspectRatio: "1/1", height: "auto", width: "auto" }}>
-                                        <button className="btn btn-danger h-100 fs-3 close d-flex align-items-center" onClick={handleCancel}><span>&times;</span></button>
+                                        <button className="btn btn-clear-orange h-100 fs-3 close d-flex align-items-center" onClick={handleCancel}><span>&times;</span></button>
                                     </div>
                                     { taskInfo.status == "pending" &&
                                         <div className="rounded-circle overflow-hidden smooth d-flex align-items-center" style={{ width: "auto", height: "auto", aspectRatio: "1/1" }}>
-                                            <button className="btn btn-dark h-100" onClick={handleShow}><Icon  className="fs-5" icon="mage:edit-fill" /></button>
+                                            <button className="btn btn-clear-dark h-100" onClick={handleShow}><Icon  className="fs-5" icon="mage:edit-fill" /></button>
                                         </div>
                                     }
                                 </>
@@ -112,7 +112,7 @@ const Task = ({ taskInfo, index, list }) => {
                             <span><b>Task Seeker:</b> <Link to={`/users/${taskInfo.seeker?.user?.username}`}>{taskInfo.seeker?.user?.username}</Link></span>
                         </div>
                         : <Link to={`/tasks/${taskInfo.id}/applicants`}>
-                            <button className="btn btn-dark smooth">
+                            <button className="btn btn-green smooth">
                                 <span className="d-flex align-items-center">
                                     <Icon className="me-2" icon="ph:user-bold" /> 
                                     <span>{taskInfo.applicants.length} {taskInfo.applicants.length == 1 ? "applicant" : "applicants"}</span>
@@ -121,7 +121,7 @@ const Task = ({ taskInfo, index, list }) => {
                         </Link>
                         }
                         <Link to={`/tasks/${taskInfo.id}`}>
-                            <button className="btn btn-dark smooth">See Details</button>
+                            <button className="btn btn-green smooth">See Details</button>
                         </Link>
                     </div>
                 </div>

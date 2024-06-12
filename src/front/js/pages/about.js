@@ -35,7 +35,7 @@ const About = () => {
                 
                 <div className="col-12 col-md-5 order-2">
                     <div className="card h-100">
-                        <img src="https://res-console.cloudinary.com/doojwu2m7/media_explorer_thumbnails/b79ce5079aaec66e7597064f9eba91fd/detailed" className="card-img-top" alt="Team" />
+                        <img src="https://res.cloudinary.com/doojwu2m7/image/upload/v1718042879/gw9flftqwp2umkbbmsue.png" className="card-img-top" alt="Team" />
                     </div>
                 </div>
             </div>

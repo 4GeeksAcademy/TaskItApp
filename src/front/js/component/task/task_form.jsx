@@ -170,8 +170,8 @@ const TaskForm = (props) => {
                 </form>
             </Modal.Body>
             <Modal.Footer>
-                <button type="button" className="btn btn-secondary" onClick={props.handleClose}>Close</button>
-                <button type="submit" form="task-form" className="btn btn-primary" onClick={(event) => handleSubmit(event)}>{`${props.currentTask ? "Save" : "Post"}`}</button>
+                <button type="button" className="btn btn-orange" onClick={props.handleClose}>Close</button>
+                <button type="submit" form="task-form" className="btn btn-green" onClick={(event) => handleSubmit(event)}>{`${props.currentTask ? "Save" : "Post"}`}</button>
             </Modal.Footer>
         </Modal>
     );

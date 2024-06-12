@@ -14,7 +14,7 @@ const UserTaskList = () => {
     useEffect(() => { actions.getUserTasks(); }, [store.notifications])   
 
     return (
-        <div className="container-fluid px-5">
+        <div className="container-fluid px-5 bg-light">
             <h3>My tasks</h3>
             <div className="row">
                 {store.userTasks.length === 0 ? (

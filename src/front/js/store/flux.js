@@ -1,5 +1,3 @@
-import { io } from "socket.io-client";
-
 const getState = ({ getStore, getActions, setStore }) => {	
     const fetchHelper = async (url, config = {}, successCallback) => {
 		try {
@@ -33,21 +31,27 @@ const getState = ({ getStore, getActions, setStore }) => {
 			ratings: [],
 			auth: false,
 			access_token: "",
-			login_error: "",
-			signup_error: "",
 			valid_token: false,
-			socket: io(process.env.BACKEND_URL),
 			notifications: [],
 			chats: [],
+			login_error: '',
 			access_token: localStorage.getItem('access_token') || "",
 			seekerCompletedTasks: [],
-			requesterCompletedTasks: []
+			requesterCompletedTasks: [],
+			currentChat: {},
+			unseenMessages: [],
+			onlineUsers: [],
 		},
 		actions: {
 			resetMessages: () => { setStore({ message: "", error: "" }) },
 			setError: (error) => { setStore({ message: "", error: error }) },
-			joinRoom: (room, username) => { getStore().socket.emit('join', { room: room, username: username }) },
-			leaveRoom: (room, username) => { getStore().socket.emit('leave', { room: room, username: username }) },
+			setCurrentChat: (chat) => { setStore({ currentChat: chat }) },
+			setOnlineUsers: (onlineUsers) => { setStore({ onlineUsers: onlineUsers }) },
+			isUserOnline: (chat) => {
+				const otherUser = chat.requester_user.id === getStore().user.id ? chat.seeker_user.username : chat.requester_user.username;
+				return getStore().onlineUsers.includes(otherUser);
+			},
+
 			timeAgo: (isoTime) => {
 				const now = new Date();
 				const time = new Date(isoTime);
@@ -72,6 +76,38 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			
 				return 'Just now';
+			},
+
+			setUnseenMessages: (unseenMessages, prev = false) => {
+				if (prev) {
+					setStore({
+						unseenMessages: {
+							...getStore().unseenMessages,
+							[unseenMessages.room]: unseenMessages.hasUnseenMessages
+						}
+					});
+				} else setStore({ unseenMessages: unseenMessages });
+			},
+
+			fetchChatsAndUnseenMessages: async () => {
+				await getActions().getChats();
+				const unseenMessagesStatus = {};
+				for (const chat of getStore().chats) {
+					const hasUnseenMessages = await getActions().checkUnseenMessages(getStore().user.id, chat.id);
+					unseenMessagesStatus[chat.room_name] = hasUnseenMessages;
+				}
+				getActions().setUnseenMessages(unseenMessagesStatus);
+			},
+			
+			checkUnseenMessages: async (userId, chatId) => {
+				try {
+					const res = await fetch(`${process.env.BACKEND_URL}/api/users/${userId}/chats/${chatId}`, {});
+					const data = await res.json();
+					return data.has_unseen_messages;
+				} catch (error) {
+					console.error("Error checking unseen messages:", error);
+					return false;
+				}
 			},
 
 			getCoordinates: async (address) => {
@@ -818,21 +854,18 @@ const getState = ({ getStore, getActions, setStore }) => {
 
                 try {
                     const response = await fetch(process.env.BACKEND_URL + "/api/login", config);
-                    if (!response.ok) {
-                        const error = await response.json();
-                        throw new Error(error.error);
-                    }
-                    const data = await response.json();
-                    localStorage.setItem('access_token', data.access_token);
-                    setStore({ access_token: data.access_token, user: data.user, auth: true });
-                    getActions().joinRoom(username, username);
+					const data = await response.json();
+					if (response.ok) {
+						localStorage.setItem('access_token', data.access_token);
+						setStore({ access_token: data.access_token, user: data.user, auth: true });
+						setStore({ message: data.message, error: "" });
+					} else setStore({ message: "", error: data.error || "An error occurred" });
                 } catch (error) {
                     console.error(error);
                 }
             },
 
             logout: () => {
-                getActions().leaveRoom(getStore().user.username, getStore().user.username);
                 localStorage.removeItem('access_token');
                 setStore({ access_token: "", user: null, auth: false });
             },

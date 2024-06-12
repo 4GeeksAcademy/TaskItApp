@@ -132,12 +132,12 @@ export const Task = () => {
 						{store.user.id != task.requester_user?.id 
 							? (((store.user.role == "both" || store.user.role == "task_seeker") && !applied) &&
 								<div className="w-100 d-flex justify-content-between">
-									<button className="btn btn-dark px-4" onClick={handleShowApplicationForm}>Apply</button>
+									<button className="btn btn-green px-4" onClick={handleShowApplicationForm}>Apply</button>
 								</div>
 							)
 							: ( task.status == "pending" &&
 								<div className="w-100 d-flex justify-content-between">
-									<button className="btn btn-dark px-4" onClick={handleShowTaskForm}><Icon icon="mage:edit-fill" /> Edit</button>
+									<button className="btn btn-green px-4" onClick={handleShowTaskForm}><Icon icon="mage:edit-fill" /> Edit</button>
 								</div>
 							)
 						}

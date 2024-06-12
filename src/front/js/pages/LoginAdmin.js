@@ -16,8 +16,9 @@ const LoginAdmin = () => {
     }
 
     return (
-        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "50vh" }}>
+        <div className="d-flex justify-content-center align-items-center" style={{ width: '100vw', height: '100vh'}}>
             <div className="card p-4" style={{ maxWidth: "400px", width: "100%" }}>
+                <h4 className="text-center">Log in as Admin</h4>
                 <form onSubmit={handleLogin}>
                     <div className="mb-3">
                         <label htmlFor="exampleInputEmail" className="form-label">Email address</label>
@@ -43,11 +44,14 @@ const LoginAdmin = () => {
                             required
                         />
                     </div>
-                    <button type="submit" className="btn btn-dark w-100 mb-3">Login</button>
+                    <button type="submit" className="btn btn-green w-100 mb-3">Log In</button>
                 </form>
+                <div className="text-center">
+                    <span>Not an admin? <Link to="/signin"><b>Sing In</b></Link></span>
+                </div>
                 <div className="text-center mt-3">
                     <Link to="/">
-                        <span className="btn btn-link">Back to Home</span>
+                        <span className="btn btn-clear-green fw-normal">Back to Home</span>
                     </Link>
                 </div>
             </div>
