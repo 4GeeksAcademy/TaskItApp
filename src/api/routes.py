@@ -798,7 +798,7 @@ def get_user_tasks(index):
     ).all()
     return jsonify([task.serialize() for task in tasks]), 200
 
-@api.route('/users/<int:index>/applied-to-tasks', methods=['GET'])
+@api.route('/users/<int:index>/applications', methods=['GET'])
 def get_applied_to_tasks(index):
     seeker = TaskSeeker.query.filter_by(user_id=index).first()
     if not seeker:

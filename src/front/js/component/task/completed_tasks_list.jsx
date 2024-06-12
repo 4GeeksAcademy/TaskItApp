@@ -17,7 +17,7 @@ const CompletedTasksList = ({ role }) => {
 
     return (
         <div className="container-fluid px-5 bg-light">
-            <h3>Completed tasks as {role}</h3>
+            <h3>{ role == "seeker" ? "My Completed Tasks" : "My Completed Requests"}</h3>
             <div className="row">
                 {role === "seeker" ? (
                     store.seekerCompletedTasks.length === 0 ? (

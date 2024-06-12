@@ -31,7 +31,7 @@ const AppliedToTaskList = () => {
     }, [store.notifications]);
 
     const loadInfo = () => {
-        fetch(process.env.BACKEND_URL + `/api/users/${store.user.id}/applied-to-tasks`)
+        fetch(process.env.BACKEND_URL + `/api/users/${store.user.id}/applications`)
         .then(response => response.json())
         .then(data => setTasks(data))
         .catch(error => console.error(error));
@@ -40,7 +40,7 @@ const AppliedToTaskList = () => {
 
     return (
         <div className="container-fluid px-5 bg-light">
-            <h3>Applied to tasks</h3>
+            <h3>Applications</h3>
             <div className="row">
                 { tasks.length == 0 
                     ? <div>You haven't applied to tasks yet.</div>

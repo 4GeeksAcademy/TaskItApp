@@ -9,7 +9,7 @@ import useScreenWidth from "../../hooks/useScreenWidth.jsx";
 const Task = ({ taskInfo, index, list }) => {
     const { store, actions } = useContext(Context);
     const path = useLocation().pathname;
-    const isUserTasksPage = /^\/users\/[^/]+\/my-tasks$/.test(path);
+    const isUserTasksPage = /^\/users\/[^/]+\/active-requests$/.test(path);
     const isUserCompletedTasksPage = /^\/users\/[^/]+\/completed-tasks$/.test(path);
     const smallDevice = useScreenWidth();
     const [show, setShow] = useState(false);
