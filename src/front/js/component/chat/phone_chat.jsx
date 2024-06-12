@@ -63,7 +63,6 @@ const PhoneChat = () => {
         e.preventDefault();
         if (message) {
             const uniqueId = actions.generateUniqueId();
-            console.log(store.currentChat)
             socket.emit('message', { client_generated_id: uniqueId, username: store.user.username, message, room: store.currentChat?.room_name }); 
             const config = {
                 method: "POST",
