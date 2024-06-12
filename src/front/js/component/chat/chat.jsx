@@ -84,7 +84,9 @@ const Chat = (props) => {
 
             <Card.Body className="chat-content container-fluid d-flex flex-column">
                 { loading 
-                    ? <Spinner animation="border" variant="dark" />
+                    ? <div className="spinner-container">
+                        <Spinner animation="border" variant="dark" />
+                    </div>
                     : (messages.map((msg, index) => (
                     msg.room_name === props.chat.room_name && (
                         <Message
