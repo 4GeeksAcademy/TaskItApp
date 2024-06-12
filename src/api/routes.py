@@ -1045,18 +1045,17 @@ def get_last_three_reviews(id):
     reviews = []
     serialized_reviews = []
 
-    if user.requester and not user.task_seeker:
-        reviews = Rating.query.filter(Rating.requester_id == user.requester.id).order_by(Rating.id.desc()).limit(3).all()  
-        serialized_reviews = [review.serialize() for review in reviews]
-        return jsonify(serialized_reviews), 200
-
-    if user.task_seeker and not user.requester:
-        reviews = Rating.query.filter(Rating.seeker_id == user.task_seeker.id).order_by(Rating.id.desc()).limit(3).all()  
-        serialized_reviews = [review.serialize() for review in reviews]
-        return jsonify(serialized_reviews), 200
+    if user.requester:
+        requester_reviews = Rating.query.filter(Rating.requester == user).order_by(Rating.id.desc()).all()
+        reviews += requester_reviews
     
-    reviews = Rating.query.filter((Rating.seeker_id == user.task_seeker.id) | (Rating.requester_id == user.requester.id)).order_by(Rating.id.desc()).limit(3).all()  
+    if user.task_seeker:
+        seeker_reviews = Rating.query.filter(Rating.seeker_id == user.task_seeker.id).order_by(Rating.id.desc()).all()
+        reviews += seeker_reviews
 
+    unique_reviews = {review.id: review for review in reviews}.values()
+    
+    reviews = sorted(unique_reviews, key=lambda x: x.id, reverse=True)[:3]
     serialized_reviews = [review.serialize() for review in reviews]
     return jsonify(serialized_reviews), 200
 
@@ -1066,7 +1065,7 @@ def get_last_three_requester_reviews(id):
     if not user:
         return jsonify({'error': 'User not found'}), 404
 
-    reviews = Rating.query.filter_by(requester_id=user.requester.id).order_by(Rating.id.desc()).limit(3).all()
+    reviews = Rating.query.filter_by(requester_id=user.id).order_by(Rating.id.desc()).limit(3).all()
 
     serialized_reviews = [review.serialize() for review in reviews]
 
