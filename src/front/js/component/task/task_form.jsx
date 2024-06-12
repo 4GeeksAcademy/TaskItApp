@@ -122,7 +122,7 @@ const TaskForm = (props) => {
             <Modal.Header>
                 <ModalTitle>Task Information</ModalTitle>
                 <button className="btn close" data-dismiss="modal" aria-label="Close" onClick={props.handleClose}>
-                    <span aria-hidden="true">&times;</span>
+                    <span className="fs-3" aria-hidden="true">&times;</span>
                 </button>
             </Modal.Header>
             <Modal.Body>
