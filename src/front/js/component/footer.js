@@ -7,11 +7,12 @@ import { Link } from "react-router-dom";
 
 export const Footer = () => {
     const path = useLocation().pathname;
+    const isChat = /^\/chats\/\d+$/.test(path);
 	const { store } = useContext(Context);
 
 	return ( 
 		<>
-			{ (path != "/signup" && path != "/login" && path != "/login-admin") &&
+			{ (path != "/signup" && path != "/login" && path != "/login-admin" && path != "/chats" && !isChat) &&
 				<div className={ store.auth ? "pt-5 bg-light" : "mt-5"}>
 					<footer className="footer footer-bg mt-auto py-3 text-center custom-footer text-white py-5">
 						
