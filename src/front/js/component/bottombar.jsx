@@ -32,9 +32,14 @@ export const BottomNavbar = () => {
             actions.getChats();
         });
 
+        socket.on('online_users', (data) => {
+            actions.setOnlineUsers(data.users);
+        });
+
         return () => {
             socket.off('unseen_message');
             socket.off('new_chat');
+            socket.off('online_users');
         };
     }, [socket, smallDevice]);
 
