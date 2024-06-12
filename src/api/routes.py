@@ -884,8 +884,9 @@ def create_message(id):
     data = request.get_json()
     message = data.get('message')
     sender_id = data.get('sender_id')
+    client_generated_id = data.get('client_generated_id')
     
-    if not message or not sender_id:
+    if not message or not sender_id or not client_generated_id:
         return jsonify({'error': 'Missing fields.'}), 400
     
     existing_sender = User.query.get(sender_id)
@@ -894,7 +895,7 @@ def create_message(id):
     existing_chat = Chat.query.get(id)
     if not existing_chat: return jsonify({'error': 'Chat with given id not found.'}), 404
     
-    message = ChatMessage(chat_id=id, sender_user_id=sender_id, message=message)
+    message = ChatMessage(chat_id=id, sender_user_id=sender_id, message=message, client_generated_id=client_generated_id)
 
     db.session.add(message)
     db.session.commit()

@@ -5,7 +5,7 @@ import { Card, Form, Button, Spinner } from 'react-bootstrap';
 import { useWebSocket } from '../../store/webSocketContext.js';
 
 const Chat = (props) => {
-    const { store } = useContext(Context);
+    const { store, actions } = useContext(Context);
     const socket = useWebSocket();
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState('');
@@ -16,7 +16,11 @@ const Chat = (props) => {
             try {
                 const response = await fetch(process.env.BACKEND_URL + `/api/chats/${props.chat.id}/messages`);
                 const data = await response.json();
-                setMessages(data);
+                setMessages(data.slice().sort((a, b) => {
+                    const dateA = new Date(a.timestamp);
+                    const dateB = new Date(b.timestamp);
+                    return dateA - dateB;
+                }));
                 setLoading(false);
                 scrollToBottom();
             } catch (error) {
@@ -39,7 +43,6 @@ const Chat = (props) => {
         };
     }, [props.chat, socket]);
 
-
     const scrollToBottom = () => {
         const chatContainer = document.querySelector('.chat-content');
         chatContainer.scrollTop = chatContainer.scrollHeight;
@@ -48,11 +51,11 @@ const Chat = (props) => {
     const sendMessage = (e) => {
         e.preventDefault();
         if (message) {
-            socket.emit('message', { username: store.user.username, message, room: props.chat.room_name });
-
+            const uniqueId = actions.generateUniqueId(); 
+            socket.emit('message', { client_generated_id: uniqueId, username: store.user.username, message, room: props.chat.room_name }); 
             const config = {
                 method: "POST",
-                body: JSON.stringify({ message, sender_id: store.user.id }),
+                body: JSON.stringify({ client_generated_id: uniqueId, message, sender_id: store.user.id }),
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'

@@ -5,10 +5,10 @@ const Message = ({ message, markMessageAsSeen }) => {
     const { store } = useContext(Context);
 
     const isCurrentUserMessage = message && message.sender_user && message.sender_user.username === store.user.username;
-    const isUserMessage = message && message.username && message.username === store.user.username;
+    const isUserMessage = message && message.username === store.user.username;
 
     useEffect(() => {
-        markMessageAsSeen(message.id)
+        if(!isCurrentUserMessage) markMessageAsSeen(message.client_generated_id)
     }, []);
 
 
@@ -20,7 +20,6 @@ const Message = ({ message, markMessageAsSeen }) => {
     
         return `${time}`;
     }
-    
 
     return (
         <>
