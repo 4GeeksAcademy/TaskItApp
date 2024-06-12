@@ -30,6 +30,8 @@ import PhoneChatList from "./pages/phone_chat_list.js";
 import ProtectedRoute from "./component/protected_route.js";
 import { WebSocketProvider } from "./store/webSocketContext";
 import PhoneChat from "./component/chat/phone_chat.jsx";
+import { PhoneTask } from "./pages/phone_task.js";
+import { PhoneUser } from "./pages/phone_profile.js";
 
 const Layout = () => {
     const basename = process.env.BASENAME || "";
@@ -69,10 +71,10 @@ const Layout = () => {
                                     <Route element={<CategoryList />} path="/categories" />
                                     <Route element={<Category />} path="/categories/:thecategory" />
                                     <Route element={<ProtectedRoute element={<TaskFeed />} />} path="/tasks" />
-                                    <Route element={<ProtectedRoute element={<Task />} />} path="/tasks/:theid" />
+                                    <Route element={<ProtectedRoute element={ smallDevice ? <PhoneTask /> : <Task />} />} path="/tasks/:theid" />
                                     <Route element={<Applicants />} path="/tasks/:theid/applicants" />
                                     <Route element={<Seekers />} path="/seekers" />
-                                    <Route element={<User />} path="/users/:theusername" />
+                                    <Route element={ smallDevice ? <PhoneUser /> : <User /> } path="/users/:theusername" />
                                     <Route element={<LoginUser />} path="/login" />
                                     <Route element={<SignupUser />} path="/signup" />
                                     <Route element={<LoginAdmin />} path="/login-admin" />

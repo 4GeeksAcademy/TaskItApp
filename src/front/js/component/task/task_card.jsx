@@ -29,14 +29,12 @@ const Task = ({ taskInfo, index, list }) => {
     const handleComplete = () => {
         actions.changeTaskStatus(taskInfo.id, "completed");
         setStatus("completed");
-        if(list == "userTasks") store.userTasks[index].status = "completed";
         actions.sendNotification(`The task with id ${taskInfo.id}, has been marked as completed.`, taskInfo.seeker.user.username);
     }
     
     const handleCancel = () => {
         actions.changeTaskStatus(taskInfo.id, "cancelled");
         setStatus("cancelled");
-        if(list == "userTasks") store.userTasks[index].status = "cancelled";
         if(taskInfo.seeker) actions.sendNotification(`The task with id ${taskInfo.id}, has been cancelled.`, taskInfo.seeker.user.username);
     }
 
@@ -56,7 +54,7 @@ const Task = ({ taskInfo, index, list }) => {
                         { ((taskInfo.status == "completed" || status == "completed") && (path == '/' || isUserTasksPage))
                             ? ( showRateBtn &&
                                 <div className="rounded-circle overflow-hidden smooth" style={{ width: "auto", height: "auto" ,aspectRatio: "1/1" }}>
-                                    <button className="btn btn-warning h-100" onClick={handleShowRatingForm}><Icon className="fs-5" icon="material-symbols:reviews-outline" /></button>
+                                    <button className="btn btn-clear-yellow h-100" onClick={handleShowRatingForm}><Icon className="fs-5" icon="material-symbols:reviews-outline" /></button>
                                 </div>
                             ) : ((store.user.id == taskInfo.requester_user?.id && (taskInfo.status != "cancelled" || status != "cancelled") && (path == '/' || isUserTasksPage)) && (
                                 <>

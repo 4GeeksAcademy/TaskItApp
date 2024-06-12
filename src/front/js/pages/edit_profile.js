@@ -29,7 +29,7 @@ const EditProfile = () => {
     };
 
     return (
-        <div className={`container mt-5 ${isScreenWidthBelow760 ? 'small-screen' : ''}`}>
+        <div className={`container ${isScreenWidthBelow760 ? 'small-screen' : ''}`}>
             <div className="row justify-content-center">
                 <div className="col-md-6">
                     <h2 className="text-center mb-4">Edit Profile</h2>
@@ -93,14 +93,14 @@ const EditProfile = () => {
                             />
                         </div>
 
-                        <div className="form-group mb-3">
+                        <div className="form-group mb-3 mb-3">
                             <label htmlFor="edit-description" className="form-label">Description:</label>
                             <textarea
                                 className="form-control"
                                 id="description"
                                 name="edit-description"
                                 placeholder="Tell us about yourself..."
-                                value={description}
+                                value={description || ''}
                                 onChange={(e) => setDescription(e.target.value)}
                             ></textarea>
                         </div>
@@ -147,7 +147,7 @@ const EditProfile = () => {
                                 <small className="form-text text-muted">You can both request and seek tasks.</small>
                             </div>
                         </div>
-                        <button type="submit" className="btn btn-dark w-100">Save Changes</button>
+                        <button type="submit" className="btn btn-green w-100">Save Changes</button>
                     </form>
                 </div>
             </div>

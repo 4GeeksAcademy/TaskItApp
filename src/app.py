@@ -99,7 +99,8 @@ def handle_message(data):
     msg = data.get('message', 'No message provided')
     user = data.get('username')
     room = data.get('room')
-    send({'message': msg, 'username': user, 'room_name': room}, room=room)
+    unique_id = data.get('client_generated_id')
+    send({'client_generated_id': unique_id, 'room_name': room, 'message': msg, 'username': user}, room=room)
     emit('unseen_message', {'room': room}, room=room)
 
 @socketio.on('join')
@@ -169,7 +170,8 @@ def handle_new_chat(data):
 def handle_mark_message_as_seen(data):
     message_id = data['message_id']
     user_id = data['user_id']
-    chat_message = ChatMessage.query.get(message_id)
+    chat_message = ChatMessage.query.filter_by(client_generated_id=message_id).first()
+    print("holi", message_id)
     if chat_message and chat_message.sender_user_id != user_id and not chat_message.seen:
         chat_message.seen = True
         db.session.commit()

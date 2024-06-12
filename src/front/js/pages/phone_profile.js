@@ -4,10 +4,12 @@ import { useParams } from "react-router-dom";
 import { Context } from "../store/appContext";
 import StarRating from "../component/rating/StarRating.jsx";
 import RatingCard from "../component/rating/rating_card.jsx";
+import useScreenWidth from "../hooks/useScreenWidth.jsx";
 
-export const User = () => {
+export const PhoneUser = () => {
 	const { actions } = useContext(Context);
 	const params = useParams();
+    const smallDevice = useScreenWidth();
 
 	const [user, setUser] = useState({});
 	const [reviews, setReviews] = useState([])
@@ -39,19 +41,19 @@ export const User = () => {
     };
 
 	return (
-		<div className="container p-5 pt-0">
+		<div className="containerpt-0">
 			<div className="row d-flex justify-content-center mx-2">
-				<div className="col-6" >
+				<div className="col-12" >
 					<div className="rounded overflow-hidden p-0 float-start">
 						{ user.profile_picture && <img 
 							className="img-fluid" 
 							src={user.profile_picture} 
 							alt="User Profile"
-							style={{ height: "40rem", objectFit: "cover" }}
+							style={{ height: "auto", objectFit: "cover" }}
 						/>}
 					</div>
 				</div>
-				<div className="col-6 d-flex flex-column justify-content-between">
+				<div className="col-12 d-flex flex-column justify-content-between">
 					<div>
 						<h1><b>{user.full_name}</b> ({user.username})</h1>
 						{ requesterInfo && Object.keys(requesterInfo).length > 0 && 
@@ -74,18 +76,18 @@ export const User = () => {
 						}
 						<p className="fs-3 text-muted">{user.description}</p>
 					</div>
-					<div className="d-flex flex-column justify-content-around gap-5">
-						{	requesterInfo && Object.keys(requesterInfo).length > 0 &&
+					<div className="d-flex flex-column justify-content-around gap-2">
+                        {	requesterInfo && Object.keys(requesterInfo).length > 0 &&
 							<div className="card d-flex justify-content-around flex-row">
-								<div className="text-center d-flex flex-column">
+								<div className="text-center d-flex flex-column col-4">
 									<span className="fs-5"><b>Average Budget</b></span>
 									<span className="fs-2 text-muted">{requesterInfo.average_budget.toFixed(2)}</span>
 								</div>
-								<div className="text-center d-flex flex-column">
+								<div className="text-center d-flex flex-column col-4">
 									<span className="fs-5"><b>Total Requested</b></span>
 									<span className="fs-2 text-muted">{requesterInfo.total_requested_tasks}</span>
 								</div>
-								<div className="text-center d-flex flex-column">
+								<div className="text-center d-flex flex-column col-4 align-self-end">
 									<span className="fs-5"><b>Open</b></span>
 									<span className="fs-2 text-muted">{requesterInfo.total_open_tasks}</span>
 								</div>
@@ -105,17 +107,17 @@ export const User = () => {
 						}
 					</div>
 				</div>
-				{ reviews.length > 0 && <hr className="my-5"></hr>}
-				<div className="d-flex justify-content-between">
-					{ reviews.map((review) =>{
-						return <RatingCard key={review.id + 'urev'} rating={review} />
-					})}
+				{ reviews.length > 0 && <hr className="my-5"></hr> }
+                    <div className={`d-flex justify-content-between ${smallDevice ? "flex-column gap-3" : ""}`}>
+                        { reviews.map((review) =>{
+                            return <RatingCard key={review.id + 'urev'} rating={review} />
+                        })}
 				</div>
 			</div>
 		</div>
 	);
 };
 
-User.propTypes = {
+PhoneUser.propTypes = {
 	match: PropTypes.object
 };

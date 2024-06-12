@@ -307,6 +307,7 @@ class Chat(db.Model):
     
 class ChatMessage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    client_generated_id = db.Column(db.String(36), unique=True, nullable=False)
     sender_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     sender_user = db.relationship('User')
     chat_id = db.Column(db.Integer, db.ForeignKey('chat.id'), nullable=False)
@@ -321,6 +322,7 @@ class ChatMessage(db.Model):
     def serialize(self):
         return {
             "id": self.id,
+            "client_generated_id": self.client_generated_id, 
             "sender_user_id": self.sender_user.id,
             "sender_user": self.sender_user.serialize(),
             "chat_id": self.chat_id,

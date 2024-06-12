@@ -9,6 +9,7 @@ const ApplicantForm = (props) => {
 
     useEffect(() => {
         resetStates();
+        actions.resetMessages();
     }, [props.show])
 
     useEffect(() => {

@@ -110,6 +110,12 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 
+			generateUniqueId: () => {
+				const timestamp = new Date().getTime().toString().slice(-5); 
+				const randomNumber = Math.floor(Math.random() * 100000).toString().padStart(5, '0'); 
+				return timestamp + randomNumber;
+			},
+
 			getCoordinates: async (address) => {
 				const formattedAddress = address.replace(/\s+/g, '+');
 				const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${formattedAddress}&key=AIzaSyAbDzpCV-I2_PaflkmFtXby6R0WelVOapw`;

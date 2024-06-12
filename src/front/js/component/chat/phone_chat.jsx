@@ -17,18 +17,6 @@ const PhoneChat = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchMessages = async () => {
-            try {
-                const response = await fetch(process.env.BACKEND_URL + `/api/chats/${chatid}/messages`);
-                const data = await response.json();
-                setMessages(data);
-                setLoading(false);
-                scrollToBottom();
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
         setLoading(true);
         fetchMessages();
 
@@ -41,6 +29,7 @@ const PhoneChat = () => {
 
         return () => {
             socket.off('message');
+            actions.setUnseenMessages({ room: store.currentChat.room_name, hasUnseenMessages: false }, true);
             actions.setCurrentChat(null);
         };
     }, [store.currentChat, socket]);
@@ -54,13 +43,31 @@ const PhoneChat = () => {
         chatContainer.scrollTop = chatContainer.scrollHeight;
     };
 
+    const fetchMessages = async () => {
+        try {
+            const response = await fetch(process.env.BACKEND_URL + `/api/chats/${chatid}/messages`);
+            const data = await response.json();
+            setMessages(data.slice().sort((a, b) => {
+                const dateA = new Date(a.timestamp);
+                const dateB = new Date(b.timestamp);
+                return dateA - dateB;
+            }));
+            setLoading(false);
+            scrollToBottom();
+        } catch (error) {
+            console.error(error);
+        }
+    };
+    
     const sendMessage = (e) => {
         e.preventDefault();
         if (message) {
-            socket.emit('message', { username: store.user.username, message, room: store.currentChat?.room_name }); 
+            const uniqueId = actions.generateUniqueId();
+            console.log(store.currentChat)
+            socket.emit('message', { client_generated_id: uniqueId, username: store.user.username, message, room: store.currentChat?.room_name }); 
             const config = {
                 method: "POST",
-                body: JSON.stringify({ message, sender_id: store.user.id }),
+                body: JSON.stringify({ client_generated_id: uniqueId, message, sender_id: store.user.id }),
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
@@ -82,9 +89,9 @@ const PhoneChat = () => {
     return (
         <div className="phone-chat-container d-flex flex-column p-0 bg-light">
             <hr></hr>
-            <div className="chat-header bg-light px-5">
+            <div className="chat-header bg-light px-5 d-flex flex-row justify-content-between align-items-center">
                 <h5>{store.currentChat?.requester_user?.id == store.user.id ? store.currentChat?.seeker_user?.username : store.currentChat?.requester_user?.username} for task {store.currentChat?.task_id}</h5>
-                { store.currentChat?.isUserOnline && <span className="badge bg-success ms-2">Online</span>}
+                { actions.isUserOnline(store.currentChat) && <span className="badge bg-success ms-2">Online</span>}
             </div>
             <hr></hr>
 
