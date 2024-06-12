@@ -75,7 +75,7 @@ const TaskForm = (props) => {
                 dueDate, 
                 category, 
                 null, 
-                budget, 
+                parseInt(budget, 10), 
                 deliveryLat, 
                 deliveryLgt, 
                 pickupLat, 
@@ -99,7 +99,7 @@ const TaskForm = (props) => {
                     deliveryAddress, 
                     dueDate, 
                     category, 
-                    budget, 
+                    parseInt(budget, 10), 
                     deliveryLat, 
                     deliveryLgt, 
                     pickupLat, 
@@ -160,7 +160,7 @@ const TaskForm = (props) => {
                         <div>
                             <label htmlFor='budget'>Budget</label>
                             <div className='input-group'>
-                                <input type="text" className="form-control" id='budget' aria-label="budget" aria-describedby="basic-addon1" value={budget} onChange={(e) => setBudget(e.target.value)} />
+                                <input type="text" className="form-control" id='budget' aria-label="budget" aria-describedby="basic-addon1" value={budget} onChange={(e) => setBudget(e.target.value.replace(/\D/g, ''))} />
                                 <div className="input-group-append">
                                     <span className="input-group-text" id="basic-addon2">€</span>
                                 </div>
