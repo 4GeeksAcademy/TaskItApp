@@ -5,6 +5,7 @@ import { Link, useLocation } from "react-router-dom";
 import TaskForm from "./task_form.jsx";
 import RatingForm from "../rating/rating_form.jsx";
 import useScreenWidth from "../../hooks/useScreenWidth.jsx";
+import "../../../styles/better-buttons.css"
 
 const Task = ({ taskInfo, index, list }) => {
     const { store, actions } = useContext(Context);
@@ -54,23 +55,27 @@ const Task = ({ taskInfo, index, list }) => {
                     <div className="w-100 d-flex justify-content-end gap-2">
                         { ((taskInfo.status == "completed" || status == "completed") && (path == '/' || isUserTasksPage || isUserCompletedRequestsPage))
                             ? ( showRateBtn &&
-                                <div className="rounded-circle overflow-hidden smooth" style={{ width: "auto", height: "auto" ,aspectRatio: "1/1" }}>
-                                    <button className="btn btn-clear-yellow h-100" onClick={handleShowRatingForm}><Icon className="fs-5" icon="material-symbols:reviews-outline" /></button>
-                                </div>
+                                <button className="tc-btn yellow" onClick={handleShowRatingForm}> 
+                                    <Icon icon="material-symbols:reviews-outline" />
+                                    <span className="tc-btn-text">Rate</span> 
+                                </button>
                             ) : ((store.user.id == taskInfo.requester_user?.id && (taskInfo.status != "cancelled" || status != "cancelled") && (path == '/' || isUserTasksPage || isUserCompletedRequestsPage)) && (
                                 <>
                                     { taskInfo.seeker_id && 
-                                        <div className="rounded-circle overflow-hidden smooth" style={{ width: "auto", height: "auto" ,aspectRatio: "1/1" }}>
-                                            <button className="btn btn-clear-green h-100" onClick={handleComplete}><Icon  className="fs-5" icon="fluent-mdl2:accept-medium" /></button>
-                                        </div> 
+                                        <button className="tc-btn green" onClick={handleComplete}> 
+                                            <Icon icon="fluent-mdl2:accept-medium" />
+                                            <span className="tc-btn-text">Delete</span> 
+                                        </button>
                                     }
-                                    <div className="rounded-circle overflow-hidden smooth" style={{ aspectRatio: "1/1", height: "auto", width: "auto" }}>
-                                        <button className="btn btn-clear-orange h-100 fs-3 close d-flex align-items-center" onClick={handleCancel}><span>&times;</span></button>
-                                    </div>
+                                    <button className="tc-btn orange" onClick={handleCancel}> 
+                                        <Icon icon="tabler:trash" />
+                                        <span className="tc-btn-text">Delete</span> 
+                                    </button>
                                     { taskInfo.status == "pending" &&
-                                        <div className="rounded-circle overflow-hidden smooth d-flex align-items-center" style={{ width: "auto", height: "auto", aspectRatio: "1/1" }}>
-                                            <button className="btn btn-clear-dark h-100" onClick={handleShow}><Icon  className="fs-5" icon="mage:edit-fill" /></button>
-                                        </div>
+                                        <button className="tc-btn dark" onClick={handleShow}> 
+                                            <Icon icon="basil:edit-outline" />
+                                            <span className="tc-btn-text">Edit</span> 
+                                        </button>
                                     }
                                 </>
                             ))
@@ -96,13 +101,15 @@ const Task = ({ taskInfo, index, list }) => {
                         </div>
                     }
                     <div className="d-flex justify-content-between flex-row">
-                        <h2>{taskInfo.title}</h2>
-                        <small className="text-muted"><b>ID: </b>{taskInfo.id}</small>
+                        <h2 className="col-10">{taskInfo.title}</h2>
+                        <div className="col-2">
+                            <small className="text-muted float-end"><b>ID: </b>{taskInfo.id}</small>
+                        </div>
                     </div>
                     <p className="text-muted">{taskInfo.description}</p>
                 </div>
                 <div>
-                    <div className={`d-flex justify-content-between ${smallDevice ? "flex-column gap-3" : ""}`}>
+                    <div className={`d-flex justify-content-between`}>
                         { (path != '/' && !isUserTasksPage && !isUserCompletedTasksPage)
                         ? <div><span className="fs-3 d-flex align-items-center"><Icon className="me-2" icon="ph:user-bold" /> <span>{taskInfo.applicants.length} {taskInfo.applicants.length == 1 ? "applicant" : "applicants"}</span></span></div>
                         : taskInfo.seeker_id 
@@ -111,10 +118,10 @@ const Task = ({ taskInfo, index, list }) => {
                             <span><b>Task Seeker:</b> <Link to={`/users/${taskInfo.seeker?.user?.username}`}>{taskInfo.seeker?.user?.username}</Link></span>
                         </div>
                         : <Link to={`/tasks/${taskInfo.id}/applicants`}>
-                            <button className="btn btn-green smooth">
+                            <button className="btn btn-clear-dark smooth">
                                 <span className="d-flex align-items-center">
                                     <Icon className="me-2" icon="ph:user-bold" /> 
-                                    <span>{taskInfo.applicants.length} {taskInfo.applicants.length == 1 ? "applicant" : "applicants"}</span>
+                                    <span>{taskInfo.applicants.length} {smallDevice ? "" : (taskInfo.applicants.length == 1 ? "applicant" : "applicants")}</span>
                                 </span>
                             </button>
                         </Link>

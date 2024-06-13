@@ -31,6 +31,18 @@ a:hover {
     color: white;
 }
 
+.btn-dark {
+    border-radius: 3rem;
+    color: white;
+    transition: all 0.2s ease;
+    background-color: var(--dark);
+}
+
+.btn-dark:hover {
+    background-color: var(--dark);
+    color: white;
+}
+
 .btn-clear-green {
     border-radius: 3rem;
     border: 2px solid var(--green);
@@ -52,7 +64,7 @@ a:hover {
 }
 
 .btn-green:hover {
-    background-color: rgb(139, 160, 128);
+    background-color: var(--light-green);
     color: white;
 }
 
@@ -80,7 +92,7 @@ a:hover {
 }
 
 .btn-orange:hover {
-    background-color: rgb(240, 138, 109);
+    background-color: var(--light-orange);
     color: white;
 }
 
@@ -108,7 +120,7 @@ a:hover {
 }
 
 .btn-yellow:hover {
-    background-color: rgb(255, 216, 148);
+    background-color: var(--light-yellow);
     color: white;
 }
 .text-orange {

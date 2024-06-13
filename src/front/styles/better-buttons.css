@@ -1,0 +1,60 @@
+@import url(variables.css);
+
+.green {
+    --btn-main-color: var(--green);
+    --btn-light: var(--light-green);
+    --btn-color-text: white;
+}
+
+.yellow {
+    --btn-main-color: var(--yellow);
+    --btn-light: var(--light-yellow);
+    --btn-color-text: var(--dark);
+}
+
+.orange {
+    --btn-main-color: var(--orange);
+    --btn-light: var(--light-orange);
+    --btn-color-text: white;
+}
+
+.dark {
+    --btn-main-color: var(--dark);
+    --btn-light: var(--light-dark);
+    --btn-color-text: white;
+}
+
+.tc-btn {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    background-color: var(--btn-main-color);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--btn-color-text);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: width 0.3s, border-radius 0.3s, background-color 0.3s;
+}
+  
+.tc-btn-text {
+    opacity: 0;
+    white-space: nowrap;
+    transition: opacity 0.3s;
+    padding-left: 0.3rem;
+}
+  
+.tc-btn:hover {
+    width: 90px;
+    border-radius: 50px;
+    background-color: var(--btn-light);
+}
+  
+.tc-btn:hover .tc-btn-text {
+    opacity: 1;
+}
+
+
