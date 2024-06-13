@@ -47,7 +47,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			setError: (error) => { setStore({ message: "", error: error }) },
 			setCurrentChat: (chat) => { setStore({ currentChat: chat }) },
 			setOnlineUsers: (onlineUsers) => { setStore({ onlineUsers: onlineUsers }) },
-			emptyNotifications: () => { setStore ({ notificaitions: [] })},
+			emptyNotifications: () => { setStore ({ notifications: [] })},
 			isUserOnline: (chat) => {
 				const otherUser = chat.requester_user.id === getStore().user.id ? chat.seeker_user.username : chat.requester_user.username;
 				return getStore().onlineUsers.includes(otherUser);
