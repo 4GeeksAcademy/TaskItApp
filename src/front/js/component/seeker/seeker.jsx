@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import StarRating from "../rating/StarRating.jsx";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Context } from "../../store/appContext.js";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +10,8 @@ const Seeker = ({ seekerInfo, applicantInfo, applicants }) => {
     const { store, actions } = useContext(Context);
     const navigate = useNavigate();
     const smallDevice = useScreenWidth();
+    const path = useLocation().pathname; 
+    const isTasksApplicantsPath = /^\/tasks\/\d+\/applicants\/?$/.test(path);
 
     const acceptSeeker = () => {
         for(let applicant of applicants) {
@@ -85,12 +87,12 @@ const Seeker = ({ seekerInfo, applicantInfo, applicants }) => {
                     <div className="d-flex justify-content-between">
                         <button className="btn btn-green smooth" onClick={acceptSeeker}>Accept</button>
                         <button className="btn btn-orange smooth" onClick={() => actions.changePostulantStatus(applicantInfo.id, "rejected")}>Reject</button>
-                        <Link to={`/users/${seekerInfo.user.username}`}>
+                        <Link to={`/users/${seekerInfo.user.username}`} onClick={() => actions.setFromApplicants(isTasksApplicantsPath)}>
                             <button className="btn btn-clear-green smooth">View</button>
                         </Link>
                     </div>
                     :
-                    <div className="d-flex justify-content-between">
+                    <div className="d-flex justify-content-between" onClick={() => actions.setFromApplicants(isTasksApplicantsPath)}>
                         <Link to={`/users/${seekerInfo.user.username}`}>
                             <button className="btn btn-clear-green smooth">See Details</button>
                         </Link>

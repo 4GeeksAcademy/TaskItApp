@@ -4,9 +4,10 @@ import { useParams } from "react-router-dom";
 import { Context } from "../store/appContext";
 import StarRating from "../component/rating/StarRating.jsx";
 import RatingCard from "../component/rating/rating_card.jsx";
+import BackButton from "../component/back_button.js";
 
 export const User = () => {
-	const { actions } = useContext(Context);
+	const { store, actions } = useContext(Context);
 	const params = useParams();
 
 	const [user, setUser] = useState({});
@@ -26,6 +27,9 @@ export const User = () => {
 		}
 
 		loadInfo();
+
+		
+		return () => { actions.setFromApplicants(false) };
 	}, [])
 
 	const fetchReviews = async (currentUser) => {
@@ -39,7 +43,8 @@ export const User = () => {
     };
 
 	return (
-		<div className="container p-5 pt-0">
+		<div className="container-fluid p-5 pt-0">
+			{ store.fromApplicants && <BackButton></BackButton> }
 			<div className="row d-flex justify-content-center mx-2">
 				<div className="col-6" >
 					<div className="rounded overflow-hidden p-0 float-start">

@@ -5,9 +5,10 @@ import { Context } from "../store/appContext";
 import StarRating from "../component/rating/StarRating.jsx";
 import RatingCard from "../component/rating/rating_card.jsx";
 import useScreenWidth from "../hooks/useScreenWidth.jsx";
+import BackButton from "../component/back_button.js";
 
 export const PhoneUser = () => {
-	const { actions } = useContext(Context);
+	const { store, actions } = useContext(Context);
 	const params = useParams();
     const smallDevice = useScreenWidth();
 
@@ -41,8 +42,9 @@ export const PhoneUser = () => {
     };
 
 	return (
-		<div className="containerpt-0">
+		<div className="container pt-0">
 			<div className="row d-flex justify-content-center mx-2">
+				{ store.fromApplicants && <BackButton></BackButton> }
 				<div className="col-12" >
 					<div className="rounded overflow-hidden p-0 float-start">
 						{ user.profile_picture && <img 
