@@ -45,8 +45,8 @@ const SettingsUser = ({ dropdownVisible, setDropdownVisible }) => {
                         />}
                     </div>
                     <div className="d-flex flex-column justify-content-around">
-                        <span className="fs-5">{store.user.full_name}</span>
-                        <span className="fs-5">{store.user.username}</span>
+                        <span className="fs-5 text-break">{store.user.full_name}</span>
+                        <span className="fs-5 text-break">{store.user.username}</span>
                     </div>
                 </div>
             </div>

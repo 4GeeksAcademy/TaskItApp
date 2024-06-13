@@ -35,7 +35,8 @@ const SignupUser = () => {
                         <input 
                             value={username} 
                             onChange={(e) => setUsername(e.target.value)} 
-                            type="text" 
+                            type="text"  
+                            maxLength="24"
                             className="form-control" 
                             id="exampleInputUsername" 
                             placeholder="Enter username"
