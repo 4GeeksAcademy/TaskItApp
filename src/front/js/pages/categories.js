@@ -23,7 +23,7 @@ const CategoryList = () => {
                 }
             });
         }
-    }, [actions]);
+    }, []);
 
     const handleLogout = () => {
         actions.logoutAdmin();
