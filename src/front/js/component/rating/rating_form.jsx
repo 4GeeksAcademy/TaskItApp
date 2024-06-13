@@ -11,7 +11,7 @@ const RatingForm = (props) => {
 
     useEffect(() => {
         resetStates();
-        if (store.message) store.message = "";
+        actions.resetMessages();
     }, [props.show])
 
     const resetStates = () => {
