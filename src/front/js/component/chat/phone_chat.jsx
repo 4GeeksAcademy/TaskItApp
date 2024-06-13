@@ -5,6 +5,7 @@ import { Context } from "../../store/appContext.js"
 import { Form, Spinner } from 'react-bootstrap';
 import { useWebSocket } from '../../store/webSocketContext.js';
 import useScreenWidth from '../../hooks/useScreenWidth.jsx';
+import TypingAnimation from './typing_animation.jsx';
 
 const PhoneChat = () => { 
     const { store, actions } = useContext(Context);
@@ -15,6 +16,7 @@ const PhoneChat = () => {
     const { chatid } = useParams(); 
     const smallDevice = useScreenWidth();
     const navigate = useNavigate();
+    const [typingUsers, setTypingUsers] = useState({});
 
     useEffect(() => {
         setLoading(true);
@@ -26,9 +28,18 @@ const PhoneChat = () => {
             setMessages((prevMessages) => [...prevMessages, message]);
             scrollToBottom();
         });
+        
+        socket.on('typing_status', ({ room, users }) => {
+            setTypingUsers((prevTypingUsers) => ({
+                ...prevTypingUsers,
+                [room]: users,
+            }));
+        });
 
         return () => {
             socket.off('message');
+            socket.off('typing_status');            
+            handleStopTyping();
             actions.setUnseenMessages({ room: store.currentChat.room_name, hasUnseenMessages: false }, true);
             actions.setCurrentChat(null);
         };
@@ -63,7 +74,7 @@ const PhoneChat = () => {
         e.preventDefault();
         if (message) {
             const uniqueId = actions.generateUniqueId();
-            socket.emit('message', { client_generated_id: uniqueId, username: store.user.username, message, room: store.currentChat?.room_name }); 
+            socket.emit('message', { client_generated_id: uniqueId, username: store.user?.username, message, room: store.currentChat?.room_name }); 
             const config = {
                 method: "POST",
                 body: JSON.stringify({ client_generated_id: uniqueId, message, sender_id: store.user.id }),
@@ -76,6 +87,7 @@ const PhoneChat = () => {
             fetch(process.env.BACKEND_URL + `/api/chats/${store.currentChat?.id}/messages`, config)
             .catch(error => console.error(error));
 
+            handleStopTyping();
             setMessage('');
         }
     };
@@ -84,6 +96,20 @@ const PhoneChat = () => {
         if(message_id) socket.emit('mark_message_as_seen', { message_id: message_id, user_id: store.user.id });
         if(store.currentChat?.room_name) actions.setUnseenMessages({ room: store.currentChat?.room_name, hasUnseenMessages: false }, true);
     }
+
+    const handleTyping = () => {
+        socket.emit('typing', { username: store.user?.username, room: store.currentChat.room_name });
+    };
+
+    const handleStopTyping = () => {
+        socket.emit('stop_typing', { username: store.user?.username, room: store.currentChat.room_name });
+    };
+
+    const handleOnChange = (e) => {
+        setMessage(e.target.value);
+        if(e.target.value.length > 0) handleTyping();
+        else handleStopTyping();
+    };
 
     return (
         <div className="phone-chat-container d-flex flex-column p-0 bg-light">
@@ -100,7 +126,20 @@ const PhoneChat = () => {
                     </div>
                     <div className='d-flex flex-column justify-content-center'>
                         <h5 className="mb-0">{store.currentChat.requester_user.id == store.user.id ? store.currentChat.seeker_user.username : store.currentChat.requester_user.username} for task {store.currentChat.task_id}</h5>
-                        <small>{actions.isUserOnline(store.currentChat) ? "Online" : "Offline"}</small>
+                        <small>
+                            {actions.isUserOnline(store.currentChat) ? (
+                                ((typingUsers[store.currentChat.room_name]?.length > 0 && !typingUsers[store.currentChat.room_name]?.some((user) => user === store.user?.username))
+                                || typingUsers[store.currentChat.room_name]?.length == 2)
+                                    ? (
+                                        <>
+                                            is typing
+                                            <TypingAnimation />
+                                        </>
+                                    ) : (
+                                        'Online'
+                                    )
+                            ) : 'Offline'}
+                        </small>
                     </div>
                 </div>
             </div>
@@ -126,7 +165,7 @@ const PhoneChat = () => {
                     <Form.Control
                         type="text"
                         value={message}
-                        onChange={(e) => setMessage(e.target.value)}
+                        onChange={(e) => handleOnChange(e)}
                         placeholder="Enter message"
                     />
                 </Form>

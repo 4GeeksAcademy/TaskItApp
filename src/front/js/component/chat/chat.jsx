@@ -3,6 +3,7 @@ import Message from './message.jsx';
 import { Context } from "../../store/appContext.js"
 import { Card, Form, Button, Spinner } from 'react-bootstrap';
 import { useWebSocket } from '../../store/webSocketContext.js';
+import TypingAnimation from './typing_animation.jsx';
 
 const Chat = (props) => {
     const { store, actions } = useContext(Context);
@@ -10,6 +11,7 @@ const Chat = (props) => {
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(true);
+    const [typingUsers, setTypingUsers] = useState({});
 
     useEffect(() => {
         const fetchMessages = async () => {
@@ -38,8 +40,18 @@ const Chat = (props) => {
             scrollToBottom();
         });
 
+        socket.on('typing_status', ({ room, users }) => {
+            setTypingUsers((prevTypingUsers) => ({
+                ...prevTypingUsers,
+                [room]: users,
+            }));
+        });
+
+
         return () => {
             socket.off('message');
+            socket.off('typing_status');
+            handleStopTyping();
         };
     }, [props.chat, socket]);
 
@@ -52,7 +64,7 @@ const Chat = (props) => {
         e.preventDefault();
         if (message) {
             const uniqueId = actions.generateUniqueId(); 
-            socket.emit('message', { client_generated_id: uniqueId, username: store.user.username, message, room: props.chat.room_name }); 
+            socket.emit('message', { client_generated_id: uniqueId, username: store.user?.username, message, room: props.chat.room_name }); 
             const config = {
                 method: "POST",
                 body: JSON.stringify({ client_generated_id: uniqueId, message, sender_id: store.user.id }),
@@ -65,6 +77,7 @@ const Chat = (props) => {
             fetch(process.env.BACKEND_URL + `/api/chats/${props.chat.id}/messages`, config)
             .catch(error => console.error(error));
 
+            handleStopTyping();
             setMessage('');
         }
     };
@@ -72,6 +85,20 @@ const Chat = (props) => {
     function markMessageAsSeen(message_id) {
         if(message_id) socket.emit('mark_message_as_seen', { message_id: message_id, user_id: store.user.id });
     }
+
+    const handleTyping = () => {
+        socket.emit('typing', { username: store.user?.username, room: props.chat.room_name });
+    };
+
+    const handleStopTyping = () => {
+        socket.emit('stop_typing', { username: store.user?.username, room: props.chat.room_name });
+    };
+
+    const handleOnChange = (e) => {
+        setMessage(e.target.value);
+        if(e.target.value.length > 0) handleTyping();
+        else handleStopTyping();
+    };
 
     return (
         <Card className='position-absolute bottom-0 start-70 card-messaging chat'>
@@ -87,7 +114,20 @@ const Chat = (props) => {
                     </div>
                     <div className='d-flex flex-column justify-content-center'>
                         <h5 className="mb-0">{props.chat.requester_user.id == store.user.id ? props.chat.seeker_user.username : props.chat.requester_user.username} for task {props.chat.task_id}</h5>
-                        <small>{props.isUserOnline ? "Online" : "Offline"}</small>
+                        <small>
+                        {props.isUserOnline ? (
+                                ((typingUsers[props.chat.room_name]?.length > 0 && !typingUsers[props.chat.room_name]?.some((user) => user === store.user?.username))
+                                || typingUsers[props.chat.room_name]?.length == 2)
+                                    ? (
+                                        <>
+                                            is typing
+                                            <TypingAnimation />
+                                        </>
+                                    ) : (
+                                        'Online'
+                                    )
+                            ) : 'Offline'}
+                        </small>
                     </div>
                 </div>
                 <Button onClick={props.handleClose} variant="" className="close p-0" aria-label="Close">
@@ -115,7 +155,7 @@ const Chat = (props) => {
                     <Form.Control
                         type="text"
                         value={message}
-                        onChange={(e) => setMessage(e.target.value)}
+                        onChange={(e) => handleOnChange(e)}
                         placeholder="Enter message"
                     />
                 </Form>
