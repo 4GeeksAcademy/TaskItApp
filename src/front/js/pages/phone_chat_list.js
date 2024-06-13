@@ -27,7 +27,7 @@ const PhoneChatList = () => {
                                 {actions.isUserOnline(chat) && (
                                 <span className="text-success ms-2">&#9679;</span>
                             )}
-                            {(store.unseenMessages[chat.room_name] && chat != currentChat && !chatOpen) && <span className="badge bg-danger ms-2">New</span>}
+                            {(store.unseenMessages[chat.room_name] && chat != store.currentChat) && <span className="badge bg-danger ms-2">New</span>}
                         </div>
                     )))}
                 </div>

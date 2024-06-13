@@ -35,8 +35,10 @@ const AppliedToTask = ({ taskInfo }) => {
                     </div>
                 </div>
                 <div className="d-flex justify-content-between flex-row">
-                    <h2>{taskInfo.title}</h2>
-                    <small className="text-muted"><b>ID: </b>{taskInfo.id}</small>
+                    <h2 className="col-10">{taskInfo.title}</h2>
+                    <div className="col-2">
+                        <small className="text-muted"><b>ID: </b>{taskInfo.id}</small>
+                    </div>
                 </div>
                 <p className="text-muted">{taskInfo.description}</p>
                 <div className="d-flex align-items-end justify-content-between">

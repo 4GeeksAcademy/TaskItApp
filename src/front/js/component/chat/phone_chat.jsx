@@ -88,7 +88,7 @@ const PhoneChat = () => {
     return (
         <div className="phone-chat-container d-flex flex-column p-0 bg-light">
             <hr></hr>
-            <div className="chat-header bg-light px-5 d-flex flex-row justify-content-between align-items-center">
+            <div className="chat-header bg-light px-5 d-flex align-items-center">
                 <div className='d-flex flex-row align-items-center'>
                     <div className="rounded-circle bg-dark me-2 overflow-hidden" style={{ height: "40px", width: "40px", aspectRatio: "1/1" }}>
                         {(store.currentChat?.requester_user.id == store.user.id ? store.currentChat?.seeker_user.profile_picture : store.currentChat?.requester_user.profile_picture) && <img
@@ -98,9 +98,11 @@ const PhoneChat = () => {
                         style={{ width: "100%", height: "100%", objectFit: "cover" }}
                     />}
                     </div>
-                    <h5>{store.currentChat?.requester_user?.id == store.user.id ? store.currentChat?.seeker_user?.username : store.currentChat?.requester_user?.username} for task {store.currentChat?.task_id}</h5>
+                    <div className='d-flex flex-column justify-content-center'>
+                        <h5 className="mb-0">{store.currentChat.requester_user.id == store.user.id ? store.currentChat.seeker_user.username : store.currentChat.requester_user.username} for task {store.currentChat.task_id}</h5>
+                        <small>{actions.isUserOnline(store.currentChat) ? "Online" : "Offline"}</small>
+                    </div>
                 </div>
-                { actions.isUserOnline(store.currentChat) && <span className="badge bg-success ms-2">Online</span>}
             </div>
             <hr></hr>
 
