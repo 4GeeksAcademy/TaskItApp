@@ -63,7 +63,7 @@ const HowItWorks = () => {
                     </div>
                     <div className="mt-5">
                         <h3>5. Rate and Review <small>⭐</small></h3>
-                        <p className="fs-4 text-muted">After task completion, both solicitors and task seekers have the opportunity to rate and review each other.</p>
+                        <p className="fs-4 text-muted">After task completion, both requesters and task seekers have the opportunity to rate and review each other.</p>
                     </div>
                     <h4 className="text-orange">Build a trusted reputation within the community based on your reliability, professionalism and quality of work.</h4>
                 </div>
