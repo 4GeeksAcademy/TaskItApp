@@ -76,6 +76,25 @@ export const PhoneTask = () => {
 					: task.status == "pending" && <button className="btn btn-clear-dark" onClick={handleShowTaskForm}><Icon icon="mage:edit-fill" /> Edit</button>
 				}
 			</div>
+			<div className="d-flex flex-row align-items-center mt-3 py-3">
+                <div className="rounded-circle bg-dark me-2 overflow-hidden" style={{ height: "60px", width: "60px", aspectRatio: "1/1" }}>
+                    { task.requester_user?.profile_picture && <img
+                        className="img-fluid"
+                        src={task.requester_user?.profile_picture}
+                        alt="User Profile"
+                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    />}
+                </div>
+                <div className="d-flex flex-column justify-content-around">
+                    <Link to={`/users/${task.requester_user?.username}`}>
+                        <h5 className="mb-0 pt-2" >{task.requester_user?.username || "deleted"}</h5>
+                    </Link>
+                    <div className="d-flex align-items-center">
+                        {requester.overall_rating && <StarRating value={requester.overall_rating || 0}></StarRating>}
+                        {parseInt(requester.overall_rating) > 0 && <span className="text-muted ms-1">({requester.total_reviews})</span>}
+                    </div>
+                </div>
+            </div>
             <div>
 				<div className="d-flex justify-content-between flex-row">
 					<h2 className="col-10">{task.title}</h2>
@@ -97,25 +116,6 @@ export const PhoneTask = () => {
             <div className="rounded overflow-hidden card p-0  mt-3" style={{ height: "200px"}}>
 				{ (task.delivery_address && task.pickup_address) && <Map markers={[[task.delivery_address?.latitude, task.delivery_address?.longitude], [task.pickup_address?.latitude, task.pickup_address?.longitude]]} height={200}></Map>}
 			</div>
-            <div className="d-flex flex-row justify-content-center align-items-center mt-3 card py-3">
-                    <div className="rounded-circle bg-dark me-2 overflow-hidden" style={{ height: "60px", width: "60px", aspectRatio: "1/1" }}>
-                        { task.requester_user?.profile_picture && <img
-                            className="img-fluid"
-                            src={task.requester_user?.profile_picture}
-                            alt="User Profile"
-                            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                        />}
-                    </div>
-                    <div className="d-flex flex-column justify-content-around">
-                        <Link to={`/users/${task.requester_user?.username}`}>
-                            <h5 className="mb-0 pt-2" >{task.requester_user?.username || "deleted"}</h5>
-                        </Link>
-                        <div className="d-flex align-items-center">
-                            {requester.overall_rating && <StarRating value={requester.overall_rating || 0}></StarRating>}
-                            {parseInt(requester.overall_rating) > 0 && <span className="text-muted ms-1">({requester.total_reviews})</span>}
-                        </div>
-                    </div>
-                </div>
 			<TaskForm show={showTaskForm} handleClose={handleCloseTaskForm} currentTask={task} loadInfo={loadInfo} ></TaskForm>
 			<ApplicantForm show={showApplicationForm} handleClose={handleCloseApplicationForm} taskID={task.id} setApplied={setApplied} taskRequester={task.requester_user?.username}></ApplicantForm>
 		</div>

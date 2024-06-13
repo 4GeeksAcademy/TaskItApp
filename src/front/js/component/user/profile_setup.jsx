@@ -47,7 +47,8 @@ const ProfileSetup = () => {
                                         type="text"
                                         className="form-control"
                                         id="full-name"
-                                        name="full-name"
+                                        name="full-name" 
+                                        maxLength="120"
                                         placeholder="Enter your full name"
                                         value={fullName}
                                         onChange={(e) => setFullName(e.target.value)}

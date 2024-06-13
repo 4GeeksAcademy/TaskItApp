@@ -66,7 +66,7 @@ const Seeker = ({ seekerInfo, applicantInfo, applicants }) => {
                         <div className="d-flex flex-column justify-content-around">
                             <Link to={`/users/${seekerInfo.user.username}`}>
                                 { !smallDevice 
-                                    ? <span className="fs-5"><b>{seekerInfo.user.full_name}</b> <span className="text-muted"> ({seekerInfo.user.username})</span></span>
+                                    ? <span className="fs-5 text-break"><b>{seekerInfo.user.full_name}</b> <span className="text-muted"> ({seekerInfo.user.username})</span></span>
                                     : <span className="fs-5"><b>{seekerInfo.user.username}</b></span>
                                 }
                             </Link>

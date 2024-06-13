@@ -48,7 +48,7 @@
 }
   
 .tc-btn:hover {
-    width: 90px;
+    width: 120px;
     border-radius: 50px;
     background-color: var(--btn-light);
 }

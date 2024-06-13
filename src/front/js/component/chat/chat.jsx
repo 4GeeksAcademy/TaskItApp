@@ -11,8 +11,6 @@ const Chat = (props) => {
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(true);
 
-    console.log(props.chat)
-
     useEffect(() => {
         const fetchMessages = async () => {
             try {
@@ -87,8 +85,10 @@ const Chat = (props) => {
                             style={{ width: "100%", height: "100%", objectFit: "cover" }}
                         />}
                     </div>
-                    <h5 className="mb-0">{props.chat.requester_user.id == store.user.id ? props.chat.seeker_user.username : props.chat.requester_user.username} for task {props.chat.task_id}</h5>
-                    { props.isUserOnline && <span className="badge bg-success ms-2">Online</span>}
+                    <div className='d-flex flex-column justify-content-center'>
+                        <h5 className="mb-0">{props.chat.requester_user.id == store.user.id ? props.chat.seeker_user.username : props.chat.requester_user.username} for task {props.chat.task_id}</h5>
+                        <small>{props.isUserOnline ? "Online" : "Offline"}</small>
+                    </div>
                 </div>
                 <Button onClick={props.handleClose} variant="" className="close p-0" aria-label="Close">
                     <span className="fs-3" aria-hidden="true">&times;</span>
