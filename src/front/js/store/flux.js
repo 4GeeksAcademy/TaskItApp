@@ -47,6 +47,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			setError: (error) => { setStore({ message: "", error: error }) },
 			setCurrentChat: (chat) => { setStore({ currentChat: chat }) },
 			setOnlineUsers: (onlineUsers) => { setStore({ onlineUsers: onlineUsers }) },
+			emptyNotifications: () => { setStore ({ notificaitions: [] })},
 			isUserOnline: (chat) => {
 				const otherUser = chat.requester_user.id === getStore().user.id ? chat.seeker_user.username : chat.requester_user.username;
 				return getStore().onlineUsers.includes(otherUser);
@@ -288,6 +289,14 @@ const getState = ({ getStore, getActions, setStore }) => {
                     (data) => setStore({ addresses: data })
                 );
             },
+
+			getUserAddresses: () => {
+                fetchHelper(
+                    process.env.BACKEND_URL + `/api/addresses/${getStore().user.id}`,
+                    {},
+                    (data) => setStore({ addresses: data })
+                );
+			},
 
             deleteAddresses: (id) => {
                 const config = {

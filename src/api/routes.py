@@ -198,9 +198,9 @@ def get_addresses():
 
     return jsonify(results), 200
 
-@api.route('/addresses/<int:address_id>', methods=['GET'])
-def get_address(address_id):
-    address = Address.query.filter_by(id=address_id).first()
+@api.route('/addresses/<int:user_id>', methods=['GET'])
+def get_address(user_id):
+    address = Address.query.filter_by(user_id=user_id).first()
     return jsonify(address.serialize()), 200
 
 
@@ -949,7 +949,13 @@ def has_unseen_messages(user_id, chat_id):
     if not existing_user: return jsonify({"error": "User does not exist."}), 404
 
     try:
+        last_message = ChatMessage.query.filter_by(chat_id=chat_id).order_by(ChatMessage.timestamp.desc()).first()
+
+        if last_message and last_message.sender_user_id == user_id:
+            return jsonify({"has_unseen_messages": False})
+
         unseen_messages_count = ChatMessage.query.filter_by(chat_id=chat_id, seen=False).filter(ChatMessage.sender_user_id != user_id).count()
+
         return jsonify({"has_unseen_messages": bool(unseen_messages_count > 0)})
     except Exception as e:
         return jsonify({"error": str(e)}), 500

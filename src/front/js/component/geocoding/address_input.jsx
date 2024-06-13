@@ -6,7 +6,7 @@ const AddressInput = (props) => {
     const [suggestions, setSuggestions] = useState([]);
 
     useEffect(() => {
-        actions.getAddresses();
+        actions.getUserAddresses();
     }, []);
 
     const getSuggestions = async (address) => {
