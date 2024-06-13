@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 
 function useScreenWidth() {
-    const [isScreenWidthBelow760, setIsScreenWidthBelow760] = useState(window.innerWidth <= 760);
+    const [isScreenWidthBelow820, setIsScreenWidthBelow820] = useState(window.innerWidth <= 820);
 
     useEffect(() => {
         const handleResize = () => {
-            setIsScreenWidthBelow760(window.innerWidth <= 760);
+            setIsScreenWidthBelow820(window.innerWidth <= 820);
         };
 
         window.addEventListener('resize', handleResize);
@@ -15,7 +15,7 @@ function useScreenWidth() {
         };
     }, []);
 
-    return isScreenWidthBelow760;
+    return isScreenWidthBelow820;
 }
 
 export default useScreenWidth;

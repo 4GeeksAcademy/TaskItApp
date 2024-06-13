@@ -8,7 +8,7 @@ const RatingCard = ({ rating }) => {
 
     return (
         <div className="container-fluid">
-            <div className={`${isTaskDetailPage ? "col-12" : "col-lg-4 col-md-8 col-sm-11 flex-column"} p-0 d-flex w-100 h-100`}>
+            <div className={`${isTaskDetailPage ? "col-12" : "col-xl-4 col-lg-12 col-12 flex-column"} p-0 d-flex w-100 h-100`}>
                 <div className={`card p-4 h-100 ${isTaskDetailPage ? "w-100" : ""} `}>
                     <StarRating value={rating.stars || 0} />
                     <p>{rating.review}</p>
