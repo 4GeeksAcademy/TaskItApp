@@ -41,12 +41,15 @@ const getState = ({ getStore, getActions, setStore }) => {
 			currentChat: {},
 			unseenMessages: [],
 			onlineUsers: [],
+			fromApplicants: false,
 		},
 		actions: {
 			resetMessages: () => { setStore({ message: "", error: "" }) },
 			setError: (error) => { setStore({ message: "", error: error }) },
 			setCurrentChat: (chat) => { setStore({ currentChat: chat }) },
 			setOnlineUsers: (onlineUsers) => { setStore({ onlineUsers: onlineUsers }) },
+			emptyNotifications: () => { setStore ({ notifications: [] })},
+			setFromApplicants: (bool) => { setStore({ fromApplicants: bool })},
 			isUserOnline: (chat) => {
 				const otherUser = chat.requester_user.id === getStore().user.id ? chat.seeker_user.username : chat.requester_user.username;
 				return getStore().onlineUsers.includes(otherUser);
@@ -281,13 +284,13 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 
 			// ADDRESSES
-            getAddresses: () => {
+			getUserAddresses: () => {
                 fetchHelper(
-                    process.env.BACKEND_URL + "/api/addresses",
+                    process.env.BACKEND_URL + `/api/addresses/${getStore().user.id}`,
                     {},
                     (data) => setStore({ addresses: data })
                 );
-            },
+			},
 
             deleteAddresses: (id) => {
                 const config = {
@@ -322,7 +325,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                 fetchHelper(
                     process.env.BACKEND_URL + `/api/addresses`,
                     config,
-                    () => getActions().getAddresses()
+                    () => getActions().getUserAddresses()
                 );
             },
 

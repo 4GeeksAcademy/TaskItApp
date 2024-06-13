@@ -26,7 +26,7 @@ const LoginUser = () => {
         <div className="d-flex justify-content-center align-items-center bg-light" style={{ width: '100vw', height: '100vh' }}>
             <div className="card p-4" style={{ maxWidth: "400px", width: "100%" }}>
                 <h4 className="text-center">Log in</h4>
-                { (store.error || store.message) && <Alert message={store.message} error={store.error} ></Alert>}
+                { (store.error) && <Alert error={store.error} ></Alert>}
                 <form onSubmit={handleSubmit}>
                     <div className="mb-3">
                         <label htmlFor="exampleInputUsername" className="form-label">Username</label>

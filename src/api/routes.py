@@ -198,10 +198,10 @@ def get_addresses():
 
     return jsonify(results), 200
 
-@api.route('/addresses/<int:address_id>', methods=['GET'])
-def get_address(address_id):
-    address = Address.query.filter_by(id=address_id).first()
-    return jsonify(address.serialize()), 200
+@api.route('/addresses/<int:user_id>', methods=['GET'])
+def get_address(user_id):
+    addresses = Address.query.filter_by(user_id=user_id).all()
+    return jsonify([address.serialize() for address in addresses]), 200
 
 
 @api.route('/addresses', methods=['POST'])
@@ -793,17 +793,17 @@ def get_user_tasks(index):
     requester = Requester.query.filter_by(user_id=index).first()
     if not requester:
         return jsonify({"error": "Requester not found"}), 404
+    
+    query = Task.query.filter(
+        Task.requester_id == requester.id,
+        Task.status.notin_([StatusEnum.CANCELLED, StatusEnum.COMPLETED])
+    )
 
     if last:
-        tasks = Task.query.filter(
-            Task.status.notin_([StatusEnum.CANCELLED, StatusEnum.COMPLETED])
-        ).all()
-        tasks = tasks[::-1][:3]
+        tasks = query.order_by(Task.id.desc()).limit(3).all()
     else:
-        tasks = Task.query.filter(
-            Task.status.notin_([StatusEnum.CANCELLED, StatusEnum.COMPLETED])
-        ).all()
-        tasks = tasks[::-1]
+        tasks = query.order_by(Task.id.desc()).all()
+
 
     return jsonify([task.serialize() for task in tasks]), 200
 
@@ -949,7 +949,13 @@ def has_unseen_messages(user_id, chat_id):
     if not existing_user: return jsonify({"error": "User does not exist."}), 404
 
     try:
+        last_message = ChatMessage.query.filter_by(chat_id=chat_id).order_by(ChatMessage.timestamp.desc()).first()
+
+        if last_message and last_message.sender_user_id == user_id:
+            return jsonify({"has_unseen_messages": False})
+
         unseen_messages_count = ChatMessage.query.filter_by(chat_id=chat_id, seen=False).filter(ChatMessage.sender_user_id != user_id).count()
+
         return jsonify({"has_unseen_messages": bool(unseen_messages_count > 0)})
     except Exception as e:
         return jsonify({"error": str(e)}), 500

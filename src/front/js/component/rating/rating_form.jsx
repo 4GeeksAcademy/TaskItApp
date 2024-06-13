@@ -3,15 +3,17 @@ import { Modal, ModalTitle } from 'react-bootstrap';
 import { Context } from '../../store/appContext.js';
 import Alert from '../alert.jsx';
 import StarRating from "./StarRating.jsx"
+import { useLocation } from 'react-router-dom';
 
 const RatingForm = (props) => {
     const { store, actions } = useContext(Context);
     const [rating, setRating] = useState(0);
     const [review, setReview] = useState("");
+    const path = useLocation().pathname;
 
     useEffect(() => {
         resetStates();
-        if (store.message) store.message = "";
+        actions.resetMessages();
     }, [props.show])
 
     const resetStates = () => {
@@ -21,8 +23,9 @@ const RatingForm = (props) => {
 
     useEffect(() => {
         if(store.message == "User rated successfully.") {
-            if (props.role == "requester") actions.getRequesterCompletedTasks();
-            if (props.role == "seeker") actions.getSeekerCompletedTasks();
+            if (props.role == "requester") actions.getRequesterCompletedTasks(path == '/');
+            if (props.role == "seeker") actions.getSeekerCompletedTasks(path == '/');
+            
             props.setShowBtn(false);
             props.handleClose();
         }

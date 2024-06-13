@@ -22,6 +22,7 @@ const NotificationDropdown = ({ dropdownVisible, setDropdownVisible }) => {
 
     useEffect(() => {
         if(store.notifications.length > 0) markAsSeen();
+        if(!dropdownVisible) actions.emptyNotifications();
     }, [dropdownVisible]);
 
     function markAsSeen() {
@@ -31,7 +32,6 @@ const NotificationDropdown = ({ dropdownVisible, setDropdownVisible }) => {
                 .catch(error => console.error(error))
             }
         }
-        actions.getNotifications()
     }
 
     return (
