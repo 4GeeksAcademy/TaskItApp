@@ -282,14 +282,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 
 			// ADDRESSES
-            getAddresses: () => {
-                fetchHelper(
-                    process.env.BACKEND_URL + "/api/addresses",
-                    {},
-                    (data) => setStore({ addresses: data })
-                );
-            },
-
 			getUserAddresses: () => {
                 fetchHelper(
                     process.env.BACKEND_URL + `/api/addresses/${getStore().user.id}`,
@@ -331,7 +323,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                 fetchHelper(
                     process.env.BACKEND_URL + `/api/addresses`,
                     config,
-                    () => getActions().getAddresses()
+                    () => getActions().getUserAddresses()
                 );
             },
 

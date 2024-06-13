@@ -8,6 +8,10 @@ const AddressInput = (props) => {
     useEffect(() => {
         actions.getUserAddresses();
     }, []);
+    
+    useEffect(() => {
+        console.log(store.addresses)
+    }, [store.addresses])
 
     const getSuggestions = async (address) => {
         if (address.length > 7) {

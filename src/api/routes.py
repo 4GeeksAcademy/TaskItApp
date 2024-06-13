@@ -200,8 +200,8 @@ def get_addresses():
 
 @api.route('/addresses/<int:user_id>', methods=['GET'])
 def get_address(user_id):
-    address = Address.query.filter_by(user_id=user_id).first()
-    return jsonify(address.serialize()), 200
+    addresses = Address.query.filter_by(user_id=user_id).all()
+    return jsonify([address.serialize() for address in addresses]), 200
 
 
 @api.route('/addresses', methods=['POST'])
