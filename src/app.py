@@ -32,6 +32,7 @@ CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 usernames = {}
+typing_users = {}
 
 # database condiguration
 db_url = os.getenv("DATABASE_URL")
@@ -90,6 +91,7 @@ def handle_connect():
 
 @socketio.on('disconnect')
 def handle_disconnect():
+    remove_user_from_typing()
     if request.sid in usernames:
         del usernames[request.sid]
         emit('online_users', {'users': list(usernames.values())}, broadcast=True)
@@ -171,11 +173,44 @@ def handle_mark_message_as_seen(data):
     message_id = data['message_id']
     user_id = data['user_id']
     chat_message = ChatMessage.query.filter_by(client_generated_id=message_id).first()
-    print("holi", message_id)
     if chat_message and chat_message.sender_user_id != user_id and not chat_message.seen:
         chat_message.seen = True
         db.session.commit()
         emit('message_seen', {'message_id': message_id}, room=chat_message.chat.room_name)
+
+@socketio.on('typing')
+def handle_typing(data):
+    user = data.get('username')
+    room = data.get('room')
+    if user and room:
+        if room not in typing_users:
+            typing_users[room] = []
+        if user not in typing_users[room]:
+            typing_users[room].append(user)
+        emit_typing_users(room)
+
+@socketio.on('stop_typing')
+def handle_stop_typing(data):
+    user = data.get('username')
+    room = data.get('room')
+    if user and room and room in typing_users and user in typing_users[room]:
+        typing_users[room].remove(user)
+        if not typing_users[room]:
+            del typing_users[room]
+        emit_typing_users(room)
+
+def emit_typing_users(room):
+    emit('typing_status', {'room': room, 'users': typing_users.get(room, [])}, room=room, broadcast=True)
+
+def remove_user_from_typing():
+    rooms_to_remove = []
+    for room, users in typing_users.items():
+        if request.sid in users:
+            users.remove(request.sid)
+            if not users:
+                rooms_to_remove.append(room)
+    for room in rooms_to_remove:
+        del typing_users[room]
 
 cloudinary.config(
     cloud_name = 'doojwu2m7',
