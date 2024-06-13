@@ -155,7 +155,7 @@ const TaskForm = (props) => {
                     <div className='d-flex justify-content-between'>
                         <div>
                             <label htmlFor='due-date'>Due Date</label>
-                            <input type="date" className="form-control" aria-label="due date" id='due-date' aria-describedby="basic-addon1" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
+                            <input type="date" className="form-control" aria-label="due date" id='due-date' aria-describedby="basic-addon1" min={new Date().toISOString().split('T')[0]} value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
                         </div>
                         <div>
                             <label htmlFor='budget'>Budget</label>
