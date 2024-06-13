@@ -7,7 +7,7 @@ import RatingForm from "../rating/rating_form.jsx";
 import useScreenWidth from "../../hooks/useScreenWidth.jsx";
 import "../../../styles/better-buttons.css"
 
-const Task = ({ taskInfo, index, list }) => {
+const Task = ({ taskInfo }) => {
     const { store, actions } = useContext(Context);
     const path = useLocation().pathname;
     const isUserTasksPage = /^\/users\/[^/]+\/active-requests$/.test(path);
@@ -49,7 +49,7 @@ const Task = ({ taskInfo, index, list }) => {
     useEffect(() => { showRateButton(); }, [])
 
     return (
-        <div className="col-lg-4 col-12 p-2 d-flex flex-column">
+        <div className="col-xl-4 col-12 p-2 d-flex flex-column">
             <div className="card p-4 h-100 d-flex flex-column justify-content-between flex-grow-1">
                 <div>
                     <div className="w-100 d-flex justify-content-end gap-2">
@@ -64,7 +64,7 @@ const Task = ({ taskInfo, index, list }) => {
                                     { taskInfo.seeker_id && 
                                         <button className="tc-btn green" onClick={handleComplete}> 
                                             <Icon icon="fluent-mdl2:accept-medium" />
-                                            <span className="tc-btn-text">Delete</span> 
+                                            <span className="tc-btn-text">Complete</span> 
                                         </button>
                                     }
                                     <button className="tc-btn orange" onClick={handleCancel}> 
@@ -111,7 +111,7 @@ const Task = ({ taskInfo, index, list }) => {
                 <div>
                     <div className={`d-flex justify-content-between`}>
                         { (path != '/' && !isUserTasksPage && !isUserCompletedTasksPage)
-                        ? <div><span className="fs-3 d-flex align-items-center"><Icon className="me-2" icon="ph:user-bold" /> <span>{taskInfo.applicants.length} {taskInfo.applicants.length == 1 ? "applicant" : "applicants"}</span></span></div>
+                        ? <div><span className="fs-3 d-flex align-items-center"><Icon className="me-2" icon="ph:user-bold" /> <span>{taskInfo.applicants.length} { smallDevice ? "" : (taskInfo.applicants.length == 1 ? "applicant" : "applicants")}</span></span></div>
                         : taskInfo.seeker_id 
                         ? <div className="d-flex flex-column">
                             <span><b>Status:</b> {taskInfo.status == "in_progress" ? "in progress" : taskInfo.status}</span>
@@ -127,7 +127,7 @@ const Task = ({ taskInfo, index, list }) => {
                         </Link>
                         }
                         <Link to={`/tasks/${taskInfo.id}`}>
-                            <button className="btn btn-green smooth">See Details</button>
+                            <button className="btn btn-green smooth">{smallDevice ? "Details" : "See Details"}</button>
                         </Link>
                     </div>
                 </div>

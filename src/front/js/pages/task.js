@@ -85,7 +85,18 @@ export const Task = () => {
 	return (
 		<div className="container p-5 pt-0 mx-auto">
 			<div className="p-5 pt-0">
-				<div className="row d-flex justify-content-center">
+				{store.user.id != task.requester_user?.id 
+					? (((store.user.role == "both" || store.user.role == "task_seeker") && !applied) &&
+						<div className="w-100 d-flex justify-content-between">
+							<button className="btn btn-clear-dark px-4" onClick={handleShowApplicationForm}>Apply</button>
+						</div>
+						) : ( task.status == "pending" &&
+						<div className="w-100 d-flex justify-content-between">
+							<button className="btn btn-clear-dark px-4" onClick={handleShowTaskForm}><Icon icon="mage:edit-fill" /> Edit</button>
+						</div>
+					)
+				}
+				<div className="mt-4 row d-flex justify-content-center">
 					<div className="col-3">
 						<div className="rounded bg-dark overflow-hidden" style={{ width: "100%", aspectRatio: "1/1" }}>
 							{ task.requester_user?.profile_picture && <img
@@ -98,49 +109,42 @@ export const Task = () => {
 						<Link to={`/users/${task.requester_user?.username}`}>
 							<h5 className="mb-0 pt-2" >{task.requester_user?.username || "deleted"}</h5>
 						</Link>
-						<div className="d-flex align-items-center">
-							{requester.overall_rating && <StarRating value={requester.overall_rating || 0}></StarRating>}
-							{parseInt(requester.overall_rating) > 0 && <span className="text-muted ms-1">({requester.total_reviews})</span>}
-						</div>
+						{ requester.overall_rating != '0' && 
+							<div className="d-flex align-items-center">
+								<StarRating value={requester.overall_rating}></StarRating>
+								<span className="text-muted ms-1">({requester.total_reviews})</span>
+							</div>
+						}
 					</div>
 					<div className="col-9 d-flex flex-column justify-content-between">
 						<div>
 							<div className="d-flex justify-content-between flex-row">
-								<h2>{task.title}</h2>
-								<small className="text-muted"><b>ID: </b>{task.id}</small>
+								<h2 className="col-10">{task.title}</h2>
+								<div className="col-2">
+									<small className="text-muted float-end"><b>ID: </b>{task.id}</small>
+								</div>
 							</div>
 							<p className="text-muted">{actions.timeAgo(task.creation_date)}</p>
 							<p>{task.description}</p>
 						</div>
-						<div className="card p-2">
-							<div className="d-flex flex-column">
+						<div className="card p-4 gap-3">
+							<div className="d-flex gap-3 flex-column">
 								<span><Icon className="fs-3" icon="mingcute:location-2-line" /><b>Pick Up: </b>{task.pickup_address?.address}</span>
 								<span><Icon className="fs-3" icon="mingcute:location-2-fill" /><b>Drop Off: </b>{task.delivery_address?.address}</span>
 							</div>
-							<div className="d-flex justify-content-between align-items-end">
+							<div className="d-flex justify-content-between align-items-end gap-3">
 								<span><Icon className="fs-4 me-2" icon="fa6-solid:money-bill-1-wave" /><b>Budget: </b>{task.budget}€</span>
 								<span><Icon className="fs-3 me-2" icon="solar:calendar-linear" /><b>Due: </b>{dueIn(task.due_date)}</span>
 							</div>
 						</div>
 					</div>
 				</div>
+				<hr></hr>
 				<div className="row d-flex justify-content-center mt-4">
 					<div className="col-7 d-flex flex-column justify-content-between gap-4">
 						{ reviews.map((review) =>{
 							return <RatingCard key={review.id + "trev"} rating={review} />
 						})}
-						{store.user.id != task.requester_user?.id 
-							? (((store.user.role == "both" || store.user.role == "task_seeker") && !applied) &&
-								<div className="w-100 d-flex justify-content-between">
-									<button className="btn btn-green px-4" onClick={handleShowApplicationForm}>Apply</button>
-								</div>
-							)
-							: ( task.status == "pending" &&
-								<div className="w-100 d-flex justify-content-between">
-									<button className="btn btn-green px-4" onClick={handleShowTaskForm}><Icon icon="mage:edit-fill" /> Edit</button>
-								</div>
-							)
-						}
 					</div>
 					<div className="col-5 rounded overflow-hidden card p-0" style={{ height: "450px"}}>
 						{ (task.delivery_address && task.pickup_address) && <Map markers={[[task.delivery_address?.latitude, task.delivery_address?.longitude], [task.pickup_address?.latitude, task.pickup_address?.longitude]]} height={450}></Map>}

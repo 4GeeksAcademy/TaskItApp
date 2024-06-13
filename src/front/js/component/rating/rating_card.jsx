@@ -7,7 +7,7 @@ const RatingCard = ({ rating }) => {
     const isTaskDetailPage = /^\/tasks\/\d+$/.test(path);
 
     return (
-        <div className="container-fluid flex-grow-1">
+        <div className="container-fluid">
             <div className={`${isTaskDetailPage ? "col-12" : "col-lg-4 col-md-8 col-sm-11 flex-column"} p-0 d-flex w-100 h-100`}>
                 <div className={`card p-4 h-100 ${isTaskDetailPage ? "w-100" : ""} `}>
                     <StarRating value={rating.stars || 0} />

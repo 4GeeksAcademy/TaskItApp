@@ -1,11 +1,11 @@
 @import url(variables.css);
 
 a {
-    color: var(--orange);
+    color: var(--yellow);
 }
 
 a:hover {
-    color: var(--orange);
+    color: var(--yellow);
 }
 
 .card {
