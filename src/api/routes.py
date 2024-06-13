@@ -793,17 +793,17 @@ def get_user_tasks(index):
     requester = Requester.query.filter_by(user_id=index).first()
     if not requester:
         return jsonify({"error": "Requester not found"}), 404
+    
+    query = Task.query.filter(
+        Task.requester_id == requester.id,
+        Task.status.notin_([StatusEnum.CANCELLED, StatusEnum.COMPLETED])
+    )
 
     if last:
-        tasks = Task.query.filter(
-            Task.status.notin_([StatusEnum.CANCELLED, StatusEnum.COMPLETED])
-        ).all()
-        tasks = tasks[::-1][:3]
+        tasks = query.order_by(Task.id.desc()).limit(3).all()
     else:
-        tasks = Task.query.filter(
-            Task.status.notin_([StatusEnum.CANCELLED, StatusEnum.COMPLETED])
-        ).all()
-        tasks = tasks[::-1]
+        tasks = query.order_by(Task.id.desc()).all()
+
 
     return jsonify([task.serialize() for task in tasks]), 200
 
