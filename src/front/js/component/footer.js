@@ -35,9 +35,9 @@ export const Footer = () => {
 									<h5>Contact Us:</h5>
 									
 									<ul className="list-unstyled">
-									<li className="mt-3"><a href="https://github.com/BlondyMartinez" className="text-light">Blondy Martínez Montero <Icon icon="mdi:github" className="fs-2 text-orange" /></a></li>
-									<li className="mt-3"><a href="https://github.com/Fali1980" className="text-light">Rafael Hilario Rodríguez <Icon icon="mdi:github" className="fs-2 text-yellow" /></a></li>
-									<li className="mt-3"><a href="https://github.com/Aresdgi" className="text-light">Ares Dominguez Gil <Icon icon="mdi:github" className="fs-2 text-green" /></a></li>
+									<li className="mt-3"><a href="https://github.com/BlondyMartinez" className="text-light" target="_blank">Blondy Martínez Montero <Icon icon="mdi:github" className="fs-2 text-orange" /></a></li>
+									<li className="mt-3"><a href="https://github.com/Fali1980" className="text-light" target="_blank">Rafael Hilario Rodríguez <Icon icon="mdi:github" className="fs-2 text-yellow" /></a></li>
+									<li className="mt-3"><a href="https://github.com/Aresdgi" className="text-light" target="_blank">Ares Dominguez Gil <Icon icon="mdi:github" className="fs-2 text-green" /></a></li>
 									</ul>
 								</div>
 							
