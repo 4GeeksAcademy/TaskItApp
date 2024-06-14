@@ -72,14 +72,14 @@ const Layout = () => {
                                     <Route element={<Category />} path="/categories/:thecategory" />
                                     <Route element={<ProtectedRoute element={<TaskFeed />} />} path="/tasks" />
                                     <Route element={<ProtectedRoute element={ smallDevice ? <PhoneTask /> : <Task />} />} path="/tasks/:theid" />
-                                    <Route element={<Applicants />} path="/tasks/:theid/applicants" />
+                                    <Route element={<ProtectedRoute element={<Applicants />} />} path="/tasks/:theid/applicants" />
                                     <Route element={<Seekers />} path="/seekers" />
                                     <Route element={ smallDevice ? <PhoneUser /> : <User /> } path="/users/:theusername" />
                                     <Route element={<LoginUser />} path="/login" />
                                     <Route element={<SignupUser />} path="/signup" />
                                     <Route element={<LoginAdmin />} path="/login-admin" />
                                     <Route element={<About />} path="/about" />
-                                    <Route element={<EditProfile />} path="/edit-profile" />
+                                    <Route element={<ProtectedRoute element={<EditProfile />} />} path="/edit-profile" />
                                     { smallDevice  && <Route element={<ProtectedRoute element={<PhoneChatList />} />} path="/chats" />}
                                     { smallDevice  && <Route element={<ProtectedRoute element={<PhoneChat />} />} path="/chats/:chatid" />}
                                     {(store.user?.role === "requester" || store.user?.role === "both") && 
