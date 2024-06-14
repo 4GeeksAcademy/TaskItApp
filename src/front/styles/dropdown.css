@@ -1,3 +1,5 @@
+@import url(variables.css);
+
 .dropdown-menu {
     position: absolute;
     top: 4rem; /* Ajusta esta distancia según sea necesario */
@@ -18,6 +20,11 @@
     overflow-wrap: break-word !important;
     white-space: normal;
 }
+
+.dropdown-item.active, .dropdown-item:active{
+    background-color: var(--green);
+}
+
 
 .dropdown-item img {
     width: 100%;
