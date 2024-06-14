@@ -110,7 +110,7 @@ const Task = ({ taskInfo }) => {
                 </div>
                 <div>
                     <div className={`d-flex justify-content-between`}>
-                        { (path != '/' && !isUserTasksPage && !isUserCompletedTasksPage)
+                        { (path != '/' && !isUserTasksPage && !isUserCompletedTasksPage && !isUserCompletedRequestsPage)
                         ? <div><span className="fs-3 d-flex align-items-center"><Icon className="me-2" icon="ph:user-bold" /> <span>{taskInfo.applicants.length} { smallDevice ? "" : (taskInfo.applicants.length == 1 ? "applicant" : "applicants")}</span></span></div>
                         : taskInfo.seeker_id 
                         ? <div className="d-flex flex-column">
