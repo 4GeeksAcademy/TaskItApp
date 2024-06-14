@@ -14,23 +14,23 @@ const About = () => {
 
                     <h2 className="text-secondary mt-5">Meet Our Team</h2>
 
-                    <h3 className="text-secondary mt-2">Blondy</h3>
-
+                    <h3 className="text-secondary mt-4">Blondy</h3>
                     <p className="fs-4 text-muted">
                         With a background in video game development and a deep understanding of programming and computer science, she brings a unique perspective to our team.
                     </p>
 
                     <h3 className="text-secondary mt-2">Ares</h3>
-
                     <p className="fs-4 text-muted">
-                        A versatile full-stack developer with a knack for backend architecture. His attention to detail and problem-solving skills ensure the platform runs smoothly and efficiently.
+                        I am a historian who has decided to reinvent myself and focus on what I have truly discovered I am passionate about: programming and Full Stack development. 
+                        This transition has allowed me to combine my love for research and analysis with the creation of technological solutions. 
+                        I am always looking to learn new technologies and improve my skills to continue growing in this fascinating field.
                     </p>
 
                     <h3 className="text-secondary mt-2">Fali</h3>
-
                     <p className="fs-4 text-muted">
-                    I am a programming student focused on Full Stack development. Before diving into programming, I worked in electronics for several years. I am passionate about creation, and programming is another way for me to create things.
-                    I am always looking to learn new technologies and improve my skills.
+                        I am a programming student focused on Full Stack development. Before diving into programming, I worked in electronics for several years. 
+                        I am passionate about creation, and programming is another way for me to create things.
+                        I am always looking to learn new technologies and improve my skills.
                     </p>
                 </div>
                 
