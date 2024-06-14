@@ -1088,7 +1088,7 @@ def get_last_three_reviews(id):
         reviews += requester_reviews
     
     if user.task_seeker:
-        seeker_reviews = Rating.query.filter(Rating.seeker_id == user.task_seeker.id).order_by(Rating.id.desc()).all()
+        seeker_reviews = Rating.query.filter(Rating.seeker_id == user.id).order_by(Rating.id.desc()).all()
         reviews += seeker_reviews
 
     unique_reviews = {review.id: review for review in reviews}.values()
