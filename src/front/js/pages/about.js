@@ -21,9 +21,8 @@ const About = () => {
 
                     <h3 className="text-secondary mt-2">Ares</h3>
                     <p className="fs-4 text-muted">
-                        I am a historian who has decided to reinvent myself and focus on what I have truly discovered I am passionate about: programming and Full Stack development. 
-                        This transition has allowed me to combine my love for research and analysis with the creation of technological solutions. 
-                        I am always looking to learn new technologies and improve my skills to continue growing in this fascinating field.
+                        I am a historian who has decided to focus on programming and Full Stack development. This allows me to combine my love for research with creating technological solutions. 
+                        I am always eager to learn new technologies and improve my skills.
                     </p>
 
                     <h3 className="text-secondary mt-2">Fali</h3>
