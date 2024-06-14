@@ -14,7 +14,7 @@ const About = () => {
 
                     <h2 className="text-secondary mt-5">Meet Our Team</h2>
 
-                    <h3 className="text-secondary mt-5">Blondy</h3>
+                    <h3 className="text-secondary mt-2">Blondy</h3>
 
                     <p className="fs-4 text-muted">
                         With a background in video game development and a deep understanding of programming and computer science, she brings a unique perspective to our team.
@@ -29,13 +29,14 @@ const About = () => {
                     <h3 className="text-secondary mt-2">Fali</h3>
 
                     <p className="fs-4 text-muted">
-                        A creative force with a passion for design and user experience. His expertise in UI/UX design elevates the platform's aesthetics and usability, making it a pleasure to use for our users.
+                    I am a programming student focused on Full Stack development. Before diving into programming, I worked in electronics for several years. I am passionate about creation, and programming is another way for me to create things.
+                    I am always looking to learn new technologies and improve my skills.
                     </p>
                 </div>
                 
                 <div className="col-12 col-md-5 order-2">
                     <div className="card h-100">
-                        <img src="https://res.cloudinary.com/doojwu2m7/image/upload/v1718042879/gw9flftqwp2umkbbmsue.png" className="card-img-top" alt="Team" />
+                        <img src="https://res.cloudinary.com/doojwu2m7/image/upload/v1718042879/gw9flftqwp2umkbbmsue.png" className="card-img-top img-fluid" alt="Team" />
                     </div>
                 </div>
             </div>
