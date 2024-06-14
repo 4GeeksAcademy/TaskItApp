@@ -37,12 +37,12 @@ const AppliedToTask = ({ taskInfo }) => {
                 <div className="d-flex justify-content-between flex-row">
                     <h2 className="col-10">{taskInfo.title}</h2>
                     <div className="col-2">
-                        <small className="text-muted"><b>ID: </b>{taskInfo.id}</small>
+                        <small className="float-end text-muted"><b>ID: </b>{taskInfo.id}</small>
                     </div>
                 </div>
                 <p className="text-muted">{taskInfo.description}</p>
                 <div className="d-flex align-items-end justify-content-between">
-                    <span><b>Status: </b>{applicantInfo.status}</span>
+                    <span><b>Status: </b>{taskInfo.seeker ? "accepted" : applicantInfo.status}</span>
                     <Link to={`/tasks/${taskInfo.id}`}>
                         <button className="btn btn-green smooth">See Details</button>
                     </Link>
