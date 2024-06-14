@@ -34,25 +34,29 @@ const SettingsUser = ({ dropdownVisible, setDropdownVisible }) => {
 
     return (
         <div ref={ref} className={`dropdown-menu ${dropdownVisible ? 'show' : ''}`} aria-labelledby="dropdownMenuButton">
-            <div className="dropdown-item d-flex" onClick={() => navigate(`/users/${store.user.username}`)}>
-                <div className="d-flex align-items-center gap-2 mb-2">
-                    <div className="rounded-circle bg-dark overflow-hidden col-2" style={{ height: "60px", width: "60px", aspectRatio: '1/1' }}>
-                        { store.user.profile_picture && <img
-                            className="img-fluid"
-                            src={store.user.profile_picture}
-                            alt="User Profile"
-                            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                        />}
+            { store.user?.role != "none" &&
+                <>
+                    <div className="dropdown-item d-flex" onClick={() => navigate(`/users/${store.user.username}`)}>
+                        <div className="d-flex align-items-center gap-2 mb-2">
+                            <div className="rounded-circle bg-dark overflow-hidden col-2" style={{ height: "60px", width: "60px", aspectRatio: '1/1' }}>
+                                { store.user.profile_picture && <img
+                                    className="img-fluid"
+                                    src={store.user.profile_picture}
+                                    alt="User Profile"
+                                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                />}
+                            </div>
+                            <div className="d-flex flex-column justify-content-around col-10">
+                                <span className="fs-5 text-break">{store.user.full_name}</span>
+                                <span className="fs-5 text-break">{store.user.username}</span>
+                            </div>
+                        </div>
                     </div>
-                    <div className="d-flex flex-column justify-content-around col-10">
-                        <span className="fs-5 text-break">{store.user.full_name}</span>
-                        <span className="fs-5 text-break">{store.user.username}</span>
+                    <div className="dropdown-item fs-5" type="button" onClick={handleEditProfileClick}>
+                        <span><Icon icon="mage:edit-fill" /> Edit profile</span>
                     </div>
-                </div>
-            </div>
-            <div className="dropdown-item fs-5" type="button" onClick={handleEditProfileClick}>
-                <span><Icon icon="mage:edit-fill" /> Edit profile</span>
-            </div>
+                </>
+            }   
             <div className="dropdown-item fs-5" type="button" onClick={handleLogout}>
                 <span><Icon icon="icon-park:logout" /> Sign out </span>
             </div>

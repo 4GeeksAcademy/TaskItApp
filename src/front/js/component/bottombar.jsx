@@ -77,12 +77,14 @@ export const BottomNavbar = () => {
                         }
                     </DropdownButton>
                 </Nav.Item>
-                <Nav.Item className='d-flex justify-content-center'>
-                    <Nav.Link as={Link} to="/tasks" className="nav-link d-flex flex-column align-items-center">
-                        <Icon className='fs-2' icon="mingcute:task-2-fill" />
-                        <span className="small">Tasks</span>
-                    </Nav.Link>
-                </Nav.Item>
+                { store.user?.role != "none" &&
+                    <Nav.Item className='d-flex justify-content-center'>
+                        <Nav.Link as={Link} to="/tasks" className="nav-link d-flex flex-column align-items-center">
+                            <Icon className='fs-2' icon="mingcute:task-2-fill" />
+                            <span className="small">Tasks</span>
+                        </Nav.Link>
+                    </Nav.Item>
+                }   
                 { (store.user.role === "both" || store.user.role === "task_seeker") && 
                     <Nav.Item className='d-flex justify-content-center'>
                         <DropdownButton
@@ -99,13 +101,15 @@ export const BottomNavbar = () => {
                         </DropdownButton>
                     </Nav.Item>
                 }
-                <Nav.Item className='d-flex justify-content-center'>
-                    <Nav.Link as={Link} to="/chats" className="nav-link d-flex flex-column align-items-center position-relative">
-                        <ChatNotification></ChatNotification>
-                        <Icon className="fs-2" icon="mdi:message" />
-                        <span className="small">Messages</span>
-                    </Nav.Link>
-                </Nav.Item>
+                { store.user?.role != "none" &&
+                    <Nav.Item className='d-flex justify-content-center'>
+                        <Nav.Link as={Link} to="/chats" className="nav-link d-flex flex-column align-items-center position-relative">
+                            <ChatNotification></ChatNotification>
+                            <Icon className="fs-2" icon="mdi:message" />
+                            <span className="small">Messages</span>
+                        </Nav.Link>
+                    </Nav.Item>
+                }   
                 { (store.user.role === "both" || store.user.role === "task_seeker") && 
                     <Nav.Item className='d-flex justify-content-center'>
                         <Nav.Link as={Link} to="/seekers" className="nav-link d-flex flex-column align-items-center">
