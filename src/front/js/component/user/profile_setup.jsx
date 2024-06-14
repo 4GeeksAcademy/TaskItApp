@@ -26,7 +26,7 @@ const ProfileSetup = () => {
             <div className="row">
                 <div className="col-md-8 mx-auto">
                     <div className="card">
-                        <div className="card-header text-center">
+                        <div className="card-header bg-darkblue text-green text-center">
                             <h2>Welcome to Task It App!</h2>
                             <p>Let's set up your profile</p>
                         </div>

@@ -123,6 +123,7 @@ a:hover {
     background-color: var(--light-yellow);
     color: white;
 }
+
 .text-orange {
     color: var(--orange);
 }
@@ -133,6 +134,10 @@ a:hover {
 
 .text-green {
     color: var(--green);
+}
+
+.bg-darkblue {
+    background-color: var(--dark);
 }
 
 .scrollable-menu {
