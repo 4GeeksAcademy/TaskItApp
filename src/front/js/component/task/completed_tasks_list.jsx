@@ -30,7 +30,7 @@ const CompletedTasksList = ({ role }) => {
                     ) : (
                         store.seekerCompletedTasks.sort((a, b) => b.id - a.id).map((task, index) => {
                             return (
-                                <React.Fragment key={task.id + role + "cts"}>
+                                <React.Fragment key={task.id + role + "cts" + task.seeker.username}>
                                     <Task taskInfo={task} index={index} list={"seekerList"} ></Task>
                                 </React.Fragment>
                             );
@@ -42,7 +42,7 @@ const CompletedTasksList = ({ role }) => {
                     ) : (
                         store.requesterCompletedTasks.sort((a, b) => b.id - a.id).map((task, index) => {
                             return (
-                                <React.Fragment key={task.id + role + "ctr"} >
+                                <React.Fragment key={task.id + role + "ctr" + task.seeker.username} >
                                     <Task taskInfo={task} index={index} list={"requesterList"} ></Task>
                                 </React.Fragment>
                             );

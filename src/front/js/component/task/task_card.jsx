@@ -41,8 +41,8 @@ const Task = ({ taskInfo }) => {
     }
 
     const showRateButton = () => {
-        const userHasRated = taskInfo.ratings.some(rating => (rating.seeker_id !== store.user.seeker?.id  && rating.seeker_id === taskInfo.seeker.id) || (rating.requester_id !== store.user.requester?.id && rating.requester_id === taskInfo.requester_user.id));
-        if (!userHasRated && taskInfo.ratings.length < 2) setShowRateBtn(true);
+        const userHasRated = taskInfo.ratings.some(rating => (rating.seeker_id !== store.user.seeker?.user.id  && rating.seeker_id === taskInfo.seeker.user.id) || (rating.requester_id !== store.user.requester?.id && rating.requester_id === taskInfo.requester_user.id));
+        if (!userHasRated && taskInfo.ratings.length < 2) setShowRateBtn(true);        
         else setShowRateBtn(false);
     }
 
@@ -152,7 +152,7 @@ const Task = ({ taskInfo }) => {
                 show={showRatingForm} 
                 handleClose={handleCloseRatingForm} 
                 role={store.user.id == taskInfo.requester_user?.id ? "requester" : "seeker"} 
-                id={store.user.id === taskInfo.requester_user?.id ? taskInfo.seeker?.id : taskInfo.requester_user?.id} 
+                id={store.user.id === taskInfo.requester_user?.id ? taskInfo.seeker?.user.id : taskInfo.requester_user?.id} 
                 username={store.user.id === taskInfo.requester_user?.id ? taskInfo.seeker?.user.username : taskInfo.requester_user?.username} 
                 taskID={taskInfo.id}
                 setShowBtn={setShowRateBtn}
