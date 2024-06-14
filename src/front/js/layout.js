@@ -1,5 +1,5 @@
 import React, { useEffect, useContext } from "react";
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import ScrollToTop from "./component/scrollToTop";
 import { BackendURL } from "./component/backendURL";
 import { Home } from "./pages/home";
@@ -95,6 +95,7 @@ const Layout = () => {
                                         </>
                                     }
                                     <Route element={<h1>Not found!</h1>} />
+                                    <Route path="*" element={<Navigate to="/" />} />
                                 </Routes>
                                 <Footer />
                                 { (store.auth && !smallDevice) && <ChatList></ChatList> }
