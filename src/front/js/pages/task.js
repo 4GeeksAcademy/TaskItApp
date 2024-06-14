@@ -83,7 +83,7 @@ export const Task = () => {
 	}
 
 	return (
-		<div className="container p-5 pt-0 mx-auto">
+		<div className="container-fluid pt-0 mx-auto">
 			<div className="p-5 pt-0">
 				{store.user.id != task.requester_user?.id 
 					? (((store.user.role == "both" || store.user.role == "task_seeker") && !applied) &&
@@ -109,12 +109,10 @@ export const Task = () => {
 						<Link to={`/users/${task.requester_user?.username}`}>
 							<h5 className="mb-0 pt-2" >{task.requester_user?.username || "deleted"}</h5>
 						</Link>
-						{ requester.overall_rating != '0' && 
-							<div className="d-flex align-items-center">
-								<StarRating value={requester.overall_rating}></StarRating>
-								<span className="text-muted ms-1">({requester.total_reviews})</span>
-							</div>
-						}
+						<div className="d-flex align-items-center">
+							{requester.overall_rating && <StarRating value={requester.overall_rating || 0}></StarRating>}
+							{parseInt(requester.overall_rating) > 0 && <span className="text-muted ms-1">({requester.total_reviews})</span>}
+						</div>
 					</div>
 					<div className="col-9 d-flex flex-column justify-content-between">
 						<div>

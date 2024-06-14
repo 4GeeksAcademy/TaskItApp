@@ -20,12 +20,15 @@ export const Home = () => {
 					{(store.user.role == "requester" || store.user.role == "both") && 
 						<>
 							<UserTaskList></UserTaskList>
+							<hr></hr>
 							<CompletedTasksList role={"requester"} />
 						</>
 					}
 					{(store.user.role == "task_seeker" || store.user.role == "both") && 
 						<>	
+							{((store.user.role == "requester" || store.user.role == "both") && <hr></hr>)}
 							<AppliedToTaskList></AppliedToTaskList>
+							<hr></hr>
 							<CompletedTasksList role={"seeker"} />
 						</>
 					}

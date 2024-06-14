@@ -15,11 +15,11 @@ const AppliedToTaskList = () => {
     }, [store.user.role]);
 
     useEffect(() => {
-        loadInfo(path == '/'); 
+        loadInfo(path == '/' || path == `/users/${store.user.username}/applications`); 
     }, [store.notifications]);
 
     const loadInfo = (last) => {
-        if(!last && path == '/') return;
+        if(!last) return;
         fetch(process.env.BACKEND_URL + `/api/users/${store.user.id}/applications/${last ? "?last=true" : ""}`)
         .then(response => response.json())
         .then(data => setTasks(data))
