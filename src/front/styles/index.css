@@ -39,7 +39,7 @@ a:hover {
 }
 
 .btn-dark:hover {
-    background-color: var(--dark);
+    background-color: var(--light-dark);
     color: white;
 }
 
