@@ -109,10 +109,10 @@ export const Task = () => {
 						<Link to={`/users/${task.requester_user?.username}`}>
 							<h5 className="mb-0 pt-2" >{task.requester_user?.username || "deleted"}</h5>
 						</Link>
-						<div className="d-flex align-items-center">
+						{requester.total_reviews > 0 && <div className="d-flex align-items-center">
 							{requester.overall_rating && <StarRating value={requester.overall_rating || 0}></StarRating>}
 							{parseInt(requester.overall_rating) > 0 && <span className="text-muted ms-1">({requester.total_reviews})</span>}
-						</div>
+						</div>}
 					</div>
 					<div className="col-9 d-flex flex-column justify-content-between">
 						<div>
