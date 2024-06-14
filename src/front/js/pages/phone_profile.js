@@ -76,7 +76,7 @@ export const PhoneUser = () => {
 								</div>
 							</div>)
 						}
-						<p className="fs-3 text-muted">{user.description}</p>
+						<p className="py-3 fs-3 text-muted">{user.description}</p>
 					</div>
 					<div className="d-flex flex-column justify-content-around gap-2">
                         {	requesterInfo && Object.keys(requesterInfo).length > 0 &&
