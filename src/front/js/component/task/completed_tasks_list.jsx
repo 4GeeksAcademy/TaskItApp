@@ -28,7 +28,7 @@ const CompletedTasksList = ({ role }) => {
                     store.seekerCompletedTasks.length === 0 ? (
                         <div>No tasks available</div>
                     ) : (
-                        store.seekerCompletedTasks.slice().reverse().map((task, index) => {
+                        store.seekerCompletedTasks.sort((a, b) => b.id - a.id).map((task, index) => {
                             return (
                                 <React.Fragment key={task.id + role + "cts"}>
                                     <Task taskInfo={task} index={index} list={"seekerList"} ></Task>
@@ -40,7 +40,7 @@ const CompletedTasksList = ({ role }) => {
                     store.requesterCompletedTasks.length === 0 ? (
                         <div>No tasks available</div>
                     ) : (
-                        store.requesterCompletedTasks.slice().reverse().map((task, index) => {
+                        store.requesterCompletedTasks.sort((a, b) => b.id - a.id).map((task, index) => {
                             return (
                                 <React.Fragment key={task.id + role + "ctr"} >
                                     <Task taskInfo={task} index={index} list={"requesterList"} ></Task>
