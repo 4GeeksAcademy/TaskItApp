@@ -114,8 +114,22 @@ const Task = ({ taskInfo }) => {
                         ? <div><span className="fs-3 d-flex align-items-center"><Icon className="me-2" icon="ph:user-bold" /> <span>{taskInfo.applicants.length} { smallDevice ? "" : (taskInfo.applicants.length == 1 ? "applicant" : "applicants")}</span></span></div>
                         : taskInfo.seeker_id 
                         ? <div className="d-flex flex-column">
-                            <span><b>Status:</b> {taskInfo.status == "in_progress" ? "in progress" : taskInfo.status}</span>
-                            <span><b>Task Seeker:</b> <Link to={`/users/${taskInfo.seeker?.user?.username}`}>{taskInfo.seeker?.user?.username}</Link></span>
+                            <div className="d-flex flex-column">
+                                <div className="d-flex align-items-center">
+                                    <div className="rounded-circle bg-dark me-2 overflow-hidden" style={{ height: "40px", width: "40px", aspectRatio: "1/1" }}>
+                                        { taskInfo.seeker?.user?.profile_picture && <img
+                                            className="img-fluid"
+                                            src={taskInfo.seeker?.user?.profile_picture}
+                                            alt="User Profile"
+                                            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                        />}
+                                    </div>
+                                    <div className="d-flex flex-column justify-content-center">
+                                        <h6 className="p-0 m-0">{taskInfo.status == "in_progress" ? "Being handled by" : "Handled by"}</h6>
+                                        <span className="fw-bold"><Link to={`/users/${taskInfo.seeker?.user?.username}`}>{taskInfo.seeker?.user?.username}</Link></span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         : <Link to={`/tasks/${taskInfo.id}/applicants`}>
                             <button className="btn btn-clear-dark smooth">
