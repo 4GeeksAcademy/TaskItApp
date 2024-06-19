@@ -1,4 +1,4 @@
-<h1>Todo List App</h1>
+<h1>Task It App</h1>
 <h2>Overview</h2>
 Platform that connects Requesters (people who post tasks) with Seekers (people who complete tasks) - or even both!
 
